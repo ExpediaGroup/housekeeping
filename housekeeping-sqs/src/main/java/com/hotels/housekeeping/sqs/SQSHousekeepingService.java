@@ -22,8 +22,8 @@ import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import com.hotels.bdp.housekeeping.api.model.LegacyReplicaPath;
-import com.hotels.bdp.housekeeping.api.service.HousekeepingService;
+import com.hotels.housekeeping.api.model.ILegacyReplicaPath;
+import com.hotels.housekeeping.api.service.HousekeepingService;
 
 public class SQSHousekeepingService implements HousekeepingService {
 
@@ -108,7 +108,7 @@ public class SQSHousekeepingService implements HousekeepingService {
   }
 
   @Override
-  public void scheduleForHousekeeping(LegacyReplicaPath cleanUpPath) {
+  public void scheduleForHousekeeping(ILegacyReplicaPath cleanUpPath) {
     try {
       SendMessageRequest sendMessageRequest = new SendMessageRequest();
       sendMessageRequest.setQueueUrl(id);

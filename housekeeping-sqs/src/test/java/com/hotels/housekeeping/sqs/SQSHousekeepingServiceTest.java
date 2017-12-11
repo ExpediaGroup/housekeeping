@@ -33,8 +33,8 @@ import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 
-import com.hotels.bdp.housekeeping.api.model.LegacyReplicaPath;
-import com.hotels.bdp.housekeeping.api.service.HousekeepingService;
+import com.hotels.housekeeping.api.model.LegacyReplicaPath;
+import com.hotels.housekeeping.api.service.HousekeepingService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SQSHousekeepingServiceTest {

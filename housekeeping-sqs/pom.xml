@@ -16,7 +16,7 @@
   <dependencies>
     <!-- Housekeeping -->
     <dependency>
-      <groupId>com.hotels.bdp</groupId>
+      <groupId>com.hotels</groupId>
       <artifactId>housekeeping-api</artifactId>
       <version>${project.version}</version>
     </dependency>
