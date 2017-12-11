@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>housekeeping-parent</artifactId>
+    <groupId>com.hotels.bdp</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>housekeeping-sqs</artifactId>
+  <groupId>com.hotels</groupId>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <dependencies>
+    <!-- Housekeeping -->
+    <dependency>
+      <groupId>com.hotels.bdp</groupId>
+      <artifactId>housekeeping-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- AWS -->
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-s3</artifactId>
+      <version>1.11.100</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-sqs</artifactId>
+      <version>1.11.100</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+      <version>1.9.5</version>
+    </dependency>
+  </dependencies>
+
+</project>
