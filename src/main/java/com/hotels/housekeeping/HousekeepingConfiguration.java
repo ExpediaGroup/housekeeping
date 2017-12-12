@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.google.common.collect.ImmutableMap;
@@ -42,7 +41,6 @@ import com.hotels.housekeeping.converter.StringToDurationConverter;
 @EnableAutoConfiguration
 @EnableConfigurationProperties(Housekeeping.class)
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = { "com.hotels.housekeeping" })
 public class HousekeepingConfiguration {
 
   @Autowired
