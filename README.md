@@ -1,4 +1,4 @@
-# ``Housekeeping
+# Housekeeping
 
 ## Overview
 A database-backed module that stores orphaned replica paths in a table for later clean up.
