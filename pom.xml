@@ -12,7 +12,7 @@
   <groupId>com.hotels</groupId>
   <artifactId>housekeeping</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <inceptionYear>2017</inceptionYear>
+  <inceptionYear>2016</inceptionYear>
 
   <scm>
     <connection>scm:git:git@github.com:HotelsDotCom/housekeeping.git</connection>
@@ -24,6 +24,7 @@
   <properties>
     <powermock.version>1.6.4</powermock.version>
     <mockito.version>1.10.19</mockito.version>
+    <hibernate.version>4.3.11.Final</hibernate.version>
     <spring-boot.version>1.3.3.RELEASE</spring-boot.version>
     <jasypt-spring-boot.version>1.5-java7</jasypt-spring-boot.version>
     <hadoop.version>2.7.1</hadoop.version>
@@ -55,12 +56,12 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
-      <version>4.3.11.Final</version>
+      <version>${hibernate.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-envers</artifactId>
-      <version>4.3.11.Final</version>
+      <version>${hibernate.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
