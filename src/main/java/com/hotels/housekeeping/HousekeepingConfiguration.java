@@ -22,12 +22,12 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -67,7 +67,7 @@ public class HousekeepingConfiguration {
     env.getPropertySources().addLast(new MapPropertySource("housekeepingProperties", properties));
   }
 
-  @Primary
+  @ConditionalOnMissingBean
   @Bean(destroyMethod = "close")
   DataSource housekeepingDataSource(Housekeeping housekeeping) {
     return DataSourceBuilder

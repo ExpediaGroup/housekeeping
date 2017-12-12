@@ -15,96 +15,65 @@
  */
 package com.hotels.housekeeping.model;
 
-import java.io.Serializable;
+public interface LegacyReplicaPath {
+  public String getEventId();
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+  public String getPathEventId();
 
-import org.hibernate.envers.Audited;
-import org.joda.time.Instant;
+  public String getPath();
 
-import com.google.common.base.Objects;
+  public void setPath(String path);
 
-@Entity
-// @Converter doesn't work with @Audited until https://hibernate.atlassian.net/browse/HHH-9042 is released
-@Audited
-@Table(schema = "circus_train", name = "Legacy_replica_path",
-    uniqueConstraints = @UniqueConstraint(columnNames = { "path", "creation_timestamp" }))
-public class LegacyReplicaPath implements Serializable {
-  private static final long serialVersionUID = 1L;
+  public void setPathEventId(String pathEventId);
 
-  @Id
-  @GeneratedValue
-  @Column(name = "id")
-  private long id;
+  public void setEventId(String eventId);
 
-  @Column(name = "event_id", nullable = false, length = 250)
-  private String eventId;
+  public static final class DEFAULT {
+    public static LegacyReplicaPath instance(String path) {
+      LegacyReplicaPath legacyReplicaPath = DEFAULT.newInstance();
+      legacyReplicaPath.setPath(path);
+      return legacyReplicaPath;
+    }
 
-  @Column(name = "path", nullable = false, length = 10000)
-  private String path;
+    public static LegacyReplicaPath instance(String eventId, String pathEventId, String path) {
+      LegacyReplicaPath legacyReplicaPath = DEFAULT.newInstance();
+      legacyReplicaPath.setEventId(eventId);
+      legacyReplicaPath.setPathEventId(pathEventId);
+      legacyReplicaPath.setPath(path);
+      return legacyReplicaPath;
+    }
 
-  @Column(name = "creation_timestamp", nullable = false, updatable = false)
-  private long creationTimestamp;
+    private static LegacyReplicaPath newInstance() {
+      return new LegacyReplicaPath() {
 
-  @Column(name = "path_event_id", nullable = true, length = 250)
-  private String pathEventId;
+        private String eventId;
 
-  protected LegacyReplicaPath() {}
+        private String path;
 
-  public LegacyReplicaPath(String eventId, String pathEventId, String path) {
-    this.eventId = eventId;
-    this.pathEventId = pathEventId;
-    this.path = path;
-  }
+        private String pathEventId;
 
-  public long getId() {
-    return id;
-  }
+        public String getEventId() {
+          return eventId;
+        }
 
-  public String getEventId() {
-    return eventId;
-  }
+        public String getPathEventId() {
+          return pathEventId;
+        }
 
-  public String getPathEventId() {
-    return pathEventId;
-  }
+        public String getPath() {
+          return path;
+        }
 
-  public String getPath() {
-    return path;
-  }
+        public void setPath(String path) { this.path = path;}
 
-  public long getCreationTimestamp() {
-    return creationTimestamp;
-  }
+        public void setPathEventId(String pathEventId) {
+          this.pathEventId = pathEventId;
+        }
 
-  public void setPathEventId(String pathEventId) {
-    this.pathEventId = pathEventId;
-  }
-
-  protected void setCreationTimestamp(long creationTimestamp) {
-    this.creationTimestamp = creationTimestamp;
-  }
-
-  @PrePersist
-  private void onPersist() {
-    setCreationTimestamp(new Instant().getMillis());
-  }
-
-  @Override
-  public String toString() {
-    return Objects
-        .toStringHelper(this)
-        .add("id", id)
-        .add("eventId", eventId)
-        .add("pathEventId", pathEventId)
-        .add("path", path)
-        .add("creationTimestamp", creationTimestamp)
-        .toString();
+        public void setEventId(String eventId) {
+          this.eventId = eventId;
+        }
+      };
+    }
   }
 }

@@ -93,9 +93,9 @@ public class FileSystemHousekeepingServiceTest {
     val2Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=2").getCanonicalPath());
     val3Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=3").getCanonicalPath());
     service = new FileSystemHousekeepingService(legacyReplicationPathRepository, conf);
-    cleanUpPath1 = new LegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val1Path.toString());
-    cleanUpPath2 = new LegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val2Path.toString());
-    cleanUpPath3 = new LegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val3Path.toString());
+    cleanUpPath1 = LegacyReplicaPath.DEFAULT.instance(EVENT_ID, PATH_EVENT_ID, val1Path.toString());
+    cleanUpPath2 = LegacyReplicaPath.DEFAULT.instance(EVENT_ID, PATH_EVENT_ID, val2Path.toString());
+    cleanUpPath3 = LegacyReplicaPath.DEFAULT.instance(EVENT_ID, PATH_EVENT_ID, val3Path.toString());
   }
 
   @Test
@@ -194,7 +194,7 @@ public class FileSystemHousekeepingServiceTest {
   @Test
   public void eventuallyConsistentCleanUpOnlyKeys() throws Exception {
     Path val4Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=2", "val=4").getCanonicalPath());
-    LegacyReplicaPath cleanUpPath4 = new LegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val4Path.toString());
+    LegacyReplicaPath cleanUpPath4 = LegacyReplicaPath.DEFAULT.instance(EVENT_ID, PATH_EVENT_ID, val4Path.toString());
 
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath4));
