@@ -16,6 +16,8 @@
 package com.hotels.housekeeping.model;
 
 public interface LegacyReplicaPath {
+  public long getId();
+
   public String getEventId();
 
   public String getPathEventId();
@@ -27,6 +29,10 @@ public interface LegacyReplicaPath {
   public void setPathEventId(String pathEventId);
 
   public void setEventId(String eventId);
+
+  public long getCreationTimestamp();
+
+  public void setCreationTimestamp(long creationTimestamp);
 
   public static final class DEFAULT {
     public static LegacyReplicaPath instance(String path) {
@@ -46,11 +52,17 @@ public interface LegacyReplicaPath {
     private static LegacyReplicaPath newInstance() {
       return new LegacyReplicaPath() {
 
+        private long id = 1l;
+
+        private long creationTimestamp;
+
         private String eventId;
 
         private String path;
 
         private String pathEventId;
+
+        public long getId() {return id;}
 
         public String getEventId() {
           return eventId;
@@ -72,6 +84,14 @@ public interface LegacyReplicaPath {
 
         public void setEventId(String eventId) {
           this.eventId = eventId;
+        }
+
+        public long getCreationTimestamp() {
+          return creationTimestamp;
+        }
+
+        public void setCreationTimestamp(long creationTimestamp) {
+          this.creationTimestamp = creationTimestamp;
         }
       };
     }
