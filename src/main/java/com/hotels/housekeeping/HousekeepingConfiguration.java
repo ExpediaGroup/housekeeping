@@ -65,8 +65,8 @@ public class HousekeepingConfiguration {
     env.getPropertySources().addLast(new MapPropertySource("housekeepingProperties", properties));
   }
 
-  @ConditionalOnMissingBean
   @Bean(destroyMethod = "close")
+  @ConditionalOnMissingBean(name = "housekeepingDataSource")
   DataSource housekeepingDataSource(Housekeeping housekeeping) {
     return DataSourceBuilder
         .create()

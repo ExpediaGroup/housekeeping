@@ -18,77 +18,21 @@ package com.hotels.housekeeping.audit;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+public interface AuditRevision extends Serializable {
 
-import org.hibernate.envers.RevisionEntity;
-import org.hibernate.envers.RevisionNumber;
-import org.hibernate.envers.RevisionTimestamp;
+  public int getId();
 
-@Entity
-@RevisionEntity
-@Table(schema = "circus_train", name = "audit_revision")
-public class AuditRevision implements Serializable {
-  private static final long serialVersionUID = 1L;
+  public void setId(int id);
 
-  @Id
-  @GeneratedValue
-  @RevisionNumber
-  @Column(name = "id")
-  private int id;
+  public Date getRevisionDate();
 
-  @RevisionTimestamp
-  @Column(name = "timestamp")
-  private long timestamp;
+  public long getTimestamp();
 
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  @Transient
-  public Date getRevisionDate() {
-    return new Date(timestamp);
-  }
-
-  public long getTimestamp() {
-    return timestamp;
-  }
-
-  public void setTimestamp(long timestamp) {
-    this.timestamp = timestamp;
-  }
+  public void setTimestamp(long timestamp);
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + id;
-    return result;
-  }
+  public int hashCode();
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    AuditRevision other = (AuditRevision) obj;
-    if (id != other.id) {
-      return false;
-    }
-    return true;
-  }
+  public boolean equals(Object obj);
 }
