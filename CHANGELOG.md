@@ -1,4 +1,4 @@
-## Unreleased
+## [0.0.2] 2017-12-20
 ### Changed
 * Changed HikariCP version to 2.4.13 Java 7 version for backward compatibility with older JVMs.
 
