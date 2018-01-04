@@ -58,26 +58,26 @@ public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
     return eventId;
   }
 
+  public void setEventId(String eventId) {
+    this.eventId = eventId;
+  }
+
   public String getPathEventId() {
     return pathEventId;
+  }
+
+  public void setPathEventId(String pathEventId) {
+    this.pathEventId = pathEventId;
   }
 
   public String getPath() {
     return path;
   }
 
-  public long getCreationTimestamp() {
-    return creationTimestamp;
-  }
-
   public void setPath(String path) { this.path = path;}
 
-  public void setPathEventId(String pathEventId) {
-    this.pathEventId = pathEventId;
-  }
-
-  public void setEventId(String eventId) {
-    this.eventId = eventId;
+  public long getCreationTimestamp() {
+    return creationTimestamp;
   }
 
   public void setCreationTimestamp(long creationTimestamp) {

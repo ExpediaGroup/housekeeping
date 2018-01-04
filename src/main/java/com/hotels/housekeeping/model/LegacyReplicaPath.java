@@ -21,17 +21,17 @@ public interface LegacyReplicaPath {
 
   public String getEventId();
 
-  public String getPathEventId();
-
-  public String getPath();
-
-  public long getCreationTimestamp();
-
   public void setEventId(String eventId);
+
+  public String getPathEventId();
 
   public void setPathEventId(String pathEventId);
 
+  public String getPath();
+
   public void setPath(String path);
+
+  public long getCreationTimestamp();
 
   public void setCreationTimestamp(long creationTimestamp);
 
