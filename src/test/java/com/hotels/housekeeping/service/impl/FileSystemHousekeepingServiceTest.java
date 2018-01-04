@@ -53,7 +53,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
-import com.hotels.housekeeping.TestLegacyReplicaPath;
+import com.hotels.housekeeping.model.DefaultLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 
@@ -94,9 +94,9 @@ public class FileSystemHousekeepingServiceTest {
     val2Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=2").getCanonicalPath());
     val3Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=3").getCanonicalPath());
     service = new FileSystemHousekeepingService(legacyReplicationPathRepository, conf);
-    cleanUpPath1 = new TestLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val1Path.toString());
-    cleanUpPath2 = new TestLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val2Path.toString());
-    cleanUpPath3 = new TestLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val3Path.toString());
+    cleanUpPath1 = new DefaultLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val1Path.toString());
+    cleanUpPath2 = new DefaultLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val2Path.toString());
+    cleanUpPath3 = new DefaultLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val3Path.toString());
   }
 
   @Test
@@ -195,7 +195,7 @@ public class FileSystemHousekeepingServiceTest {
   @Test
   public void eventuallyConsistentCleanUpOnlyKeys() throws Exception {
     Path val4Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=2", "val=4").getCanonicalPath());
-    LegacyReplicaPath cleanUpPath4 = new TestLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val4Path.toString());
+    LegacyReplicaPath cleanUpPath4 = new DefaultLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val4Path.toString());
 
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath4));

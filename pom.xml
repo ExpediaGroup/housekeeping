@@ -37,20 +37,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
-      <!-- Exclude logback -->
-      <dependency>
-        <groupId>net.sourceforge.cobertura</groupId>
-        <artifactId>cobertura-runtime</artifactId>
-        <version>${cobertura.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -164,6 +150,20 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Exclude logback -->
+    <dependency>
+      <groupId>net.sourceforge.cobertura</groupId>
+      <artifactId>cobertura-runtime</artifactId>
+      <version>${cobertura.version}</version>
+      <scope>test</scope>
+      <type>pom</type>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>com.github.springtestdbunit</groupId>
       <artifactId>spring-test-dbunit</artifactId>
@@ -183,4 +183,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 </project>

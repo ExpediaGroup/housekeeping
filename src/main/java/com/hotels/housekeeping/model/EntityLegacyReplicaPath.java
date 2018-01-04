@@ -100,4 +100,5 @@ public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
         .add("creationTimestamp", creationTimestamp)
         .toString();
   }
+
 }

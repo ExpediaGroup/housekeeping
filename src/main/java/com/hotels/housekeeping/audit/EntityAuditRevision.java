@@ -89,4 +89,5 @@ public abstract class EntityAuditRevision implements AuditRevision {
     }
     return true;
   }
+
 }
