@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2017 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.hotels.housekeeping.model;
 
 public interface LegacyReplicaPath {
+
   public long getId();
 
   public String getEventId();
@@ -24,76 +25,14 @@ public interface LegacyReplicaPath {
 
   public String getPath();
 
-  public void setPath(String path);
-
-  public void setPathEventId(String pathEventId);
+  public long getCreationTimestamp();
 
   public void setEventId(String eventId);
 
-  public long getCreationTimestamp();
+  public void setPathEventId(String pathEventId);
+
+  public void setPath(String path);
 
   public void setCreationTimestamp(long creationTimestamp);
 
-  public static final class DEFAULT {
-    public static LegacyReplicaPath instance(String path) {
-      LegacyReplicaPath legacyReplicaPath = DEFAULT.newInstance();
-      legacyReplicaPath.setPath(path);
-      return legacyReplicaPath;
-    }
-
-    public static LegacyReplicaPath instance(String eventId, String pathEventId, String path) {
-      LegacyReplicaPath legacyReplicaPath = DEFAULT.newInstance();
-      legacyReplicaPath.setEventId(eventId);
-      legacyReplicaPath.setPathEventId(pathEventId);
-      legacyReplicaPath.setPath(path);
-      return legacyReplicaPath;
-    }
-
-    private static LegacyReplicaPath newInstance() {
-      return new LegacyReplicaPath() {
-
-        private long id = 1l;
-
-        private long creationTimestamp;
-
-        private String eventId;
-
-        private String path;
-
-        private String pathEventId;
-
-        public long getId() {return id;}
-
-        public String getEventId() {
-          return eventId;
-        }
-
-        public String getPathEventId() {
-          return pathEventId;
-        }
-
-        public String getPath() {
-          return path;
-        }
-
-        public void setPath(String path) { this.path = path;}
-
-        public void setPathEventId(String pathEventId) {
-          this.pathEventId = pathEventId;
-        }
-
-        public void setEventId(String eventId) {
-          this.eventId = eventId;
-        }
-
-        public long getCreationTimestamp() {
-          return creationTimestamp;
-        }
-
-        public void setCreationTimestamp(long creationTimestamp) {
-          this.creationTimestamp = creationTimestamp;
-        }
-      };
-    }
-  }
 }
