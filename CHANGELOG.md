@@ -1,4 +1,4 @@
-## [0.0.3] 2018-01-05
+## [1.0.0] 2018-01-05
 ### Added
 * Configurable housekeeping entities and repositories.
 * Default housekeeping entities and repository.
