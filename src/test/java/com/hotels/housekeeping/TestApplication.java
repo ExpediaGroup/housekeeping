@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2017 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,21 @@ import javax.sql.DataSource;
 import org.apache.hadoop.conf.Configuration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 @SpringBootApplication
 @EnableConfigurationProperties
+@ComponentScan("com.hotels.housekeeping")
+@EntityScan(basePackages = { "com.hotels.housekeeping.model" })
+@EnableJpaRepositories(basePackages = { "com.hotels.housekeeping.repository" })
 public class TestApplication {
+
   @Bean
   public Configuration replicaHiveConf() {
     return new Configuration();

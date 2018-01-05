@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2017 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import com.hotels.housekeeping.TestApplication;
+import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -99,7 +100,7 @@ public class LegacyReplicaPathRepositoryTest {
   @DatabaseSetup("classpath:/com/hotels/housekeeping/repository/legacyReplicaPath-initial-test-data.xml")
   @ExpectedDatabase(value = "classpath:/com/hotels/housekeeping/repository/legacyReplicaPath-after-save-test.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
   public void save() {
-    repository.save(new LegacyReplicaPath("eventId_4", "eventId_3", "file:/foo/bar/3"));
+    repository.save(new HousekeepingLegacyReplicaPath("eventId_4", "eventId_3", "file:/foo/bar/3"));
   }
 
   private void assertCleanUpPath(

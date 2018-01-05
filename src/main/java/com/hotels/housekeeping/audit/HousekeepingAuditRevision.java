@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.housekeeping.model;
+package com.hotels.housekeeping.audit;
 
-public interface LegacyReplicaPath {
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-  public long getId();
+import org.hibernate.envers.RevisionEntity;
 
-  public String getEventId();
-
-  public void setEventId(String eventId);
-
-  public String getPathEventId();
-
-  public void setPathEventId(String pathEventId);
-
-  public String getPath();
-
-  public void setPath(String path);
-
-  public long getCreationTimestamp();
-
-  public void setCreationTimestamp(long creationTimestamp);
+@Entity
+@RevisionEntity
+@Table(schema = "housekeeping", name = "audit_revision")
+public class HousekeepingAuditRevision extends EntityAuditRevision {
 
 }

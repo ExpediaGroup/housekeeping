@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2017 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,12 @@
  */
 package com.hotels.housekeeping.repository;
 
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 
-import com.hotels.housekeeping.model.LegacyReplicaPath;
-
-@NoRepositoryBean
-public interface LegacyReplicaPathRepository<T extends LegacyReplicaPath> extends CrudRepository<T, Long> {
-
-  // http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods
-  List<LegacyReplicaPath> findByCreationTimestampLessThanEqual(long creationTimestamp);
+@Transactional
+public interface HousekeepingLegacyReplicaPathRepository
+    extends LegacyReplicaPathRepository<HousekeepingLegacyReplicaPath> {
 }
+
