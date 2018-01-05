@@ -19,4 +19,4 @@ In order to connect to your SQL database, you must place a database connector ja
 # Legal
 This project is available under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
 
-Copyright 2016-2017 Expedia Inc.
+Copyright 2016-2018 Expedia Inc.
