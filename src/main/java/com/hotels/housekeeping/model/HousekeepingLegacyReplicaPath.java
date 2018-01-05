@@ -26,11 +26,11 @@ import org.hibernate.envers.Audited;
 @Audited
 @Table(schema = "housekeeping", name = "legacy_replica_path",
     uniqueConstraints = @UniqueConstraint(columnNames = { "path", "creation_timestamp" }))
-public class DefaultLegacyReplicaPath extends EntityLegacyReplicaPath {
+public class HousekeepingLegacyReplicaPath extends EntityLegacyReplicaPath {
 
-  protected DefaultLegacyReplicaPath() {}
+  protected HousekeepingLegacyReplicaPath() {}
 
-  public DefaultLegacyReplicaPath(String eventId, String pathEventId, String path) {
+  public HousekeepingLegacyReplicaPath(String eventId, String pathEventId, String path) {
     this.eventId = eventId;
     this.pathEventId = pathEventId;
     this.path = path;

@@ -45,7 +45,7 @@ import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import com.hotels.housekeeping.TestApplication;
-import com.hotels.housekeeping.model.DefaultLegacyReplicaPath;
+import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -100,7 +100,7 @@ public class LegacyReplicaPathRepositoryTest {
   @DatabaseSetup("classpath:/com/hotels/housekeeping/repository/legacyReplicaPath-initial-test-data.xml")
   @ExpectedDatabase(value = "classpath:/com/hotels/housekeeping/repository/legacyReplicaPath-after-save-test.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
   public void save() {
-    repository.save(new DefaultLegacyReplicaPath("eventId_4", "eventId_3", "file:/foo/bar/3"));
+    repository.save(new HousekeepingLegacyReplicaPath("eventId_4", "eventId_3", "file:/foo/bar/3"));
   }
 
   private void assertCleanUpPath(

@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.housekeeping.repository;
+package com.hotels.housekeeping.audit;
 
-import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import com.hotels.housekeeping.model.DefaultLegacyReplicaPath;
+import org.hibernate.envers.RevisionEntity;
 
-@Transactional
-public interface DefaultLegacyReplicaPathRepository
-    extends LegacyReplicaPathRepository<DefaultLegacyReplicaPath> {
+@Entity
+@RevisionEntity
+@Table(schema = "housekeeping", name = "audit_revision")
+public class HousekeepingAuditRevision extends EntityAuditRevision {
+
 }
-
