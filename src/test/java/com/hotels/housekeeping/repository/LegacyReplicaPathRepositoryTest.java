@@ -116,5 +116,4 @@ public class LegacyReplicaPathRepositoryTest {
     assertThat(actual.getPath(), is(expectedPath));
     assertThat(actual.getCreationTimestamp(), is(expectedCreationTimestamp.getMillis()));
   }
-
 }
