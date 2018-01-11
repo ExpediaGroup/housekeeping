@@ -30,6 +30,12 @@ public class HousekeepingLegacyReplicaPath extends EntityLegacyReplicaPath {
 
   protected HousekeepingLegacyReplicaPath() {}
 
+  public HousekeepingLegacyReplicaPath(String path) {
+    this.eventId = "";
+    this.pathEventId = "";
+    this.path = path;
+  }
+
   public HousekeepingLegacyReplicaPath(String eventId, String pathEventId, String path) {
     this.eventId = eventId;
     this.pathEventId = pathEventId;
