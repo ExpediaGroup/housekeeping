@@ -47,6 +47,7 @@ public class HousekeepingConfiguration {
   ConfigurableEnvironment env;
 
   @PostConstruct
+  @ConditionalOnMissingBean(name = "housekeepingPostConstruct")
   public void postConstruct() {
     Map<String, Object> properties = ImmutableMap
         .<String, Object> builder()
