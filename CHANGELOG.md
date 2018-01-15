@@ -1,3 +1,8 @@
+## [1.0.1] 2018-01-15
+### Changed
+* schema.sql file moved into test resources so that it is not added to classpath of projects that depend upon this project.
+* PostConstruct Bean made conditional if Bean implementation is missing
+
 ## [1.0.0] 2018-01-05
 ### Added
 * Configurable housekeeping entities and repositories.
