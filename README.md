@@ -68,9 +68,9 @@ An example schema.sql file for use with the default housekeeping entity configur
       CREATE SCHEMA IF NOT EXISTS housekeeping;
 
 
-Applications which leverage housekeeping support can define your own schema and table which they desire your Housekeeping data to be stored into. This can be achieved by following the steps below.
+Applications which leverage housekeeping support can define their own schema and table within which housekeeping data is to be stored. This can be achieved by following the steps below.
 
-you must create your database initialisation schema.sql script, and add it to your classpath (or alternatively provide it as a resource in your application).
+You must create your database initialisation schema.sql script, and add it to your classpath (or alternatively provide it as a resource in your application).
 The simplest schema.sql initialisation script will create your schema if it does not exist.
 
        CREATE SCHEMA IF NOT EXISTS my_custom_schema;
