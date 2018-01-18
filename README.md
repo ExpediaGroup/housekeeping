@@ -34,7 +34,7 @@ If your project utilises Spring YAML you can define your Housekeeping within the
 ## Programattic Housekeeping Configuration
 Housekeeping allows you to configure your housekeeping job in a more fine grained manner by providing a certain set of Spring beans in your application.
 
-you can configure their housekeeping data source in code by defining the bean `DataSource housekeepingDataSource(...)`.
+You can configure your housekeeping data source in code by defining the bean `DataSource housekeepingDataSource(...)`.
 For example:
 
       @Bean(destroyMethod = "close")
@@ -52,7 +52,7 @@ For example:
           .build();
       }
 
-Housekeeping comes with a default `HousekeepingService` implementation, however you can choose to provide their own implementation. To
+Housekeeping comes with a default `HousekeepingService` implementation, however you can choose to provide your own implementation. To
 run housekeeping you must provide a `HousekeepingService` bean which either constructs the default `FileSystemHousekeepingService` or a custom implementation of the `HousekeepingService` interface.
 
       @Bean
@@ -61,16 +61,16 @@ run housekeeping you must provide a `HousekeepingService` bean which either cons
         return new FileSystemHousekeepingService(legacyReplicaPathRepository, new org.apache.hadoop.conf.Configuration());
       }
 
-The housekeeping support provided defaults to creating a database of the name `housekeeping` and a table of the name `legacy_replica_path` within which housekeeping data is stored. To enable this database you must provide a schema.sql file on their classpath. This file contains any SQL code which must be run to initialise your database upon application startup. This is particularly important if running Housekeeping in your application for the first time.
+The housekeeping support provided defaults to creating a database of the name `housekeeping` and a table of the name `legacy_replica_path` within which housekeeping data is stored. To enable this database you must provide a schema.sql file on your classpath. This file contains any SQL code which must be run to initialise your database upon application startup. This is particularly important if running Housekeeping in your application for the first time.
 
 An example schema.sql file for use with the default housekeeping entity configuration is given below:
 
       CREATE SCHEMA IF NOT EXISTS housekeeping;
 
 
-Applications which leverage housekeeping support can define their own schema and table which they desire their Housekeeping data to be stored into. This can be achieved by following the steps below.
+Applications which leverage housekeeping support can define your own schema and table which they desire your Housekeeping data to be stored into. This can be achieved by following the steps below.
 
-you must create their database initialisation schema.sql script, and add it to their classpath (or alternatively provide it as a resource in your application).
+you must create your database initialisation schema.sql script, and add it to your classpath (or alternatively provide it as a resource in your application).
 The simplest schema.sql initialisation script will create your schema if it does not exist.
 
        CREATE SCHEMA IF NOT EXISTS my_custom_schema;
@@ -78,7 +78,7 @@ The simplest schema.sql initialisation script will create your schema if it does
 Within your application you will need to extend two base classes provided in the Housekeeping project: `com.hotels.housekeeping.model.LegacyReplicaPath` and `com.hotels.housekeeping.repository.LegacyReplicaPathRepository`.
 These classes provide default implementations of the LegacyReplicaPath `Entity` and the LegacyReplicaPathRepository `CrudRepository`.
 
-The `LegacyReplicaPath` should be extended when you wishes to store their legacy paths in a database schema with a name other than `housekeeping`, with a table name other than `legacy_replica_path` or both. The class which extends LegacyReplicaPath must be annotated with the `@Entity` annotation and the `@Table` annotation. An example is given below which will provide the basis for creating a schema named `my_custom_schema` in your database, and a table named `legacy_replica_path` within the `my_custom_schema` schema.  
+The `LegacyReplicaPath` should be extended when you wishes to store your legacy paths in a database schema with a name other than `housekeeping`, with a table name other than `legacy_replica_path` or both. The class which extends LegacyReplicaPath must be annotated with the `@Entity` annotation and the `@Table` annotation. An example is given below which will provide the basis for creating a schema named `my_custom_schema` in your database, and a table named `legacy_replica_path` within the `my_custom_schema` schema.  
 
       @Entity
       @Table(schema = "my_custom_schema", name = "legacy_replica_path",
@@ -110,7 +110,7 @@ Whether you are using a custom housekeeping configuration, or the defaults, your
 
 
 ## Password Encryption
-Housekeeping allows you to provide encrypted passwords in their configuration or programs. The Housekeeping project depends on the [jasypt library](http://www.jasypt.org/download.html) that can be used to generate encrypted passwords which in turn can be decrypted by Spring Boot's jasypt support.
+Housekeeping allows you to provide encrypted passwords in your configuration or programs. The Housekeeping project depends on the [jasypt library](http://www.jasypt.org/download.html) that can be used to generate encrypted passwords which in turn can be decrypted by Spring Boot's jasypt support.
 
 An encrypted password can be generated by doing the following:
 
