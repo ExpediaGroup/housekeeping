@@ -11,7 +11,7 @@ A database-backed module that stores orphaned paths in a table for later clean u
 # Configuration
 The  housekeeping module defaults to using the H2 Database Engine, however this module can be configured
 to use any flavour of SQL that is supported by JDBC, Spring Boot and Hibernate. Using a database which is not in memory
-should be preferred when temporarily spinning up instances for jobs before tearing them down. This way the orphaned data
+should be preferred when spinning up short-lived instances for jobs before tearing them down. This way the orphaned data
 will still be cleaned from S3, even if the cluster ceases to exist.
 
 ## Database Connectors
@@ -31,7 +31,7 @@ If your project utilises Spring YAML you can define your Housekeeping within the
         #Database Password
         password: Ch4ll3ng3
 
-## Programattic Housekeeping Configuration
+## Programmatic Housekeeping Configuration
 Housekeeping allows you to configure your housekeeping job in a more fine grained manner by providing a certain set of Spring beans in your application.
 
 You can configure your housekeeping data source in code by defining the bean `DataSource housekeepingDataSource(...)`.
@@ -198,7 +198,7 @@ Or
         }
 
 
-Finally if you are using an encrypted password, when you run your application you must provide the application with your
+Finally, if you are using an encrypted password, when you run your application you must provide the application with your
 jasypt.encryptor.password 
 
 There are a few approaches to doing so:
