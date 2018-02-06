@@ -1,3 +1,7 @@
+## [1.0.2] TBD
+### Changed
+* Log level set to info in FileSystemHousekeepingService class
+
 ## [1.0.1] 2018-01-15
 ### Changed
 * schema.sql file moved into test resources so that it is not added to classpath of projects that depend upon this project.
