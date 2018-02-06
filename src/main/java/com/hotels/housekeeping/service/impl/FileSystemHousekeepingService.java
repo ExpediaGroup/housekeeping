@@ -15,11 +15,9 @@
  */
 package com.hotels.housekeeping.service.impl;
 
-import static java.lang.String.format;
-
-import java.io.IOException;
-import java.util.List;
-
+import com.hotels.housekeeping.model.LegacyReplicaPath;
+import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
+import com.hotels.housekeeping.service.HousekeepingService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -29,9 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
-import com.hotels.housekeeping.model.LegacyReplicaPath;
-import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
-import com.hotels.housekeeping.service.HousekeepingService;
+import java.io.IOException;
+import java.util.List;
+
+import static java.lang.String.format;
 
 public class FileSystemHousekeepingService implements HousekeepingService {
   private static final Logger LOG = LoggerFactory.getLogger(FileSystemHousekeepingService.class);
@@ -54,14 +53,14 @@ public class FileSystemHousekeepingService implements HousekeepingService {
           .findByCreationTimestampLessThanEqual(referenceTime.getMillis());
       for (LegacyReplicaPath cleanUpPath : pathsToDelete) {
         cleanUpPath = fixIncompleteRecord(cleanUpPath);
-        LOG.debug("Deleting path '{}' from file system", cleanUpPath);
+        LOG.info("Deleting path '{}' from file system", cleanUpPath);
         Path path = new Path(cleanUpPath.getPath());
         FileSystem fs = path.getFileSystem(conf);
         Path rootPath;
         try {
           fs.delete(path, true);
           rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
-          LOG.debug("Path '{}' has been deleted from file system", cleanUpPath);
+          LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
         } catch (Exception e) {
           LOG.warn("Unable to delete path '{}' from file system. Will try next time", cleanUpPath, e);
           continue;
@@ -69,7 +68,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
         if (oneOfMySiblingsWillTakeCareOfMyAncestors(path, rootPath, fs) || thereIsNothingMoreToDelete(fs, rootPath)) {
           // BEWARE the eventual consistency of your blobstore!
           try {
-            LOG.debug("Deleting path '{}' from database", cleanUpPath);
+            LOG.info("Deleting path '{}' from database", cleanUpPath);
             legacyReplicaPathRepository.delete(cleanUpPath);
           } catch (ObjectOptimisticLockingFailureException e) {
             LOG.debug(
