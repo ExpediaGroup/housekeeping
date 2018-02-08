@@ -24,16 +24,17 @@ import org.hibernate.envers.Audited;
 @Entity
 // @Converter doesn't work with @Audited until https://hibernate.atlassian.net/browse/HHH-9042 is released
 @Audited
-@Table(schema = "housekeeping", name = "legacy_replica_path",
-    uniqueConstraints = @UniqueConstraint(columnNames = { "path", "creation_timestamp" }))
+@Table(name = "legacy_replica_path", uniqueConstraints = @UniqueConstraint(columnNames = {
+    "path",
+    "creation_timestamp" }))
 public class HousekeepingLegacyReplicaPath extends EntityLegacyReplicaPath {
 
   protected HousekeepingLegacyReplicaPath() {}
 
   public HousekeepingLegacyReplicaPath(String path) {
     this.path = path;
-    this.eventId = "";
-    this.pathEventId = "";
+    eventId = "";
+    pathEventId = "";
   }
 
   public HousekeepingLegacyReplicaPath(String eventId, String pathEventId, String path) {

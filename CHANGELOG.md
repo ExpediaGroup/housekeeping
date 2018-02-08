@@ -1,3 +1,7 @@
+## [1.0.2] 2018-02-13
+### Changed
+* Add new housekeeping configuration parameters to set the schema name and the location of the DB initialization script.
+
 ## [1.0.1] 2018-01-15
 ### Changed
 * schema.sql file moved into test resources so that it is not added to classpath of projects that depend upon this project.

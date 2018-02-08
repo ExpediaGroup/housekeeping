@@ -55,10 +55,12 @@ public class HousekeepingConfiguration {
         .put("spring.jpa.hibernate.generate-ddl", true)
         .put("spring.jpa.properties.org.hibernate.envers.store_data_at_delete", true)
         .put("spring.jpa.properties.hibernate.listeners.envers.autoRegister", false)
+        .put("spring.jpa.properties.hibernate.default_schema", "${housekeeping.schema-name}")
         .put("spring.datasource.initialize", true)
         .put("spring.datasource.max-wait", 10000)
         .put("spring.datasource.max-active", 50)
         .put("spring.datasource.test-on-borrow", true)
+        .put("spring.datasource.schema", "${housekeeping.db-init-script}")
         .put("housekeeping.h2.database", "${instance.home}/data/${instance.name}/housekeeping")
         .put("housekeeping.data-source.url",
             "jdbc:h2:${housekeeping.h2.database};AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE")
@@ -83,4 +85,5 @@ public class HousekeepingConfiguration {
   StringToDurationConverter stringToDurationConverter() {
     return new StringToDurationConverter();
   }
+
 }

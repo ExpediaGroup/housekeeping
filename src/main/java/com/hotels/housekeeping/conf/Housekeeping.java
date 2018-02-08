@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2017 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,12 @@ public class Housekeeping {
   @NotNull(message = "housekeeping.dataSource must not be null")
   private DataSource dataSource = new DataSource();
 
+  @NotNull(message = "housekeeping.dbInitScript must not be null")
+  private String dbInitScript = "classpath:/schema.sql";
+
+  @NotNull(message = "housekeeping.schemaName must not be null")
+  private String schemaName = "housekeeping";
+
   public Duration getExpiredPathDuration() {
     return expiredPathDuration;
   }
@@ -45,6 +51,22 @@ public class Housekeeping {
 
   public void setDataSource(DataSource dataSource) {
     this.dataSource = dataSource;
+  }
+
+  public String getDbInitScript() {
+    return dbInitScript;
+  }
+
+  public void setDbInitScript(String dbInitScript) {
+    this.dbInitScript = dbInitScript;
+  }
+
+  public String getSchemaName() {
+    return schemaName;
+  }
+
+  public void setSchemaName(String schemaName) {
+    this.schemaName = schemaName;
   }
 
 }

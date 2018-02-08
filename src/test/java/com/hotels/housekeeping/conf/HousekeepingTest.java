@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2017 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,22 @@ public class HousekeepingTest {
     Set<ConstraintViolation<Housekeeping>> constraintViolations = validator.validate(housekeeping);
     assertThat(constraintViolations.size(), is(1));
     assertThat(constraintViolations.iterator().next().getMessage(), is("housekeeping.dataSource must not be null"));
+  }
+
+  @Test
+  public void missingDbInitScript() {
+    housekeeping.setDbInitScript(null);
+    Set<ConstraintViolation<Housekeeping>> constraintViolations = validator.validate(housekeeping);
+    assertThat(constraintViolations.size(), is(1));
+    assertThat(constraintViolations.iterator().next().getMessage(), is("housekeeping.dbInitScript must not be null"));
+  }
+
+  @Test
+  public void missingSchemaName() {
+    housekeeping.setSchemaName(null);
+    Set<ConstraintViolation<Housekeeping>> constraintViolations = validator.validate(housekeeping);
+    assertThat(constraintViolations.size(), is(1));
+    assertThat(constraintViolations.iterator().next().getMessage(), is("housekeeping.schemaName must not be null"));
   }
 
 }
