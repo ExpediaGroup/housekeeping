@@ -63,20 +63,4 @@ public class HousekeepingTest {
     assertThat(constraintViolations.iterator().next().getMessage(), is("housekeeping.dataSource must not be null"));
   }
 
-  @Test
-  public void missingDbInitScript() {
-    housekeeping.setDbInitScript(null);
-    Set<ConstraintViolation<Housekeeping>> constraintViolations = validator.validate(housekeeping);
-    assertThat(constraintViolations.size(), is(1));
-    assertThat(constraintViolations.iterator().next().getMessage(), is("housekeeping.dbInitScript must not be null"));
-  }
-
-  @Test
-  public void missingSchemaName() {
-    housekeeping.setSchemaName(null);
-    Set<ConstraintViolation<Housekeeping>> constraintViolations = validator.validate(housekeeping);
-    assertThat(constraintViolations.size(), is(1));
-    assertThat(constraintViolations.iterator().next().getMessage(), is("housekeeping.schemaName must not be null"));
-  }
-
 }
