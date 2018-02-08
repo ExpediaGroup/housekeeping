@@ -21,14 +21,19 @@ In order to connect to your SQL database, you must place a database connector ja
 If your project utilises Spring YAML you can define your Housekeeping within the YAML. For example:
 
     housekeeping:
+      # Name of the schema/database to use -defaults to houseleeping 
+      schema-name: housekeeping
+      # Location of the script file to initialize the schema - defaults to classpath:/schema.sql 
+      db-init-script: housekeeping
+      # Connection details
       data-source:
-        #The package of your driver class
+        # The package of your driver class
         driver-class-name: com.mysql.cj.jdbc.Driver
-        #JDBC URL for your Database
+        # JDBC URL for your Database
         url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/housekeeping_db
-        #Database Username
+        # Database Username
         username: bdp
-        #Database Password
+        # Database Password
         password: Ch4ll3ng3
 
 ## Programmatic Housekeeping Configuration
