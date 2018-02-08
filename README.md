@@ -21,7 +21,7 @@ In order to connect to your SQL database, you must place a database connector ja
 If your project utilises Spring YAML you can define your Housekeeping within the YAML. For example:
 
     housekeeping:
-      # Name of the schema/database to use -defaults to housekeeping 
+      # Name of the schema/database to use - defaults to housekeeping 
       schema-name: housekeeping
       # Location of the script file to initialize the schema - defaults to classpath:/schema.sql 
       db-init-script: classpath:/schema.sql
