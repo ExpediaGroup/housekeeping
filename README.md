@@ -39,40 +39,40 @@ Housekeeping allows you to configure your housekeeping job in a more fine graine
 
 You can configure your housekeeping data source in code by defining the bean `DataSource housekeepingDataSource(...)`. For example:
 
-      @Bean(destroyMethod = "close")
-      DataSource housekeepingDataSource(
+    @Bean(destroyMethod = "close")
+    DataSource housekeepingDataSource(
         String driverClassName,
         String jdbcUrl,
         String username,
         String encryptedPassword) {
-        return DataSourceBuilder
+      return DataSourceBuilder
           .create()
           .driverClassName(driverClassName)
           .url(jdbcUrl)
           .username(username)
           .password(encryptedPassword)
           .build();
-      }
+    }
 
 Housekeeping comes with a default `HousekeepingService` implementation, however you can choose to provide your own. To run housekeeping you must provide a `HousekeepingService` bean which either constructs the default `FileSystemHousekeepingService` or a custom implementation of the `HousekeepingService` interface:
 
-      @Bean
-      HousekeepingService housekeepingService(
-          LegacyReplicaPathRepository legacyReplicaPathRepository) {
-        return new FileSystemHousekeepingService(legacyReplicaPathRepository, new org.apache.hadoop.conf.Configuration());
-      }
+    @Bean
+    HousekeepingService housekeepingService(
+        LegacyReplicaPathRepository legacyReplicaPathRepository) {
+      return new FileSystemHousekeepingService(legacyReplicaPathRepository, new org.apache.hadoop.conf.Configuration());
+    }
 
 The default provided housekeeping implementation creates a database named `housekeeping` and a table named `legacy_replica_path` to store the housekeeping data. To enable this database you must provide a _schema.sql_ file which contains any SQL code that must be run to initialise your database upon application startup. This is particularly important if running Housekeeping in your application for the first time.
 
 An example _schema.sql_ file for use with the default housekeeping entity configuration is given below:
 
-      CREATE SCHEMA IF NOT EXISTS housekeeping;
+    CREATE SCHEMA IF NOT EXISTS housekeeping;
 
 Applications which leverage housekeeping support can define their own schema and table within which housekeeping data is to be stored. This can be achieved by following the steps below.
 
 You must create your database initialisation _schema.sql_ script and either add it to your classpath, provide it as a resource in your application or configure the path to it via the YAML configuration property `housekeeping.db-init-script`. The simplest _schema.sql_ initialisation script will create your schema if it does not exist.
 
-       CREATE SCHEMA IF NOT EXISTS my_custom_schema;
+     CREATE SCHEMA IF NOT EXISTS my_custom_schema;
 
 The database name must be configured in the YAML property `housekeeping.schema-name`.
 
@@ -139,11 +139,11 @@ The 'output' is your encrypted password. This encrypted password can then be use
 
 Or be decrypted from special properties file(s) on your classpath:
 
-        @Configuration
-	      @EncryptablePropertySources({@EncryptablePropertySource("classpath:encrypted.properties"), @EncryptablePropertySource("classpath:encrypted2.properties")})
-	      public class MyApplication {
-		         ...
-	      }
+    @Configuration
+    @EncryptablePropertySources({@EncryptablePropertySource("classpath:encrypted.properties"), @EncryptablePropertySource("classpath:encrypted2.properties")})
+    public class MyApplication {
+      ...
+    }
 
 The encrypted.properties file would look something like this:
 
@@ -152,41 +152,41 @@ The encrypted.properties file would look something like this:
 
 You can then access the decrypted username and password in your application by doing something akin to the following:
 
-        private @Autowired ConfigurableEnvironment env;
+    private @Autowired ConfigurableEnvironment env;
 
-        @Bean(destroyMethod = "close")
-        DataSource housekeepingDataSource(
-          String driverClassName,
-          String jdbcUrl) {
+    @Bean(destroyMethod = "close")
+    DataSource housekeepingDataSource(
+        String driverClassName,
+        String jdbcUrl) {
 
-          String username = env.getProperty("database.username");
-          String password = env.getProperty("database.password");
+      String username = env.getProperty("database.username");
+      String password = env.getProperty("database.password");
 
-          return DataSourceBuilder
-            .create()
-            .driverClassName(driverClassName)
-            .url(jdbcUrl)
-            .username(username)
-            .password(password)
-            .build();
-        }
+      return DataSourceBuilder
+          .create()
+          .driverClassName(driverClassName)
+          .url(jdbcUrl)
+          .username(username)
+          .password(password)
+          .build();
+    }
 
 Or
 
-        @Bean(destroyMethod = "close")
-        DataSource housekeepingDataSource(
-          String driverClassName,
-          String jdbcUrl,
-          @Value("${database.username}") username,
-          @Value("${database.password}") password) {
-          return DataSourceBuilder
-            .create()
-            .driverClassName(driverClassName)
-            .url(jdbcUrl)
-            .username(username)
-            .password(password)
-            .build();
-        }
+    @Bean(destroyMethod = "close")
+    DataSource housekeepingDataSource(
+        String driverClassName,
+        String jdbcUrl,
+        @Value("${database.username}") username,
+        @Value("${database.password}") password) {
+      return DataSourceBuilder
+          .create()
+          .driverClassName(driverClassName)
+          .url(jdbcUrl)
+          .username(username)
+          .password(password)
+          .build();
+    }
 
 
 Finally, if you are using an encrypted password, when you run your application you must provide the application with your
