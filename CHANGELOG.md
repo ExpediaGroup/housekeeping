@@ -1,4 +1,4 @@
-## [1.0.2] 2018-02-13
+## [1.0.2] 2018-02-15
 ### Added
 * Added new housekeeping configuration parameters to set the schema name and the location of the DB initialization script.
 
