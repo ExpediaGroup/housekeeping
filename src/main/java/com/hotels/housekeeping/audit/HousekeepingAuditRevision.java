@@ -22,7 +22,9 @@ import org.hibernate.envers.RevisionEntity;
 
 @Entity
 @RevisionEntity
-@Table(schema = "housekeeping", name = "audit_revision")
+@Table(name = "audit_revision")
 public class HousekeepingAuditRevision extends EntityAuditRevision {
+
+  private static final long serialVersionUID = 1L;
 
 }

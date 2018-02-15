@@ -26,5 +26,6 @@ import com.hotels.housekeeping.model.LegacyReplicaPath;
 public interface LegacyReplicaPathRepository<T extends LegacyReplicaPath> extends CrudRepository<T, Long> {
 
   // http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods
-  List<LegacyReplicaPath> findByCreationTimestampLessThanEqual(long creationTimestamp);
+  List<T> findByCreationTimestampLessThanEqual(long creationTimestamp);
+
 }

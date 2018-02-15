@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2017 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import com.hotels.housekeeping.validation.constraints.URI;
 
 @EnableEncryptableProperties
 public class DataSource {
+
   @NotEmpty(message = "housekeeping.dataSource.driverClassName must not be blank")
   private String driverClassName = "org.h2.Driver";
   @URI(message = "housekeeping.dataSource.url does not seem to be a valid JDBC URI", scheme = "jdbc")
@@ -63,4 +64,5 @@ public class DataSource {
   public void setPassword(String password) {
     this.password = password;
   }
+
 }

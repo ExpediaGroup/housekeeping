@@ -15,12 +15,12 @@
  */
 package com.hotels.housekeeping.repository;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 
+@Lazy
 @Transactional
 public interface HousekeepingLegacyReplicaPathRepository
-    extends LegacyReplicaPathRepository<HousekeepingLegacyReplicaPath> {
-}
-
+    extends LegacyReplicaPathRepository<HousekeepingLegacyReplicaPath> {}

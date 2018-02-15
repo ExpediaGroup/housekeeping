@@ -30,8 +30,6 @@ import com.google.common.base.Objects;
 @Audited
 public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
 
-  private static final long serialVersionUID = 1L;
-
   @Id
   @GeneratedValue
   protected long id;
@@ -50,36 +48,47 @@ public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
 
   protected EntityLegacyReplicaPath() {}
 
+  @Override
   public long getId() {
     return id;
   }
 
+  @Override
   public String getEventId() {
     return eventId;
   }
 
+  @Override
   public void setEventId(String eventId) {
     this.eventId = eventId;
   }
 
+  @Override
   public String getPathEventId() {
     return pathEventId;
   }
 
+  @Override
   public void setPathEventId(String pathEventId) {
     this.pathEventId = pathEventId;
   }
 
+  @Override
   public String getPath() {
     return path;
   }
 
-  public void setPath(String path) { this.path = path;}
+  @Override
+  public void setPath(String path) {
+    this.path = path;
+  }
 
+  @Override
   public long getCreationTimestamp() {
     return creationTimestamp;
   }
 
+  @Override
   public void setCreationTimestamp(long creationTimestamp) {
     this.creationTimestamp = creationTimestamp;
   }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2017 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
         }
       }
     } catch (Exception e) {
-      throw new RuntimeException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
-          e);
+      throw new RuntimeException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()), e);
     }
   }
 
@@ -129,4 +128,5 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       throw new RuntimeException(format("Unable to schedule path %s for deletion", cleanUpPath.getPath()), e);
     }
   }
+
 }

@@ -53,6 +53,7 @@ import com.hotels.housekeeping.model.LegacyReplicaPath;
     "spring.jpa.database=H2",
     "spring.jpa.hibernate.ddl-auto=update",
     "spring.jpa.hibernate.generate-ddl=true",
+    "spring.jpa.properties.hibernate.default_schema=housekeeping",
     "spring.datasource.initialize=true",
     "spring.datasource.schema=classpath:/schema.sql",
     "spring.datasource.max-wait=10000",
