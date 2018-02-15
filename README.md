@@ -62,7 +62,7 @@ Housekeeping comes with a default `HousekeepingService` implementation, however 
         return new FileSystemHousekeepingService(legacyReplicaPathRepository, new org.apache.hadoop.conf.Configuration());
       }
 
-The default provided housekeeping implementation creates a database names `housekeeping` and a table named `legacy_replica_path` to store the housekeeping data. To enable this database you must provide a _schema.sql_ file which contains any SQL code that must be run to initialise your database upon application startup. This is particularly important if running Housekeeping in your application for the first time.
+The default provided housekeeping implementation creates a database named `housekeeping` and a table named `legacy_replica_path` to store the housekeeping data. To enable this database you must provide a _schema.sql_ file which contains any SQL code that must be run to initialise your database upon application startup. This is particularly important if running Housekeeping in your application for the first time.
 
 An example _schema.sql_ file for use with the default housekeeping entity configuration is given below:
 
@@ -76,8 +76,6 @@ You must create your database initialisation _schema.sql_ script and either add 
 
 The database name must be configured in the YAML property `housekeeping.schema-name`.
 
-
-
 Whether you are using a custom housekeeping configuration, or the defaults, your application must provide two crucial annotations which will load the Entities and CrudRepositories that you require. These are the `@EntityScan` and `@EnableJpaRepositories` annotations. These annotations are best demonstrated in an example:
 
     //The class annotated with `@Entity` that defines the required LegacyReplicaPath implementation
@@ -89,18 +87,18 @@ Whether you are using a custom housekeeping configuration, or the defaults, your
 
 By default Housekeeping will create a `legacy_replica_path` table in the specified schema. If you need to customize the table name you can do this by extending the base classes and configuring the JPA annotations as desired. The class which extends `EntityLegacyReplicaPath` must be annotated with the `@Entity` annotation and the `@Table` annotation. An example is given below which will provide the basis for creating a schema named `my_custom_schema` in your database, and a table named `my_custom_replica_path` within the `my_custom_schema` schema.  
 
--      @Entity
--      @Table(schema = "my_custom_schema", name = "my_custom_replica_path",
--          uniqueConstraints = @UniqueConstraint(columnNames = { "path", "creation_timestamp" }))
--      public class MyJobsLegacyReplicaPath extends EntityLegacyReplicaPath {
--   	 //required inherited constructors etc. go here
--      }
+    @Entity
+    @Table(schema = "my_custom_schema", name = "my_custom_replica_path",
+        uniqueConstraints = @UniqueConstraint(columnNames = { "path", "creation_timestamp" }))
+    public class MyJobsLegacyReplicaPath extends EntityLegacyReplicaPath {
+      //required inherited constructors etc. go here
+    }
 
 -To accompany the custom `EntityLegacyReplicaPath` implementation you need to extend the `LegacyReplicaPathRepository` interface providing the custom `EntityLegacyReplicaPath` implementation as a generic type argument. This simplifies the creation of a `CrudRepository` for your `EntityLegacyReplicaPath`. For example:
 
--      public interface MyJobLegacyReplicaPathRepository
--          extends LegacyReplicaPathRepository<MyJobsLegacyReplicaPath> {
--      }
+    public interface MyJobLegacyReplicaPathRepository
+        extends LegacyReplicaPathRepository<MyJobsLegacyReplicaPath> {
+    }
 
 ## Password Encryption
 Housekeeping allows you to provide encrypted passwords in your configuration or programs. The Housekeeping project depends on the [jasypt library](http://www.jasypt.org/download.html) that can be used to generate encrypted passwords which in turn can be decrypted by Spring Boot's jasypt support.
