@@ -89,12 +89,12 @@ By default Housekeeping will create a `legacy_replica_path` table in the specifi
 
     @Entity
     @Table(schema = "my_custom_schema", name = "my_custom_replica_path",
-        uniqueConstraints = @UniqueConstraint(columnNames = { "path", "creation_timestamp" }))
+           uniqueConstraints = @UniqueConstraint(columnNames = { "path", "creation_timestamp" }))
     public class MyJobsLegacyReplicaPath extends EntityLegacyReplicaPath {
       //required inherited constructors etc. go here
     }
 
--To accompany the custom `EntityLegacyReplicaPath` implementation you need to extend the `LegacyReplicaPathRepository` interface providing the custom `EntityLegacyReplicaPath` implementation as a generic type argument. This simplifies the creation of a `CrudRepository` for your `EntityLegacyReplicaPath`. For example:
+To accompany the custom `EntityLegacyReplicaPath` implementation you need to extend the `LegacyReplicaPathRepository` interface providing the custom `EntityLegacyReplicaPath` implementation as a generic type argument. This simplifies the creation of a `CrudRepository` for your `EntityLegacyReplicaPath`. For example:
 
     public interface MyJobLegacyReplicaPathRepository
         extends LegacyReplicaPathRepository<MyJobsLegacyReplicaPath> {
