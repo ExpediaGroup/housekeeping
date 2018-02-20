@@ -15,20 +15,25 @@
  */
 package com.hotels.housekeeping.conf;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "housekeeping")
 public class Housekeeping {
+  private final static Logger log = LoggerFactory.getLogger(Housekeeping.class);
 
   @NotNull(message = "housekeeping.expiredPathDuration must not be null")
   private Duration expiredPathDuration = Duration.standardDays(3);
 
   @NotNull(message = "housekeeping.dataSource must not be null")
+  @Valid
   private DataSource dataSource = new DataSource();
 
   public Duration getExpiredPathDuration() {
