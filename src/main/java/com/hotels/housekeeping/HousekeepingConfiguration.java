@@ -20,12 +20,15 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -42,13 +45,26 @@ import com.hotels.housekeeping.converter.StringToDurationConverter;
 @EnableConfigurationProperties(Housekeeping.class)
 @EnableTransactionManagement
 public class HousekeepingConfiguration {
+  private final static Logger log = LoggerFactory.getLogger(HousekeepingConfiguration.class);
+
+  private static final String HOUSEKEEPING_ENVIRONMENT = "housekeepingEnvironment";
 
   @Autowired
   ConfigurableEnvironment env;
 
+  @Autowired
+  ApplicationContext springContext;
+
   @PostConstruct
-  @ConditionalOnMissingBean(name = "housekeepingEnvironment")
   public void postConstruct() {
+    Map<String, Object> properties = (Map<String, Object>) springContext.getBean(HOUSEKEEPING_ENVIRONMENT);
+    env.getPropertySources().addLast(new MapPropertySource(HOUSEKEEPING_ENVIRONMENT, properties));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(name = HOUSEKEEPING_ENVIRONMENT)
+  public Map<String, Object> housekeepingEnvironment() {
+    log.info("Loading default {}", HOUSEKEEPING_ENVIRONMENT);
     Map<String, Object> properties = ImmutableMap
         .<String, Object> builder()
         .put("spring.jpa.hibernate.ddl-auto", "update")
@@ -65,7 +81,7 @@ public class HousekeepingConfiguration {
         .put("housekeeping.data-source.url",
             "jdbc:h2:${housekeeping.h2.database};AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE")
         .build();
-    env.getPropertySources().addLast(new MapPropertySource("housekeepingProperties", properties));
+    return properties;
   }
 
   @Bean(destroyMethod = "close")

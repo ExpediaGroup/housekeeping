@@ -15,6 +15,7 @@
  */
 package com.hotels.housekeeping.conf;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.Duration;
@@ -29,6 +30,7 @@ public class Housekeeping {
   private Duration expiredPathDuration = Duration.standardDays(3);
 
   @NotNull(message = "housekeeping.dataSource must not be null")
+  @Valid
   private DataSource dataSource = new DataSource();
 
   public Duration getExpiredPathDuration() {
