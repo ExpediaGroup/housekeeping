@@ -1,3 +1,7 @@
+## TBD
+### Changed
+* Default Housekeeping are now provided vi `@Bean` `housekeepingEnvironment` only if bean if not provided.
+
 ## [1.0.2] 2018-02-15
 ### Added
 * Added new housekeeping configuration parameters to set the schema name and the location of the DB initialization script.
