@@ -1,6 +1,6 @@
 ## TBD
 ### Changed
-* Default Housekeeping are now provided vi `@Bean` `housekeepingEnvironment` only if bean if not provided.
+* Default Housekeeping configuration is now provided via `@Bean` `housekeepingEnvironment` only if the bean is not already provided."
 
 ## [1.0.2] 2018-02-15
 ### Added
