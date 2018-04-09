@@ -48,7 +48,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.google.common.base.Supplier;
 
 import com.hotels.bdp.circustrain.api.metastore.CloseableMetaStoreClient;
-import com.hotels.bdp.circustrain.core.conf.TableReplication;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
@@ -69,8 +68,6 @@ public class VacuumToolApplicationTest {
   private static final String DATABASE_NAME = "database";
 
   private HiveConf conf;
-  private Table partitionedReplication;
-  private TableReplication unpartitionedReplication;
   private Tables replications;
 
   @Rule
@@ -188,11 +185,16 @@ public class VacuumToolApplicationTest {
   @Test
   public void run() throws Exception {
     // There are 3 paths on the FS: partitionLocation1, partitionLocation2, partitionLocation3
-    replications.setTables(Collections.singletonList(partitionedReplication));
+    Table table = new Table();
+    table.setDatabaseName(DATABASE_NAME);
+    table.setTableName(PARTITIONED_TABLE_NAME);
+    replications.setTables(Collections.singletonList(table));
 
     // The MS references path 1
     when(partitionSd.getLocation()).thenReturn(partitionLocation1);
     when(partition.getSd()).thenReturn(partitionSd);
+    when(client.getTable(DATABASE_NAME, PARTITIONED_TABLE_NAME)).thenReturn(partitionedTable);
+
     when(client.listPartitions(DATABASE_NAME, PARTITIONED_TABLE_NAME, (short) 1))
         .thenReturn(Collections.singletonList(partition));
     when(client.getPartitionsByNames(DATABASE_NAME, PARTITIONED_TABLE_NAME, Arrays.asList(PARTITION_NAME)))
