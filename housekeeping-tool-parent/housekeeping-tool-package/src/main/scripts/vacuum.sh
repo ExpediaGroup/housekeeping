@@ -12,7 +12,6 @@ if [[ -z $HOUSEKEEPING_TOOL_HOME ]]; then
   done
   HOUSEKEEPING_TOOL_HOME="$( cd -P "$( dirname "$SOURCE" )" && cd .. && pwd )"
 fi
-echo "Using Circus Train Tool Home $HOUSEKEEPING_TOOL_HOME"
 
 source $HOUSEKEEPING_TOOL_HOME/bin/common.sh
 hadoop jar \

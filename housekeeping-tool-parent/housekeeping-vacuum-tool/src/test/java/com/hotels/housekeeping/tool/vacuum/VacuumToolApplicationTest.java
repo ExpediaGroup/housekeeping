@@ -34,7 +34,6 @@ import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
-import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,13 +48,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.google.common.base.Supplier;
 
 import com.hotels.bdp.circustrain.api.metastore.CloseableMetaStoreClient;
-import com.hotels.bdp.circustrain.core.conf.ReplicaTable;
 import com.hotels.bdp.circustrain.core.conf.TableReplication;
-import com.hotels.bdp.circustrain.core.conf.TableReplications;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
+import com.hotels.housekeeping.tool.vacuum.conf.Table;
+import com.hotels.housekeeping.tool.vacuum.conf.Tables;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VacuumToolApplicationTest {
@@ -70,9 +69,9 @@ public class VacuumToolApplicationTest {
   private static final String DATABASE_NAME = "database";
 
   private HiveConf conf;
-  private TableReplication partitionedReplication;
+  private Table partitionedReplication;
   private TableReplication unpartitionedReplication;
-  private TableReplications replications;
+  private Tables replications;
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -82,11 +81,11 @@ public class VacuumToolApplicationTest {
   @Mock
   private CloseableMetaStoreClient client;
   @Mock
-  private Table unpartitionedTable;
+  private org.apache.hadoop.hive.metastore.api.Table unpartitionedTable;
   @Mock
   private StorageDescriptor unpartitionedSd;
   @Mock
-  private Table partitionedTable;
+  private org.apache.hadoop.hive.metastore.api.Table partitionedTable;
   @Mock
   private StorageDescriptor partitionedSd;
   @Mock
@@ -126,22 +125,16 @@ public class VacuumToolApplicationTest {
 
     conf = new HiveConf(new Configuration(false), VacuumToolApplicationTest.class);
 
-    ReplicaTable partitionedReplicaTable = new ReplicaTable();
+    Table partitionedReplicaTable = new Table();
     partitionedReplicaTable.setDatabaseName(DATABASE_NAME);
     partitionedReplicaTable.setTableName(PARTITIONED_TABLE_NAME);
 
-    partitionedReplication = new TableReplication();
-    partitionedReplication.setReplicaTable(partitionedReplicaTable);
-
-    ReplicaTable unpartitionedReplicaTable = new ReplicaTable();
+    Table unpartitionedReplicaTable = new Table();
     unpartitionedReplicaTable.setDatabaseName(DATABASE_NAME);
     unpartitionedReplicaTable.setTableName(UNPARTITIONED_TABLE_NAME);
 
-    unpartitionedReplication = new TableReplication();
-    unpartitionedReplication.setReplicaTable(unpartitionedReplicaTable);
-
-    replications = new TableReplications();
-    replications.setTableReplications(Arrays.asList(partitionedReplication, unpartitionedReplication));
+    replications = new Tables();
+    replications.setTables(Arrays.asList(partitionedReplicaTable, unpartitionedReplicaTable));
 
     when(clientSupplier.get()).thenReturn(client);
 
@@ -195,7 +188,7 @@ public class VacuumToolApplicationTest {
   @Test
   public void run() throws Exception {
     // There are 3 paths on the FS: partitionLocation1, partitionLocation2, partitionLocation3
-    replications.setTableReplications(Collections.singletonList(partitionedReplication));
+    replications.setTables(Collections.singletonList(partitionedReplication));
 
     // The MS references path 1
     when(partitionSd.getLocation()).thenReturn(partitionLocation1);

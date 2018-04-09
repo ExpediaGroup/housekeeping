@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.hotels.housekeeping.tool.vacuum.conf.Table;
+import com.hotels.housekeeping.tool.vacuum.conf.Tables;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -30,7 +32,6 @@ import org.apache.hadoop.hive.metastore.IMetaStoreClient;
 import org.apache.hadoop.hive.metastore.Warehouse;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
-import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.thrift.TException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -48,8 +49,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Supplier;
 
 import com.hotels.bdp.circustrain.api.metastore.CloseableMetaStoreClient;
-import com.hotels.bdp.circustrain.core.conf.TableReplication;
-import com.hotels.bdp.circustrain.core.conf.TableReplications;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
@@ -66,7 +65,7 @@ class VacuumToolApplication implements ApplicationRunner {
   private final Supplier<CloseableMetaStoreClient> clientSupplier;
   private final LegacyReplicaPathRepository legacyReplicaPathRepository;
   private final HousekeepingService housekeepingService;
-  private final List<TableReplication> tableReplications;
+  private final List<Table> tables;
   private final String vacuumEventId;
   private final boolean isDryRun;
   private final short batchSize;
@@ -77,11 +76,11 @@ class VacuumToolApplication implements ApplicationRunner {
 
   @Autowired
   VacuumToolApplication(
-      @Value("#{replicaHiveConf}") HiveConf conf,
-      @Value("#{replicaMetaStoreClientSupplier}") Supplier<CloseableMetaStoreClient> clientSupplier,
+      @Value("#{hiveConf}") HiveConf conf,
+      @Value("#{metaStoreClientSupplier}") Supplier<CloseableMetaStoreClient> clientSupplier,
       LegacyReplicaPathRepository legacyReplicaPathRepository,
       HousekeepingService housekeepingService,
-      TableReplications replications,
+      Tables tables,
       @Value("${dry-run:false}") boolean isDryRun,
       @Value("${partition-batch-size:1000}") short batchSize,
       @Value("${expected-path-count:10000}") int expectedPathCount) {
@@ -92,7 +91,7 @@ class VacuumToolApplication implements ApplicationRunner {
     this.isDryRun = isDryRun;
     this.batchSize = batchSize;
     this.expectedPathCount = expectedPathCount;
-    tableReplications = replications.getTableReplications();
+    this.tables = tables.getTables();
     vacuumEventId = "vacuum-" + DateTime.now(DateTimeZone.UTC);
   }
 
@@ -106,9 +105,9 @@ class VacuumToolApplication implements ApplicationRunner {
     try {
       metastore = clientSupplier.get();
       housekeepingPaths = fetchHousekeepingPaths(legacyReplicaPathRepository);
-      for (TableReplication tableReplication : tableReplications) {
-        String databaseName = tableReplication.getReplicaDatabaseName();
-        String tableName = tableReplication.getReplicaTableName();
+      for (Table table : tables) {
+        String databaseName = table.getDatabaseName();
+        String tableName = table.getTableName();
         LOG.info("Vacuuming table '{}.{}'.", databaseName, tableName);
         try {
           vacuumTable(databaseName, tableName);
@@ -127,6 +126,7 @@ class VacuumToolApplication implements ApplicationRunner {
 
   @VisibleForTesting
   Set<Path> fetchHousekeepingPaths(LegacyReplicaPathRepository repository) throws URISyntaxException {
+    LOG.info("Fetching Housekeeping Paths");
     Set<Path> paths = new HashSet<>();
     Iterable<LegacyReplicaPath> legacyPaths = repository.findAll();
     for (LegacyReplicaPath legacyPath : legacyPaths) {
@@ -138,7 +138,7 @@ class VacuumToolApplication implements ApplicationRunner {
   @VisibleForTesting
   void vacuumTable(String databaseName, String tableName)
     throws MetaException, TException, NoSuchObjectException, URISyntaxException, IOException {
-    Table table = metastore.getTable(databaseName, tableName);
+    org.apache.hadoop.hive.metastore.api.Table table = metastore.getTable(databaseName, tableName);
 
     TablePathResolver pathResolver = TablePathResolver.Factory.newTablePathResolver(metastore, table);
     Path tableBaseLocation = pathResolver.getTableBaseLocation();
