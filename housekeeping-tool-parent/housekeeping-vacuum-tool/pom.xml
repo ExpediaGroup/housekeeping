@@ -23,6 +23,17 @@
       <artifactId>housekeeping</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <!-- Spring Boot -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>com.hotels</groupId>
       <artifactId>circus-train-api</artifactId>
@@ -42,6 +53,34 @@
       <groupId>com.hotels</groupId>
       <artifactId>circus-train-hive</artifactId>
       <version>${circus-train.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.1.0.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <version>3.3.0.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml</groupId>
+      <artifactId>classmate</artifactId>
+      <version>1.4.0</version>
+    </dependency>
+
+    <!-- H2 -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- For AWS -->
@@ -72,6 +111,18 @@
                   <include>com.hotels:*</include>
                   <include>com.google.guava:guava</include>
                   <include>com.amazonaws:*</include>
+                  <include>com.hazelcast</include>
+                  <include>com.fasterxml*</include>
+                  <include>com.ulisesbocchio:*</include>
+                  <include>com.zaxxer:*</include>
+                  <include>org.aspectj*</include>
+                  <include>org.h2:*</include>
+                  <include>org.hazelcast:*</include>
+                  <include>org.hibernate:*</include>
+                  <include>org.jboss*</include>
+                  <include>org.joda:*</include>
+                  <include>org.spring*</include>
+                  <include>javax*</include>
                 </includes>
               </artifactSet>
               <relocations>
