@@ -23,11 +23,6 @@
       <artifactId>circus-train-core</artifactId>
       <version>${circus-train.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>circus-train-housekeeping</artifactId>
-      <version>${circus-train.version}</version>
-    </dependency>
   </dependencies>
 
   <build>

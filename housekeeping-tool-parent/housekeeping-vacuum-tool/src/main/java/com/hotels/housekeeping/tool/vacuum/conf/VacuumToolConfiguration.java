@@ -15,6 +15,8 @@
  */
 package com.hotels.housekeeping.tool.vacuum.conf;
 
+import static org.apache.hadoop.security.alias.CredentialProviderFactory.CREDENTIAL_PROVIDER_PATH;
+
 import static com.hotels.bdp.circustrain.core.metastore.TunnellingMetaStoreClientSupplier.TUNNEL_SSH_LOCAL_HOST;
 import static com.hotels.bdp.circustrain.core.metastore.TunnellingMetaStoreClientSupplier.TUNNEL_SSH_ROUTE;
 
@@ -26,24 +28,60 @@ import java.util.Map;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.google.common.base.Supplier;
 
 import com.hotels.bdp.circustrain.api.metastore.CloseableMetaStoreClient;
 import com.hotels.bdp.circustrain.api.metastore.MetaStoreClientFactory;
 import com.hotels.bdp.circustrain.core.conf.MetastoreTunnel;
+import com.hotels.bdp.circustrain.core.conf.Security;
 import com.hotels.bdp.circustrain.core.conf.TunnelMetastoreCatalog;
 import com.hotels.bdp.circustrain.core.metastore.DefaultMetaStoreClientSupplier;
 import com.hotels.bdp.circustrain.core.metastore.HiveConfFactory;
 import com.hotels.bdp.circustrain.core.metastore.MetaStoreClientFactoryManager;
 import com.hotels.bdp.circustrain.core.metastore.SessionFactorySupplier;
+import com.hotels.bdp.circustrain.core.metastore.ThriftMetaStoreClientFactory;
 import com.hotels.bdp.circustrain.core.metastore.TunnelConnectionManagerFactory;
 import com.hotels.bdp.circustrain.core.metastore.TunnellingMetaStoreClientSupplier;
+import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
+import com.hotels.housekeeping.service.HousekeepingService;
+import com.hotels.housekeeping.service.impl.FileSystemHousekeepingService;
 
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
+@ComponentScan(VacuumToolConfiguration.HOUSEKEEPING_PACKAGE)
+@EntityScan(basePackages = { VacuumToolConfiguration.HOUSEKEEPING_PACKAGE })
+@EnableJpaRepositories(basePackages = { VacuumToolConfiguration.HOUSEKEEPING_PACKAGE })
 public class VacuumToolConfiguration {
+
+  final static String HOUSEKEEPING_PACKAGE = "com.hotels.housekeeping";
+
+  private static final String BEAN_BASE_CONF = "baseConf";
+
+  @Bean(name = BEAN_BASE_CONF)
+  org.apache.hadoop.conf.Configuration baseConf(Security security) {
+    Map<String, String> properties = new HashMap<>();
+    setCredentialProviderPath(security, properties);
+    org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
+    for (Map.Entry<String, String> entry : properties.entrySet()) {
+      conf.set(entry.getKey(), entry.getValue());
+    }
+    return conf;
+  }
+
+  private void setCredentialProviderPath(Security security, Map<String, String> properties) {
+    if (security.getCredentialProvider() != null) {
+      // TODO perhaps we should have a source catalog scoped credential provider instead on one specific to S3?
+      properties.put(CREDENTIAL_PROVIDER_PATH, security.getCredentialProvider());
+    }
+  }
 
   @Bean
   HiveConf hiveConf(Catalog catalog, @Qualifier("baseConf") org.apache.hadoop.conf.Configuration baseConf) {
@@ -104,4 +142,20 @@ public class VacuumToolConfiguration {
     }
   }
 
+  @Bean
+  MetaStoreClientFactoryManager metaStoreClientFactoryManager(List<MetaStoreClientFactory> metaStoreClientFactories) {
+    return new MetaStoreClientFactoryManager(metaStoreClientFactories);
+  }
+
+  @Bean
+  MetaStoreClientFactory thriftMetaStoreClientFactory() {
+    return new ThriftMetaStoreClientFactory();
+  }
+
+  @Bean
+  HousekeepingService housekeepingService(
+      LegacyReplicaPathRepository legacyReplicaPathRepository,
+      @Qualifier("baseConf") org.apache.hadoop.conf.Configuration baseConf) {
+    return new FileSystemHousekeepingService(legacyReplicaPathRepository, baseConf);
+  }
 }

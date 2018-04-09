@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.hotels.housekeeping.tool.vacuum.conf.Table;
-import com.hotels.housekeeping.tool.vacuum.conf.Tables;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -54,6 +52,8 @@ import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
 import com.hotels.housekeeping.service.impl.EventIdExtractor;
+import com.hotels.housekeeping.tool.vacuum.conf.Table;
+import com.hotels.housekeeping.tool.vacuum.conf.Tables;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

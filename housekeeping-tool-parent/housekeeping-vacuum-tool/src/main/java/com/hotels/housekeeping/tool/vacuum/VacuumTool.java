@@ -26,19 +26,22 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 
 import com.hotels.bdp.circustrain.api.Modules;
+import com.hotels.bdp.circustrain.core.conf.SpringExpressionParser;
 import com.hotels.bdp.circustrain.manifest.ManifestAttributes;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@ComponentScan({
-    "com.hotels.bdp.circustrain.tool.vacuum",
-    "com.hotels.bdp.circustrain.context",
-    "com.hotels.bdp.circustrain.core.conf",
-    "com.hotels.bdp.circustrain.housekeeping" })
+@ComponentScan(value = { "com.hotels.housekeeping.tool.vacuum" }, basePackageClasses = {
+    SpringExpressionParser.class }, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = {
+            "com.hotels.bdp.circustrain.core.conf.TableReplications",
+            "com.hotels.bdp.circustrain.core.conf.SourceCatalog",
+            "com.hotels.bdp.circustrain.core.conf.ReplicaCatalog" }) })
 public class VacuumTool {
   private static final Logger LOG = LoggerFactory.getLogger(VacuumTool.class);
 
@@ -51,7 +54,7 @@ public class VacuumTool {
           .properties("spring.config.location:${config:null}")
           .properties("spring.profiles.active:" + Modules.REPLICATION)
           .properties("instance.home:${user.home}")
-          .properties("instance.name:${source-catalog.name}_${replica-catalog.name}")
+          .properties("instance.name:${instance-name:null}")
           .bannerMode(Mode.OFF)
           .registerShutdownHook(true)
           .build()

@@ -20,6 +20,8 @@ Run with your respective replication YAML configuration file:
       [--partition-batch-size=1000] \
       [--expected-path-count=10000]
 
+#TODO: Explain new YAML
+
 Vacuum looks for any files and folders in the data locations of your replicated tables that are not referenced in either the metastore or Circus Train's housekeeping database. Any paths discovered are again scheduled for removal via the housekeeping process. The respective files and folders will then be removed at a time determined by the specific configuration of your housekeeping process.
 
 We use the housekeeping process for data removal in this scenario as it has useful logic for determining when ancestral paths can also be removed.

@@ -19,17 +19,6 @@
       <artifactId>housekeeping</artifactId>
       <version>${project.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>circus-train-api</artifactId>
-      <version>${circus-train.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>circus-train-aws</artifactId>
-      <version>${circus-train.version}</version>
-    </dependency>
     <dependency>
       <groupId>com.hotels</groupId>
       <artifactId>circus-train-core</artifactId>
@@ -38,11 +27,6 @@
     <dependency>
       <groupId>com.hotels</groupId>
       <artifactId>circus-train-hive</artifactId>
-      <version>${circus-train.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>circus-train-housekeeping</artifactId>
       <version>${circus-train.version}</version>
     </dependency>
 
