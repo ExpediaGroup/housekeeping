@@ -18,6 +18,51 @@
       <version>${project.version}</version>
       <classifier>all</classifier>
     </dependency>
+    <dependency>
+      <groupId>com.hotels</groupId>
+      <artifactId>circus-train-core</artifactId>
+      <version>${circus-train.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hotels</groupId>
+      <artifactId>circus-train-distcp-copier</artifactId>
+      <version>${circus-train.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hotels</groupId>
+      <artifactId>circus-train-s3-mapreduce-cp-copier</artifactId>
+      <version>${circus-train.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hotels</groupId>
+      <artifactId>circus-train-s3-s3-copier</artifactId>
+      <version>${circus-train.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hotels</groupId>
+      <artifactId>circus-train-housekeeping</artifactId>
+      <version>${circus-train.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hotels</groupId>
+      <artifactId>circus-train-metrics</artifactId>
+      <version>${circus-train.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hotels</groupId>
+      <artifactId>circus-train-s3-mapreduce-cp</artifactId>
+      <version>${circus-train.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hotels</groupId>
+      <artifactId>circus-train-gcp</artifactId>
+      <version>${circus-train.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hotels</groupId>
+      <artifactId>circus-train-hive-view</artifactId>
+      <version>${circus-train.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

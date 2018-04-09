@@ -38,8 +38,7 @@ import com.hotels.bdp.circustrain.manifest.ManifestAttributes;
     "com.hotels.bdp.circustrain.tool.vacuum",
     "com.hotels.bdp.circustrain.context",
     "com.hotels.bdp.circustrain.core.conf",
-    "com.hotels.bdp.circustrain.housekeeping",
-    "com.hotels.housekeeping" })
+    "com.hotels.bdp.circustrain.housekeeping" })
 public class VacuumTool {
   private static final Logger LOG = LoggerFactory.getLogger(VacuumTool.class);
 

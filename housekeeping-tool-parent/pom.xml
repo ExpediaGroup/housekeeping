@@ -17,4 +17,8 @@
     <module>housekeeping-vacuum-tool</module>
     <module>housekeeping-tool-package</module>
   </modules>
+
+  <properties>
+    <circus-train.version>11.3.1</circus-train.version>
+  </properties>
 </project>

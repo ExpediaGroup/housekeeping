@@ -13,6 +13,24 @@
         <include>com.hotels:housekeeping-vacuum-tool</include>
       </includes>
     </dependencySet>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <excludes>
+        <exclude>com.hotels:*</exclude>
+        <exclude>com.google.api*:*</exclude>
+        <exclude>com.google.cloud*:*</exclude>
+        <exclude>com.google.oauth*:*</exclude>
+        <exclude>com.google.http*:*</exclude>
+        <exclude>com.google.guava:guava</exclude>
+        <exclude>com.jcraft:*</exclude>
+        <exclude>com.pastdev:jsch-extension</exclude>
+        <exclude>io.dropwizard.metrics:*</exclude>
+        <exclude>com.amazonaws:*</exclude>
+        <exclude>org.apache.httpcomponents:*</exclude>
+        <exclude>com.fasterxml.jackson.*:*</exclude>
+      </excludes>
+    </dependencySet>
   </dependencySets>
   <fileSets>
     <fileSet>
