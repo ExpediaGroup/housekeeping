@@ -62,9 +62,6 @@ Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/`
     -
       database-name: db
       table-name: table_1
-    -
-      database-name: db
-      table-name: table_2
 
     housekeeping:
       schema-name: my_db
