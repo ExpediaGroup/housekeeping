@@ -54,7 +54,7 @@ public class VacuumTool {
           .properties("spring.config.location:${config:null}")
           .properties("spring.profiles.active:" + Modules.REPLICATION)
           .properties("instance.home:${housekeeping.h2.home}")
-          .properties("instance.name:${housekeeping.h2.db}")
+          .properties("instance.name:${housekeeping.h2.database-name}")
           .bannerMode(Mode.OFF)
           .registerShutdownHook(true)
           .build()
