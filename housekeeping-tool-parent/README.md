@@ -1,13 +1,32 @@
 # Housekeeping Tool
 
-Housekeeping Tool Parent is a sub-module for debug and maintenance tools.
-* **housekeeping-vacuum-tool:** Tool that removes housekeeping data
+Housekeeping Tool Parent is a sub-module for Housekeeping debug and maintenance tools.
 
 ## Housekeeping Vacuum Tool
 
 ### Usage
 
-Run with your respective replication YAML configuration file:
+#### YAML Configuration
+
+    catalog:
+      name:
+      hive-metastore-uris: thrift://shared-waggle-dance.us-west-2.hcom-data-lab.aws.hcom:48869
+
+    tables:
+    -
+      database-name: bdp
+      table-name: etl_hcom_hex_fact_2
+
+    housekeeping:
+      schema-name: circus_train
+      dataSource:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://vacuum-tool-test-db.c9czcayr4qpx.us-west-2.rds.amazonaws.com:3306/circus_train
+        username: bdp
+        password: Ch4ll3ng3
+
+
+Run with your respective YAML configuration file:
 
     $HOUSEKEEPING_TOOL_HOME/bin/vacuum.sh \
       --config=<your-config>.yml \

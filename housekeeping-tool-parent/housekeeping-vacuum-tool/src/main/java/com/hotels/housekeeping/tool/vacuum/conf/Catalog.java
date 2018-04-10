@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,7 +32,8 @@ import com.hotels.bdp.circustrain.core.conf.TunnelMetastoreCatalog;
 @ConfigurationProperties(prefix = "catalog")
 public class Catalog implements TunnelMetastoreCatalog {
 
-  private @NotBlank String name = "Vacuum Tool Catalog";
+  @NotEmpty(message = "Catalog name must not be blank")
+  private String name = "vacuum_tool_catalog";
   private @NotBlank String hiveMetastoreUris;
   private @Valid MetastoreTunnel metastoreTunnel;
   private List<String> siteXml;
