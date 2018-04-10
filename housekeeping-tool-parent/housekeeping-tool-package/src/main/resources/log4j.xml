@@ -19,24 +19,24 @@
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %-5p %c:%L - %m%n" />
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p %c:%L - %m%n"/>
     </layout>
   </appender>
 
-  <logger name="com.hotels.bdp.circustrain">
-    <level value="INFO" />
+  <logger name="com.hotels.housekeeping">
+    <level value="INFO"/>
   </logger>
-  <logger name="com.hotels.bdp.circustrain.tool.vacuum">
-    <level value="DEBUG" />
+  <logger name="com.hotels.housekeeping.tool.vacuum">
+    <level value="DEBUG"/>
   </logger>
 
   <logger name="com.pastdev.jsch">
-    <level value="WARN" />
+    <level value="WARN"/>
   </logger>
 
   <root>
-    <level value="INFO" />
-    <appender-ref ref="CONSOLE" />
+    <level value="INFO"/>
+    <appender-ref ref="CONSOLE"/>
   </root>
 
 </log4j:configuration>
