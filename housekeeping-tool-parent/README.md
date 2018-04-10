@@ -29,6 +29,8 @@ Housekeeping Tool Parent is a sub-module for Housekeeping debug and maintenance 
 
 ##### Vacuum Tool configured with MySQL Housekeeping database
 
+Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/`
+
     catalog:
       name: vacuum_tool
       hive-metastore-uris: thrift://my-metastore-uri.aws.hcom:9083
