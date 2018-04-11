@@ -87,8 +87,8 @@ public class HousekeepingConfiguration {
   @Bean(destroyMethod = "close")
   @ConditionalOnMissingBean(name = "housekeepingDataSource")
   DataSource housekeepingDataSource(Housekeeping housekeeping) {
-    log.info("Driver Class Name: {}", housekeeping.getDataSource().getDriverClassName());
-    log.info("Connection URL: {}", housekeeping.getDataSource().getUrl());
+    log.info("Housekeeping Driver Class Name: {}", housekeeping.getDataSource().getDriverClassName());
+    log.info("Housekeeping Connection URL: {}", housekeeping.getDataSource().getUrl());
     return DataSourceBuilder
         .create()
         .driverClassName(housekeeping.getDataSource().getDriverClassName())
