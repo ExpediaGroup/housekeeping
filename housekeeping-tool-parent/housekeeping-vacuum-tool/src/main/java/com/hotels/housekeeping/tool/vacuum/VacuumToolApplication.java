@@ -158,7 +158,6 @@ class VacuumToolApplication implements ApplicationRunner {
     int housekeepingPathCount = 0;
     for (FileStatus fileStatus : listStatus) {
       Path fsPath = PathUtils.normalise(fileStatus.getPath());
-      ConsistencyCheck.checkFsPath(fsPath);
       if (metastorePaths.contains(fsPath)) {
         LOG.info("KEEP path '{}', referenced in the metastore.", fsPath);
         unvisitedMetastorePaths.remove(fsPath);

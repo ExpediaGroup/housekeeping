@@ -31,16 +31,6 @@ public class ConsistencyCheckTest {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-  @Test(expected = IllegalStateException.class)
-  public void fsPathNoEventId() {
-    ConsistencyCheck.checkFsPath(new Path("/a/b/c/d"));
-  }
-
-  @Test
-  public void fsPathWithEventId() {
-    ConsistencyCheck.checkFsPath(new Path("/a/b/ctp-20160728T110821.830Z-w5npK1yY/d"));
-  }
-
   @Test
   public void metastorePathsCorrect() {
     ConsistencyCheck.checkMetastorePaths(Collections.singleton(new Path("/a/b/ctp-20160728T110821.830Z-w5npK1yY/d")),
@@ -52,11 +42,6 @@ public class ConsistencyCheckTest {
     ConsistencyCheck.checkMetastorePaths(Collections.singleton(new Path("/a/ctp-20160728T110821.830Z-w5npK1yY/d")), 4);
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void metastorePathsNoEventId() {
-    ConsistencyCheck.checkMetastorePaths(Collections.singleton(new Path("/a/b/c/d")), 4);
-  }
-
   @Test
   public void metastorePathCorrect() {
     ConsistencyCheck.checkMetastorePath(new Path("/a/b/ctp-20160728T110821.830Z-w5npK1yY/d"), 4);
@@ -65,11 +50,6 @@ public class ConsistencyCheckTest {
   @Test(expected = IllegalStateException.class)
   public void metastorePathDepthIncorrect() {
     ConsistencyCheck.checkMetastorePath(new Path("/a/ctp-20160728T110821.830Z-w5npK1yY/d"), 4);
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void metastorePathNoEventId() {
-    ConsistencyCheck.checkMetastorePath(new Path("/a/b/c/d"), 4);
   }
 
   @Test

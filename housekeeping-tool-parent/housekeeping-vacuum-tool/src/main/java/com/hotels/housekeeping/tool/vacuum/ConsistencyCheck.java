@@ -21,8 +21,6 @@ import java.util.Set;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import com.hotels.housekeeping.service.impl.EventIdExtractor;
-
 final class ConsistencyCheck {
 
   private ConsistencyCheck() {}
@@ -34,29 +32,16 @@ final class ConsistencyCheck {
   }
 
   static void checkMetastorePath(Path path, int globDepth) {
-    checkPathContainsEventId(path, "metastore");
     if (path.depth() != globDepth) {
       throw new IllegalStateException(
           "ABORTING: Metastore path structure looks wrong; depth != file system glob depth: '" + path + "'.");
     }
   }
 
-  static void checkFsPath(Path path) {
-    checkPathContainsEventId(path, "file system");
-  }
-
   static void checkUnvisitedPath(FileSystem fs, Path unvisitedMetastorePath) throws IOException {
     if (fs.exists(unvisitedMetastorePath)) {
       throw new IllegalStateException(
           "ABORTING: Metastore path not found in file system scan but does exist: '" + unvisitedMetastorePath + "'.");
-    }
-  }
-
-  private static void checkPathContainsEventId(Path path, String ownerMessage) {
-    String eventId = EventIdExtractor.extractFrom(path);
-    if (eventId == null) {
-      throw new IllegalStateException(
-          "ABORTING: All " + ownerMessage + " paths should contain an event id, this one does not: '" + path + "'.");
     }
   }
 }
