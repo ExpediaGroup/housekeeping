@@ -54,28 +54,36 @@ public class FileSystemHousekeepingService implements HousekeepingService {
           .findByCreationTimestampLessThanEqual(referenceTime.getMillis());
       for (LegacyReplicaPath cleanUpPath : pathsToDelete) {
         cleanUpPath = fixIncompleteRecord(cleanUpPath);
-        LOG.debug("Deleting path '{}' from file system", cleanUpPath);
+        LOG.info("Deleting path '{}' from file system", cleanUpPath);
         Path path = new Path(cleanUpPath.getPath());
         FileSystem fs = path.getFileSystem(conf);
-        Path rootPath;
-        try {
-          fs.delete(path, true);
-          rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
-          LOG.debug("Path '{}' has been deleted from file system", cleanUpPath);
-        } catch (Exception e) {
-          LOG.warn("Unable to delete path '{}' from file system. Will try next time", cleanUpPath, e);
-          continue;
-        }
-        if (oneOfMySiblingsWillTakeCareOfMyAncestors(path, rootPath, fs) || thereIsNothingMoreToDelete(fs, rootPath)) {
-          // BEWARE the eventual consistency of your blobstore!
+        if (fs.exists(path)) {
+          Path rootPath;
           try {
-            LOG.debug("Deleting path '{}' from database", cleanUpPath);
-            legacyReplicaPathRepository.delete(cleanUpPath);
-          } catch (ObjectOptimisticLockingFailureException e) {
-            LOG.debug(
-                "Failed to delete path '{}': probably already cleaned up by process running at same time. Ok to ignore",
-                cleanUpPath);
+            fs.delete(path, true);
+            rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
+            LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
+          } catch (Exception e) {
+            LOG.warn("Unable to delete path '{}' from file system. Will try next time", cleanUpPath, e);
+            continue;
           }
+
+          if (oneOfMySiblingsWillTakeCareOfMyAncestors(path, rootPath, fs)
+              || thereIsNothingMoreToDelete(fs, rootPath)) {
+            // BEWARE the eventual consistency of your blobstore!
+            try {
+              LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
+              legacyReplicaPathRepository.delete(cleanUpPath);
+            } catch (ObjectOptimisticLockingFailureException e) {
+              LOG.debug(
+                  "Failed to delete path '{}': probably already cleaned up by process running at same time. Ok to ignore",
+                  cleanUpPath);
+            }
+          }
+        } else {
+          LOG.warn("Path {} in housekeeping database does not exist. Nothing was deleted.", cleanUpPath);
+          LOG.info("Deleting path '{}' from database", cleanUpPath);
+          legacyReplicaPathRepository.delete(cleanUpPath);
         }
       }
     } catch (Exception e) {
