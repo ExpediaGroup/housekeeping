@@ -1,6 +1,8 @@
 ## TBD
 ### Changed
 * Default Housekeeping configuration is now provided via `@Bean` `housekeepingEnvironment` only if the bean is not already provided.
+### Fixed
+* Housekeeping doesn't fail when housekeeping database contains path which no longer exists.
 
 ## [1.0.2] 2018-02-15
 ### Added
