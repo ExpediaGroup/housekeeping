@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import java.io.IOException;
 import java.util.List;
 
+import com.hotels.housekeeping.HousekeepingException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -55,7 +56,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       fs = path.getFileSystem(conf);
       return fs;
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new HousekeepingException(e);
     }
   }
 
@@ -105,7 +106,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
         housekeepPath(cleanUpPath);
       }
     } catch (Exception e) {
-      throw new RuntimeException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()), e);
+      throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()), e);
     }
   }
 
@@ -151,7 +152,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     try {
       legacyReplicaPathRepository.save(cleanUpPath);
     } catch (Exception e) {
-      throw new RuntimeException(format("Unable to schedule path %s for deletion", cleanUpPath.getPath()), e);
+      throw new HousekeepingException(format("Unable to schedule path %s for deletion", cleanUpPath.getPath()), e);
     }
   }
 
