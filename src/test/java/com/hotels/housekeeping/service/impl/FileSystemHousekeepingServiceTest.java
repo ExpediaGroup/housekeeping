@@ -201,7 +201,7 @@ public class FileSystemHousekeepingServiceTest {
         .thenReturn(Arrays.asList(cleanUpPath4));
 
     doCallRealMethod().when(spyFs).delete(val4Path, true);
-    doReturn(false).when(spyFs).exists(val4Path);
+    doCallRealMethod().when(spyFs).exists(val4Path);
     doReturn(false).when(spyFs).exists(eventPath);
     service.cleanUp(now);
 
