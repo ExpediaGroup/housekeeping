@@ -153,7 +153,7 @@ public class FileSystemHousekeepingServiceTest {
   public void housekeepPathThatDoesntExistSkipsDeleteRemovesFromHousekeepingDatabase() throws Exception {
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath1));
-    when(spyFs.exists(any(Path.class))).thenReturn(false);
+    doReturn(false).when(spyFs).exists(any(Path.class));
 
     service.cleanUp(now);
 
@@ -189,7 +189,10 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void housekeepPathEventualConsistencyNothingMoreToDeleteFailureDoesntFailHousekeeping() throws Exception {
-    PowerMockito.doThrow(new RuntimeException()).when(service, "thereIsNothingMoreToDelete", any(FileSystem.class), any(Path.class));
+    PowerMockito.doThrow(new RuntimeException()).when(service, "thereIsNothingMoreToDelete", any(FileSystem.class),
+        any(Path.class));
+    PowerMockito.doReturn(false).when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors", any(Path.class),
+        any(Path.class), any(FileSystem.class));
 
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath1));
@@ -198,7 +201,6 @@ public class FileSystemHousekeepingServiceTest {
 
     verify(legacyReplicationPathRepository, times(0)).delete(cleanUpPath1);
   }
-
 
   @Test
   public void eventuallyConsistentCleanUpFull() throws Exception {
