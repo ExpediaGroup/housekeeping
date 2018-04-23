@@ -130,7 +130,7 @@ public class FileSystemHousekeepingServiceTest {
   }
 
   @Test
-  public void housekeepPathWithOneFileSystemLoadFailureCleansUpOtherPaths() throws Exception {
+  public void housekeepingPathsWithOneFileSystemLoadFailureCleansUpOtherPaths() throws Exception {
     PowerMockito.doReturn(null).when(service, "fileSystemForPath", eq(cleanUpPath1));
     PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(cleanUpPath2));
     PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(cleanUpPath3));
@@ -150,7 +150,7 @@ public class FileSystemHousekeepingServiceTest {
   }
 
   @Test
-  public void housekeepPathThatDoesntExistSkipsDeleteRemovesFromHousekeepingDatabase() throws Exception {
+  public void housekeepingPathThatDoesntExistSkipsDeleteAndRemovesPathFromHousekeepingDatabase() throws Exception {
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath1));
     doReturn(false).when(spyFs).exists(any(Path.class));
@@ -163,7 +163,7 @@ public class FileSystemHousekeepingServiceTest {
   }
 
   @Test
-  public void housekeepPathWhenDeleteFailsDoesntRemovePathFromHousekeepingDatabase() throws Exception {
+  public void deleteFailureDoesntRemovePathFromHousekeepingDatabase() throws Exception {
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath1));
     doThrow(new RuntimeException()).when(spyFs).delete(eq(new Path(cleanUpPath1.getPath())), eq(true));
@@ -175,7 +175,7 @@ public class FileSystemHousekeepingServiceTest {
   }
 
   @Test
-  public void housekeepPathEventualConsistencySiblingCheckFailureDoesntFailHousekeeping() throws Exception {
+  public void siblingCheckFailureDoesntFailHousekeeping() throws Exception {
     PowerMockito.doThrow(new RuntimeException()).when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors",
         any(Path.class), any(Path.class), any(FileSystem.class));
 
@@ -188,7 +188,7 @@ public class FileSystemHousekeepingServiceTest {
   }
 
   @Test
-  public void housekeepPathEventualConsistencyNothingMoreToDeleteFailureDoesntFailHousekeeping() throws Exception {
+  public void nothingMoreToDeleteFailureDoesntFailHousekeeping() throws Exception {
     PowerMockito.doThrow(new RuntimeException()).when(service, "thereIsNothingMoreToDelete", any(FileSystem.class),
         any(Path.class));
     PowerMockito.doReturn(false).when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors", any(Path.class),
