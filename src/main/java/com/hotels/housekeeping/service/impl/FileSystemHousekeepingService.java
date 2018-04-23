@@ -20,7 +20,6 @@ import static java.lang.String.format;
 import java.io.IOException;
 import java.util.List;
 
-import com.hotels.housekeeping.HousekeepingException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -30,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
+import com.hotels.housekeeping.HousekeepingException;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
@@ -91,8 +91,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
         }
       }
     } catch (Exception e) {
-      LOG.warn("Eventual consistency check failed. Path '{}' was not deleted from the housekeeping database. {}",
-          cleanUpPath, e.getMessage());
+      LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
     }
   }
 
@@ -106,7 +105,8 @@ public class FileSystemHousekeepingService implements HousekeepingService {
         housekeepPath(cleanUpPath);
       }
     } catch (Exception e) {
-      throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()), e);
+      throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
+          e);
     }
   }
 
