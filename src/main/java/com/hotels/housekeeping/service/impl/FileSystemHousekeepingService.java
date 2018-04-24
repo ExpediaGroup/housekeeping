@@ -48,13 +48,9 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
 
-  private FileSystem fileSystemForPath(LegacyReplicaPath cleanUpPath) {
-    LOG.info("Attempting to delete path '{}' from file system", cleanUpPath);
-    Path path = new Path(cleanUpPath.getPath());
-    FileSystem fs;
+  private FileSystem fileSystemForPath(Path path) {
     try {
-      fs = path.getFileSystem(conf);
-      return fs;
+      return path.getFileSystem(conf);
     } catch (IOException e) {
       throw new HousekeepingException(e);
     }
@@ -65,7 +61,8 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     final Path rootPath;
     final FileSystem fs;
     try {
-      fs = fileSystemForPath(cleanUpPath);
+      fs = fileSystemForPath(new Path(cleanUpPath.getPath()));
+      LOG.info("Attempting to delete path '{}' from file system", cleanUpPath);
       if (fs.exists(path)) {
         fs.delete(path, true);
         LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
