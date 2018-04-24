@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017-2018 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ package com.hotels.housekeeping.tool.vacuum.conf;
 
 import static org.apache.hadoop.security.alias.CredentialProviderFactory.CREDENTIAL_PROVIDER_PATH;
 
-import static com.hotels.bdp.circustrain.core.metastore.TunnellingMetaStoreClientSupplier.TUNNEL_SSH_LOCAL_HOST;
-import static com.hotels.bdp.circustrain.core.metastore.TunnellingMetaStoreClientSupplier.TUNNEL_SSH_ROUTE;
+import static com.hotels.housekeeping.tool.vacuum.TunnellingMetaStoreClientSupplier.TUNNEL_SSH_LOCAL_HOST;
+import static com.hotels.housekeeping.tool.vacuum.TunnellingMetaStoreClientSupplier.TUNNEL_SSH_ROUTE;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,21 +38,19 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.google.common.base.Supplier;
 
-import com.hotels.bdp.circustrain.api.metastore.CloseableMetaStoreClient;
-import com.hotels.bdp.circustrain.api.metastore.MetaStoreClientFactory;
-import com.hotels.bdp.circustrain.core.conf.MetastoreTunnel;
-import com.hotels.bdp.circustrain.core.conf.Security;
-import com.hotels.bdp.circustrain.core.conf.TunnelMetastoreCatalog;
-import com.hotels.bdp.circustrain.core.metastore.DefaultMetaStoreClientSupplier;
-import com.hotels.bdp.circustrain.core.metastore.HiveConfFactory;
-import com.hotels.bdp.circustrain.core.metastore.MetaStoreClientFactoryManager;
-import com.hotels.bdp.circustrain.core.metastore.SessionFactorySupplier;
-import com.hotels.bdp.circustrain.core.metastore.ThriftMetaStoreClientFactory;
-import com.hotels.bdp.circustrain.core.metastore.TunnelConnectionManagerFactory;
-import com.hotels.bdp.circustrain.core.metastore.TunnellingMetaStoreClientSupplier;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
 import com.hotels.housekeeping.service.impl.FileSystemHousekeepingService;
+import com.hotels.housekeeping.tool.vacuum.DefaultMetaStoreClientSupplier;
+import com.hotels.housekeeping.tool.vacuum.HiveConfFactory;
+import com.hotels.housekeeping.tool.vacuum.MetaStoreClientFactoryManager;
+import com.hotels.housekeeping.tool.vacuum.SessionFactorySupplier;
+import com.hotels.housekeeping.tool.vacuum.ThriftMetaStoreClientFactory;
+import com.hotels.housekeeping.tool.vacuum.TunnelConnectionManagerFactory;
+import com.hotels.housekeeping.tool.vacuum.TunnellingMetaStoreClientSupplier;
+import com.hotels.housekeeping.tool.vacuum.api.CloseableMetaStoreClient;
+import com.hotels.housekeeping.tool.vacuum.api.MetaStoreClientFactory;
+import com.hotels.housekeeping.tool.vacuum.api.TunnelMetastoreCatalog;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration

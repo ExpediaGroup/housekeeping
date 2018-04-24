@@ -12,7 +12,7 @@
   <groupId>com.hotels</groupId>
   <artifactId>housekeeping-parent</artifactId>
   <version>1.0.4-SNAPSHOT</version>
-  <inceptionYear>2017</inceptionYear>
+  <inceptionYear>2016</inceptionYear>
   <packaging>pom</packaging>
 
   <modules>

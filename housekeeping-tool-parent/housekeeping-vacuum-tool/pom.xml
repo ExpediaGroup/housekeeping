@@ -19,15 +19,11 @@
       <artifactId>housekeeping</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>circus-train-core</artifactId>
-      <version>${circus-train.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>circus-train-hive</artifactId>
-      <version>${circus-train.version}</version>
+      <groupId>com.pastdev</groupId>
+      <artifactId>jsch-extension</artifactId>
+      <version>0.1.6</version>
     </dependency>
 
     <dependency>

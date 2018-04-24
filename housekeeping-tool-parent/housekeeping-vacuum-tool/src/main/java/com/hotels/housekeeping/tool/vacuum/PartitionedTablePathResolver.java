@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017-2018 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.hotels.housekeeping.tool.vacuum;
 
-import static com.hotels.bdp.circustrain.core.metastore.LocationUtils.locationAsPath;
+import static com.hotels.housekeeping.tool.vacuum.LocationUtils.locationAsPath;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,8 +32,6 @@ import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.hotels.bdp.circustrain.hive.iterator.PartitionIterator;
 
 class PartitionedTablePathResolver implements TablePathResolver {
 

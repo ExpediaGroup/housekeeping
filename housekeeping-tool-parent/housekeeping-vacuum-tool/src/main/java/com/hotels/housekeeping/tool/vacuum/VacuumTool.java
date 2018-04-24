@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017-2018 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,22 +26,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 
-import com.hotels.bdp.circustrain.api.Modules;
-import com.hotels.bdp.circustrain.core.conf.SpringExpressionParser;
-import com.hotels.bdp.circustrain.manifest.ManifestAttributes;
+import com.hotels.housekeeping.tool.vacuum.manifest.ManifestAttributes;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@ComponentScan(value = { "com.hotels.housekeeping.tool.vacuum" }, basePackageClasses = {
-    SpringExpressionParser.class }, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = {
-            "com.hotels.bdp.circustrain.core.conf.TableReplications",
-            "com.hotels.bdp.circustrain.core.conf.SourceCatalog",
-            "com.hotels.bdp.circustrain.core.conf.ReplicaCatalog" }) })
+@ComponentScan(value = { "com.hotels.housekeeping.tool.vacuum" })
 public class VacuumTool {
   private static final Logger LOG = LoggerFactory.getLogger(VacuumTool.class);
 
@@ -52,7 +44,6 @@ public class VacuumTool {
     try {
       SpringApplication.exit(new SpringApplicationBuilder(VacuumTool.class)
           .properties("spring.config.location:${config:null}")
-          .properties("spring.profiles.active:" + Modules.REPLICATION)
           .properties("instance.home:${housekeeping.h2.home}")
           .properties("instance.name:${housekeeping.h2.database-name}")
           .bannerMode(Mode.OFF)
