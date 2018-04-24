@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017-2018 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,11 +47,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.base.Supplier;
 
-import com.hotels.bdp.circustrain.api.metastore.CloseableMetaStoreClient;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
+import com.hotels.housekeeping.tool.vacuum.api.CloseableMetaStoreClient;
 import com.hotels.housekeeping.tool.vacuum.conf.Table;
 import com.hotels.housekeeping.tool.vacuum.conf.Tables;
 

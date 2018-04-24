@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017-2018 Expedia Inc.
+ * Copyright (C) 2016-2018 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import com.hotels.bdp.circustrain.core.conf.MetastoreTunnel;
-import com.hotels.bdp.circustrain.core.conf.TunnelMetastoreCatalog;
+import com.hotels.housekeeping.tool.vacuum.api.TunnelMetastoreCatalog;
 
 @Configuration
 @ConfigurationProperties(prefix = "catalog")

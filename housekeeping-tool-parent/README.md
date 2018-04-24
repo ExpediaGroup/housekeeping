@@ -67,7 +67,7 @@ Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/`
       schema-name: my_db
       h2:
         home: /home/hadoop/vacuumtest
-        database-name: aws-hcom-data-lab-source_aws-hcom-data-lab-replica
+        database-name: db_1_test
 
 
 
