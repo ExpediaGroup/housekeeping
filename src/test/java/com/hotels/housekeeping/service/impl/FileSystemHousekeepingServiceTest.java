@@ -131,9 +131,9 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void housekeepingPathsWithOneFileSystemLoadFailureCleansUpOtherPaths() throws Exception {
-    PowerMockito.doReturn(null).when(service, "fileSystemForPath", eq(cleanUpPath1));
-    PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(cleanUpPath2));
-    PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(cleanUpPath3));
+    PowerMockito.doReturn(null).when(service, "fileSystemForPath", eq(new Path(cleanUpPath1.getPath())));
+    PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(new Path(cleanUpPath2.getPath())));
+    PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(new Path(cleanUpPath3.getPath())));
 
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3));
