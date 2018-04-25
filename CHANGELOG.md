@@ -1,6 +1,8 @@
 ## TBD
 ### Changed
 * Default Housekeeping configuration is now provided via `@Bean` `housekeepingEnvironment` only if the bean is not already provided.
+### Fixed
+* Fixed issue where Housekeeping was failing when database contained a path which no longer exists. See [#18](https://github.com/HotelsDotCom/housekeeping/issues/18).
 
 ## [1.0.2] 2018-02-15
 ### Added
