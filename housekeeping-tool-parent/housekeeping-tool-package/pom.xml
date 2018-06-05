@@ -18,11 +18,6 @@
       <version>${project.version}</version>
       <classifier>all</classifier>
     </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>circus-train-core</artifactId>
-      <version>${circus-train.version}</version>
-    </dependency>
   </dependencies>
 
   <build>

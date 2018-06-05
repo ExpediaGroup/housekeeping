@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hotels.housekeeping.tool.vacuum.conf;
+
+import javax.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
-
-import javax.validation.Valid;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-
-import com.hotels.bdp.circustrain.core.conf.MetastoreTunnel;
-import com.hotels.bdp.circustrain.core.conf.TunnelMetastoreCatalog;
 
 @Configuration
 @ConfigurationProperties(prefix = "catalog")

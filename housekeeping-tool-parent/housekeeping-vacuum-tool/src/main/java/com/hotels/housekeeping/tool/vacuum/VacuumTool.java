@@ -30,9 +30,8 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 
-import com.hotels.bdp.circustrain.api.Modules;
-import com.hotels.bdp.circustrain.core.conf.SpringExpressionParser;
-import com.hotels.bdp.circustrain.manifest.ManifestAttributes;
+import com.hotels.housekeeping.tool.vacuum.conf.SpringExpressionParser;
+import com.hotels.housekeeping.tool.vacuum.manifest.ManifestAttributes;
 
 @SpringBootApplication
 @EnableConfigurationProperties
@@ -52,7 +51,6 @@ public class VacuumTool {
     try {
       SpringApplication.exit(new SpringApplicationBuilder(VacuumTool.class)
           .properties("spring.config.location:${config:null}")
-          .properties("spring.profiles.active:" + Modules.REPLICATION)
           .properties("instance.home:${housekeeping.h2.home}")
           .properties("instance.name:${housekeeping.h2.database-name}")
           .bannerMode(Mode.OFF)

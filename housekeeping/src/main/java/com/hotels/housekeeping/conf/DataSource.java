@@ -29,7 +29,7 @@ public class DataSource {
   @URI(message = "housekeeping.dataSource.url does not seem to be a valid JDBC URI", scheme = "jdbc")
   private String url = null;
   // Housekeeping can create an application internal database if the user doesn't provide DataSource configuration
-  // properties and then these are the default credentials used.
+  // properties and then these are the default aws used.
   private String username = "bdp";
   private String password = "Ch4ll3ng3";
 

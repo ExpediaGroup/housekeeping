@@ -15,7 +15,7 @@
  */
 package com.hotels.housekeeping.tool.vacuum;
 
-import static com.hotels.bdp.circustrain.core.metastore.LocationUtils.locationAsPath;
+import static com.hotels.hcommon.hive.metastore.util.LocationUtils.locationAsPath;
 
 import java.net.URI;
 import java.net.URISyntaxException;

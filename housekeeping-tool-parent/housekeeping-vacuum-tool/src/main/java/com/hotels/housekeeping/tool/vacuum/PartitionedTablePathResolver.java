@@ -15,7 +15,7 @@
  */
 package com.hotels.housekeeping.tool.vacuum;
 
-import static com.hotels.bdp.circustrain.core.metastore.LocationUtils.locationAsPath;
+import static com.hotels.hcommon.hive.metastore.util.LocationUtils.locationAsPath;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +33,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hotels.bdp.circustrain.hive.iterator.PartitionIterator;
+import com.hotels.hcommon.hive.metastore.iterator.PartitionIterator;
 
 class PartitionedTablePathResolver implements TablePathResolver {
 

@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hotels.housekeeping.tool.vacuum.conf;
 
 import static org.apache.hadoop.security.alias.CredentialProviderFactory.CREDENTIAL_PROVIDER_PATH;
 
-import static com.hotels.bdp.circustrain.core.metastore.TunnellingMetaStoreClientSupplier.TUNNEL_SSH_LOCAL_HOST;
-import static com.hotels.bdp.circustrain.core.metastore.TunnellingMetaStoreClientSupplier.TUNNEL_SSH_ROUTE;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,21 +35,18 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.google.common.base.Supplier;
 
-import com.hotels.bdp.circustrain.api.metastore.CloseableMetaStoreClient;
-import com.hotels.bdp.circustrain.api.metastore.MetaStoreClientFactory;
-import com.hotels.bdp.circustrain.core.conf.MetastoreTunnel;
-import com.hotels.bdp.circustrain.core.conf.Security;
-import com.hotels.bdp.circustrain.core.conf.TunnelMetastoreCatalog;
-import com.hotels.bdp.circustrain.core.metastore.DefaultMetaStoreClientSupplier;
-import com.hotels.bdp.circustrain.core.metastore.HiveConfFactory;
-import com.hotels.bdp.circustrain.core.metastore.MetaStoreClientFactoryManager;
-import com.hotels.bdp.circustrain.core.metastore.SessionFactorySupplier;
-import com.hotels.bdp.circustrain.core.metastore.ThriftMetaStoreClientFactory;
-import com.hotels.bdp.circustrain.core.metastore.TunnelConnectionManagerFactory;
-import com.hotels.bdp.circustrain.core.metastore.TunnellingMetaStoreClientSupplier;
+import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
+import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
+import com.hotels.hcommon.hive.metastore.client.supplier.HiveMetaStoreClientSupplier;
+import com.hotels.hcommon.hive.metastore.client.tunnelling.TunnellingMetaStoreClientSupplier;
+import com.hotels.hcommon.hive.metastore.client.tunnelling.TunnellingMetaStoreClientSupplierBuilder;
+import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
 import com.hotels.housekeeping.service.impl.FileSystemHousekeepingService;
+import com.hotels.housekeeping.tool.vacuum.metastore.ConditionalMetaStoreClientFactory;
+import com.hotels.housekeeping.tool.vacuum.metastore.MetaStoreClientFactoryManager;
+import com.hotels.housekeeping.tool.vacuum.metastore.ThriftHiveMetaStoreClientFactory;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -97,7 +91,6 @@ public class VacuumToolConfiguration {
     if (hiveCatalog.getHiveMetastoreUris() != null) {
       properties.put(HiveConf.ConfVars.METASTOREURIS.varname, hiveCatalog.getHiveMetastoreUris());
     }
-    configureMetastoreTunnel(hiveCatalog.getMetastoreTunnel(), properties);
     putConfigurationProperties(hiveCatalog.getConfigurationProperties(), properties);
     HiveConf hiveConf = new HiveConfFactory(siteXml, properties).newInstance();
     return hiveConf;
@@ -120,20 +113,27 @@ public class VacuumToolConfiguration {
       MetastoreTunnel metastoreTunnel,
       MetaStoreClientFactory metaStoreClientFactory) {
     if (metastoreTunnel != null) {
-      SessionFactorySupplier sessionFactorySupplier = new SessionFactorySupplier(metastoreTunnel.getPort(),
-          metastoreTunnel.getKnownHosts(), Arrays.asList(metastoreTunnel.getPrivateKeys().split(",")));
-      return new TunnellingMetaStoreClientSupplier(hiveConf, name, metaStoreClientFactory,
-          new TunnelConnectionManagerFactory(sessionFactorySupplier));
+      return tunnellingMetaStoreClientSupplier(hiveConf, name, metaStoreClientFactory, metastoreTunnel);
     } else {
-      return new DefaultMetaStoreClientSupplier(hiveConf, name, metaStoreClientFactory);
+      return new HiveMetaStoreClientSupplier(metaStoreClientFactory, hiveConf, name);
     }
   }
 
-  private void configureMetastoreTunnel(MetastoreTunnel metastoreTunnel, Map<String, String> properties) {
-    if (metastoreTunnel != null) {
-      properties.put(TUNNEL_SSH_ROUTE, metastoreTunnel.getRoute());
-      properties.put(TUNNEL_SSH_LOCAL_HOST, metastoreTunnel.getLocalhost());
-    }
+  TunnellingMetaStoreClientSupplier tunnellingMetaStoreClientSupplier(
+      HiveConf hiveConf,
+      String name,
+      MetaStoreClientFactory metaStoreClientFactory,
+      MetastoreTunnel metastoreTunnel) {
+    return new TunnellingMetaStoreClientSupplierBuilder()
+        .withName(name)
+        .withRoute(metastoreTunnel.getRoute())
+        .withKnownHosts(metastoreTunnel.getKnownHosts())
+        .withLocalHost(metastoreTunnel.getLocalhost())
+        .withPort(metastoreTunnel.getPort())
+        .withPrivateKeys(metastoreTunnel.getPrivateKeys())
+        .withTimeout(metastoreTunnel.getTimeout())
+        .withStrictHostKeyChecking(metastoreTunnel.getStrictHostKeyChecking())
+        .build(hiveConf, metaStoreClientFactory);
   }
 
   private void putConfigurationProperties(Map<String, String> configurationProperties, Map<String, String> properties) {
@@ -143,13 +143,13 @@ public class VacuumToolConfiguration {
   }
 
   @Bean
-  MetaStoreClientFactoryManager metaStoreClientFactoryManager(List<MetaStoreClientFactory> metaStoreClientFactories) {
-    return new MetaStoreClientFactoryManager(metaStoreClientFactories);
+  ConditionalMetaStoreClientFactory thriftHiveMetaStoreClientFactory() {
+    return new ThriftHiveMetaStoreClientFactory();
   }
 
   @Bean
-  MetaStoreClientFactory thriftMetaStoreClientFactory() {
-    return new ThriftMetaStoreClientFactory();
+  MetaStoreClientFactoryManager metaStoreClientFactoryManager(List<ConditionalMetaStoreClientFactory> factories) {
+    return new MetaStoreClientFactoryManager(factories);
   }
 
   @Bean

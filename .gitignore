@@ -30,7 +30,7 @@ target/
 # MAC stuff
 .DS_Store
 
-# AWS credentials
+# AWS aws
 *.pem
 
 # Job Specific Config

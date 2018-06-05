@@ -21,13 +21,8 @@
     </dependency>
     <dependency>
       <groupId>com.hotels</groupId>
-      <artifactId>circus-train-core</artifactId>
-      <version>${circus-train.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>circus-train-hive</artifactId>
-      <version>${circus-train.version}</version>
+      <artifactId>hcommon-hive-metastore</artifactId>
+      <version>1.0.0</version>
     </dependency>
 
     <dependency>

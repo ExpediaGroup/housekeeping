@@ -46,7 +46,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Supplier;
 
-import com.hotels.bdp.circustrain.api.metastore.CloseableMetaStoreClient;
+import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
