@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 
@@ -36,11 +35,7 @@ import com.hotels.housekeeping.tool.vacuum.manifest.ManifestAttributes;
 @SpringBootApplication
 @EnableConfigurationProperties
 @ComponentScan(value = { "com.hotels.housekeeping.tool.vacuum" }, basePackageClasses = {
-    SpringExpressionParser.class }, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = {
-            "com.hotels.bdp.circustrain.core.conf.TableReplications",
-            "com.hotels.bdp.circustrain.core.conf.SourceCatalog",
-            "com.hotels.bdp.circustrain.core.conf.ReplicaCatalog" }) })
+    SpringExpressionParser.class })
 public class VacuumTool {
   private static final Logger LOG = LoggerFactory.getLogger(VacuumTool.class);
 
