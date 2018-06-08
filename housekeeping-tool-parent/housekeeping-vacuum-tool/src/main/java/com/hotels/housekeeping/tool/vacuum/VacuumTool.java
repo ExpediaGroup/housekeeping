@@ -25,17 +25,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 
-import com.hotels.housekeeping.tool.vacuum.conf.SpringExpressionParser;
 import com.hotels.housekeeping.tool.vacuum.manifest.ManifestAttributes;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@ComponentScan(value = { "com.hotels.housekeeping.tool.vacuum" }, basePackageClasses = {
-    SpringExpressionParser.class })
 public class VacuumTool {
   private static final Logger LOG = LoggerFactory.getLogger(VacuumTool.class);
 
@@ -46,10 +42,12 @@ public class VacuumTool {
     try {
       SpringApplication.exit(new SpringApplicationBuilder(VacuumTool.class)
           .properties("spring.config.location:${config:null}")
-          .properties("instance.home:${housekeeping.h2.home}")
-          .properties("instance.name:${housekeeping.h2.database-name}")
+          .properties("instance.name:${catalog.name}")
+          .properties("instance.home:${user.home}")
+          .registerShutdownHook(true)
           .bannerMode(Mode.OFF)
           .registerShutdownHook(true)
+          .listeners(new ConfigFileValidationApplicationListener())
           .build()
           .run(args));
     } catch (BeanCreationException e) {

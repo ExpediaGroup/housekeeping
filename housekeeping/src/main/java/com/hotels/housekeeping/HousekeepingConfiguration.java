@@ -15,10 +15,10 @@
  */
 package com.hotels.housekeeping;
 
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

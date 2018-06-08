@@ -13,29 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.housekeeping.tool.vacuum.conf;
+package com.hotels.housekeeping.tool.vacuum;
 
-import javax.validation.Valid;
-
+import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.ObjectError;
 
-@Configuration
-@ConfigurationProperties(prefix = "")
-public class Tables {
+class ConfigFileValidationException extends RuntimeException {
 
-  @Valid
-  @NotEmpty
-  private List<Table> tables;
+  private static final long serialVersionUID = 1L;
 
-  public List<Table> getTables() {
-    return this.tables;
+  private List<ObjectError> errors = new ArrayList<>();
+
+  ConfigFileValidationException(List<String> errors) {
+    super("Error reading config file(s).");
+    for (String error : errors) {
+      this.errors.add(new ObjectError("config-file-error", error));
+    }
   }
 
-  public void setTables(List<Table> tables) {
-    this.tables = tables;
+  List<ObjectError> getErrors() {
+    return errors;
   }
+
 }

@@ -66,9 +66,10 @@ Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/`
     housekeeping:
       schema-name: my_db
       h2:
-        home: /home/hadoop/vacuumtest
-        database-name: aws-hcom-data-lab-source_aws-hcom-data-lab-replica
-
+          database: /home/hadoop/vacuumtest/aws-hcom-data-lab-source_aws-hcom-data-lab-replica/housekeeping
+      dataSource:
+          username: user
+          password: foo
 
 
 Run with your respective YAML configuration file:
