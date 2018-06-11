@@ -57,7 +57,7 @@ class VacuumToolHelp {
         .append(System.lineSeparator())
         .append(TAB)
         .append("For more information and help please refer to ")
-        .append("https://github.com/HotelsDotCom/housekeeping/tree/master/housekeeping-tool-parent");
+        .append("https://github.com/HotelsDotCom/housekeeping/tree/master/housekeeping-vacuum-tool");
     return help.toString();
   }
 }
