@@ -41,7 +41,6 @@ import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.conditional.ConditionalMetaStoreClientFactoryManager;
 import com.hotels.hcommon.hive.metastore.client.conditional.ThriftHiveMetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.supplier.HiveMetaStoreClientSupplier;
-import com.hotels.hcommon.hive.metastore.client.tunnelling.TunnellingMetaStoreClientSupplier;
 import com.hotels.hcommon.hive.metastore.client.tunnelling.TunnellingMetaStoreClientSupplierBuilder;
 import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
@@ -113,27 +112,31 @@ public class VacuumToolConfiguration {
       MetastoreTunnel metastoreTunnel,
       MetaStoreClientFactory metaStoreClientFactory) {
     if (metastoreTunnel != null) {
-      return tunnellingMetaStoreClientSupplier(hiveConf, name, metaStoreClientFactory, metastoreTunnel);
+      return metaStoreClientSupplier(hiveConf, name, metaStoreClientFactory, metastoreTunnel);
     } else {
       return new HiveMetaStoreClientSupplier(metaStoreClientFactory, hiveConf, name);
     }
   }
 
-  TunnellingMetaStoreClientSupplier tunnellingMetaStoreClientSupplier(
+  Supplier<CloseableMetaStoreClient> metaStoreClientSupplier(
       HiveConf hiveConf,
       String name,
       MetaStoreClientFactory metaStoreClientFactory,
       MetastoreTunnel metastoreTunnel) {
-    return new TunnellingMetaStoreClientSupplierBuilder()
-        .withName(name)
-        .withRoute(metastoreTunnel.getRoute())
-        .withKnownHosts(metastoreTunnel.getKnownHosts())
-        .withLocalHost(metastoreTunnel.getLocalhost())
-        .withPort(metastoreTunnel.getPort())
-        .withPrivateKeys(metastoreTunnel.getPrivateKeys())
-        .withTimeout(metastoreTunnel.getTimeout())
-        .withStrictHostKeyChecking(metastoreTunnel.getStrictHostKeyChecking())
-        .build(hiveConf, metaStoreClientFactory);
+    if (metastoreTunnel != null) {
+      return new TunnellingMetaStoreClientSupplierBuilder()
+          .withName(name)
+          .withRoute(metastoreTunnel.getRoute())
+          .withKnownHosts(metastoreTunnel.getKnownHosts())
+          .withLocalHost(metastoreTunnel.getLocalhost())
+          .withPort(metastoreTunnel.getPort())
+          .withPrivateKeys(metastoreTunnel.getPrivateKeys())
+          .withTimeout(metastoreTunnel.getTimeout())
+          .withStrictHostKeyChecking(metastoreTunnel.getStrictHostKeyChecking())
+          .build(hiveConf, metaStoreClientFactory);
+    } else {
+      return new HiveMetaStoreClientSupplier(metaStoreClientFactory, hiveConf, name);
+    }
   }
 
   private void putConfigurationProperties(Map<String, String> configurationProperties, Map<String, String> properties) {

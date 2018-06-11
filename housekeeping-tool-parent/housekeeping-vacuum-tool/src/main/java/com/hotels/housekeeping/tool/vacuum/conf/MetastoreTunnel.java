@@ -24,7 +24,6 @@ import javax.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.NotBlank;
 
 public class MetastoreTunnel {
-
   public static final int DEFAULT_PORT = 22;
   public static final String DEFAULT_LOCALHOST = "localhost";
   public static final int DEFAULT_SESSION_TIMEOUT = 60000;
@@ -96,5 +95,4 @@ public class MetastoreTunnel {
   public void setStrictHostKeyChecking(String strictHostKeyChecking) {
     this.strictHostKeyChecking = strictHostKeyChecking;
   }
-
 }

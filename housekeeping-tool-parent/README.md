@@ -11,7 +11,7 @@ Housekeeping Tool Parent is a sub-module for Housekeeping debug and maintenance 
 |Property|Required|Description|
 |:----|:----:|:----|
 |`catalog.name`|Yes|A name for the source catalog for events and logging.|
-|`catalog.hive-metastore-uris`|No|Fully qualified URI of the source cluster's Hive metastore Thrift service. If not specified values are taken from the hive-site.xml on the Hadoop classpath of the machine that's running Circus Train. This property mimics the Hive property "hive.metastore.uris" and allows multiple comma separated URIs.|
+|`catalog.hive-metastore-uris`|No|Fully qualified URI of the source cluster's Hive metastore Thrift service. If not specified values are taken from the hive-site.xml on the Hadoop classpath of the machine that's running Housekeeping vacuum tool. This property mimics the Hive property "hive.metastore.uris" and allows multiple comma separated URIs.|
 |`catalog.site-xml`|No|A list of Hadoop configuration XML files to add to the configuration for the source.|
 |`catalog.configuration-properties`|No|A list of `key: value` pairs to add to the Hadoop configuration for the source.|
 |`catalog.metastore-tunnel.route`|No|A SSH tunnel can be used to connect to source metastores. The tunnel may consist of one or more hops which must be declared in this property. See [Configuring a SSH tunnel](#configuring-a-ssh-tunnel) for details.|
@@ -29,7 +29,7 @@ Housekeeping Tool Parent is a sub-module for Housekeeping debug and maintenance 
 
 ##### Vacuum Tool configured with MySQL Housekeeping database
 
-Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/`
+Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/` or some other location on the classpath of the Vacuum tool.
 
     catalog:
       name: vacuum_tool

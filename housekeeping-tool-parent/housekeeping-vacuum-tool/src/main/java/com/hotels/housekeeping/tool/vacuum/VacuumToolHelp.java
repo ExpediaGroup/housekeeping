@@ -15,9 +15,9 @@
  */
 package com.hotels.housekeeping.tool.vacuum;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
+
+import java.util.List;
 
 import org.springframework.validation.ObjectError;
 
@@ -57,7 +57,7 @@ class VacuumToolHelp {
         .append(System.lineSeparator())
         .append(TAB)
         .append("For more information and help please refer to ")
-        .append("https://github.com/HotelsDotCom/circus-train/tree/master/circus-train-tool-parent");
+        .append("https://github.com/HotelsDotCom/housekeeping/tree/master/housekeeping-tool-parent");
     return help.toString();
   }
 }
