@@ -36,7 +36,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import com.google.common.base.Supplier;
 
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
+import com.hotels.hcommon.hive.metastore.client.api.ConditionalMetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
+import com.hotels.hcommon.hive.metastore.client.conditional.ConditionalMetaStoreClientFactoryManager;
+import com.hotels.hcommon.hive.metastore.client.conditional.ThriftHiveMetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.supplier.HiveMetaStoreClientSupplier;
 import com.hotels.hcommon.hive.metastore.client.tunnelling.TunnellingMetaStoreClientSupplier;
 import com.hotels.hcommon.hive.metastore.client.tunnelling.TunnellingMetaStoreClientSupplierBuilder;
@@ -44,9 +47,6 @@ import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
 import com.hotels.housekeeping.service.impl.FileSystemHousekeepingService;
-import com.hotels.housekeeping.tool.vacuum.metastore.ConditionalMetaStoreClientFactory;
-import com.hotels.housekeeping.tool.vacuum.metastore.MetaStoreClientFactoryManager;
-import com.hotels.housekeeping.tool.vacuum.metastore.ThriftHiveMetaStoreClientFactory;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -100,8 +100,8 @@ public class VacuumToolConfiguration {
   Supplier<CloseableMetaStoreClient> metaStoreClientSupplier(
       Catalog catalog,
       @Value("#{hiveConf}") HiveConf hiveConf,
-      MetaStoreClientFactoryManager metaStoreClientFactoryManager) {
-    MetaStoreClientFactory replicaMetaStoreClientFactory = metaStoreClientFactoryManager
+      ConditionalMetaStoreClientFactoryManager ConditionalMetaStoreClientFactoryManager) {
+    MetaStoreClientFactory replicaMetaStoreClientFactory = ConditionalMetaStoreClientFactoryManager
         .factoryForUrl(catalog.getHiveMetastoreUris());
     return metaStoreClientSupplier(catalog.getName(), hiveConf, catalog.getMetastoreTunnel(),
         replicaMetaStoreClientFactory);
@@ -148,8 +148,8 @@ public class VacuumToolConfiguration {
   }
 
   @Bean
-  MetaStoreClientFactoryManager metaStoreClientFactoryManager(List<ConditionalMetaStoreClientFactory> factories) {
-    return new MetaStoreClientFactoryManager(factories);
+  ConditionalMetaStoreClientFactoryManager ConditionalMetaStoreClientFactoryManager(List<ConditionalMetaStoreClientFactory> factories) {
+    return new ConditionalMetaStoreClientFactoryManager(factories);
   }
 
   @Bean
