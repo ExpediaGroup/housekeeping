@@ -17,7 +17,7 @@
 
   <modules>
     <module>housekeeping</module>
-    <module>housekeeping-tool-parent</module>
+    <module>housekeeping-vacuum-tool</module>
   </modules>
 
   <scm>
