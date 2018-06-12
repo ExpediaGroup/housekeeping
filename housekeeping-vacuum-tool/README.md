@@ -25,11 +25,11 @@
 
 ##### Vacuum Tool configured with MySQL Housekeeping database
 
-Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/` or some other location on the classpath of the Vacuum tool.
+Add your JDBC driver to `$VACUUM_TOOL_HOME/lib/` or some other location on the classpath of the Vacuum tool.
 
     catalog:
       name: vacuum_tool
-      hive-metastore-uris: thrift://my-metastore-uri.aws.hcom:9083
+      hive-metastore-uris: thrift://my-metastore-uri:9083
 
     tables:
     -
@@ -43,7 +43,7 @@ Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/` or some other location on the 
       schema-name: my_db
       dataSource:
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://vacuum-tool-db.123456aws.us-west-2.rds.amazonaws.com:3306
+        url: jdbc:mysql://db-host:3306
         username: user
         password: foo
 
@@ -52,7 +52,7 @@ Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/` or some other location on the 
 
     catalog:
       name: vacuum_tool
-      hive-metastore-uris: thrift://my-metastore-uri.aws.hcom:9083
+      hive-metastore-uris: thrift://my-metastore-uri:9083
 
     tables:
     -
@@ -62,7 +62,7 @@ Add your MySQL driver to `$VACUUM_TOOL_HOME/lib/` or some other location on the 
     housekeeping:
       schema-name: my_db
       h2:
-          database: /home/hadoop/vacuumtest/aws-hcom-data-lab-source_aws-hcom-data-lab-replica/housekeeping
+          database: /home/hadoop/vacuumtest/mydb/housekeeping
       dataSource:
           username: user
           password: foo

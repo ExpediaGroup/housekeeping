@@ -11,7 +11,7 @@ if [[ -z $HOUSEKEEPING_TOOL_HOME ]]; then
   HOUSEKEEPING_TOOL_HOME="$( cd -P "$( dirname "$SOURCE" )" && cd .. && pwd )"
 fi
 
-echo "Using Housekeeping Home $HOUSEKEEPING_TOOL_HOME"
+echo "Using Housekeeping Tool Home $HOUSEKEEPING_TOOL_HOME"
 
 if [[ -z ${HIVE_LIB-} ]]; then
   export HIVE_LIB=/usr/hdp/current/hive-client/lib
