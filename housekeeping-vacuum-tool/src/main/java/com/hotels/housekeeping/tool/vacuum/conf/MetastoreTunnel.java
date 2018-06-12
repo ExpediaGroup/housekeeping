@@ -29,7 +29,8 @@ public class MetastoreTunnel {
   public static final int DEFAULT_SESSION_TIMEOUT = 60000;
   public static final String DEFAULT_STRICT_HOST_KEY_CHECK = "yes";
 
-  private @NotBlank @TunnelRoute String route;
+  private @NotBlank
+  String route;
   private @Min(1) @Max(65535) int port = DEFAULT_PORT;
   private String localhost = DEFAULT_LOCALHOST;
   private @NotBlank String privateKeys;

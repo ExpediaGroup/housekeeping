@@ -4,7 +4,7 @@
   <formats>
     <format>tgz</format>
   </formats>
-  <baseDirectory>housekeeping-tool-${project.version}</baseDirectory>
+  <baseDirectory>housekeeping-vacuum-tool-${project.version}</baseDirectory>
   <dependencySets>
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
