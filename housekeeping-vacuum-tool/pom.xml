@@ -59,7 +59,7 @@
     <dependency>
       <groupId>com.hotels</groupId>
       <artifactId>hcommon-hive-metastore</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -87,11 +87,10 @@
                 <includes>
                   <include>com.hotels:*</include>
                   <include>com.google.guava:guava</include>
-                  <include>com.amazonaws:*</include>
-                  <include>com.fasterxml.jackson.*:*</include>
                   <include>com.github.ulisesbocchio:*</include>
                 </includes>
               </artifactSet>
+              <outputFile>target/housekeeping-vacuum-tool-${project.version}-all.jar</outputFile>
               <relocations>
                 <relocation>
                   <pattern>com.google.common</pattern>
@@ -126,7 +125,7 @@
             </goals>
             <configuration>
               <descriptors>
-                <descriptor>src/main/assembly/housekeeping-tool-package.xml</descriptor>
+                <descriptor>src/main/assembly/housekeeping-vacuum-tool-package.xml</descriptor>
               </descriptors>
               <appendAssemblyId>true</appendAssemblyId>
             </configuration>

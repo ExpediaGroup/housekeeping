@@ -16,12 +16,6 @@
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
-      <excludes>
-        <exclude>com.hotels:*</exclude>
-        <exclude>com.google.guava:guava</exclude>
-        <exclude>com.amazonaws:*</exclude>
-        <exclude>com.fasterxml.jackson.*:*</exclude>
-      </excludes>
     </dependencySet>
   </dependencySets>
   <fileSets>

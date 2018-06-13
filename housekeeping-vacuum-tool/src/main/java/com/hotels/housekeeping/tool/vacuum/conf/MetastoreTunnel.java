@@ -23,14 +23,15 @@ import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.hotels.hcommon.ssh.validation.constraint.TunnelRoute;
+
 public class MetastoreTunnel {
   public static final int DEFAULT_PORT = 22;
   public static final String DEFAULT_LOCALHOST = "localhost";
   public static final int DEFAULT_SESSION_TIMEOUT = 60000;
   public static final String DEFAULT_STRICT_HOST_KEY_CHECK = "yes";
 
-  private @NotBlank
-  String route;
+  private @NotBlank @TunnelRoute String route;
   private @Min(1) @Max(65535) int port = DEFAULT_PORT;
   private String localhost = DEFAULT_LOCALHOST;
   private @NotBlank String privateKeys;
