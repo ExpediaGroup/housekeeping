@@ -100,7 +100,7 @@ public class VacuumToolConfiguration {
       @Value("#{hiveConf}") HiveConf hiveConf,
       ConditionalMetaStoreClientFactoryManager ConditionalMetaStoreClientFactoryManager) {
     MetaStoreClientFactory replicaMetaStoreClientFactory = ConditionalMetaStoreClientFactoryManager
-        .factoryForUrl(catalog.getHiveMetastoreUris());
+        .factoryForUri(catalog.getHiveMetastoreUris());
     return metaStoreClientSupplier(catalog.getName(), hiveConf, catalog.getMetastoreTunnel(),
         replicaMetaStoreClientFactory);
   }

@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
+import com.hotels.housekeeping.HousekeepingException;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
@@ -47,6 +48,50 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
 
+  private FileSystem fileSystemForPath(Path path) {
+    try {
+      return path.getFileSystem(conf);
+    } catch (IOException e) {
+      throw new HousekeepingException(e);
+    }
+  }
+
+  private void housekeepPath(LegacyReplicaPath cleanUpPath) {
+    final Path path = new Path(cleanUpPath.getPath());
+    final Path rootPath;
+    final FileSystem fs;
+    try {
+      fs = fileSystemForPath(new Path(cleanUpPath.getPath()));
+      LOG.info("Attempting to delete path '{}' from file system", cleanUpPath);
+      if (fs.exists(path)) {
+        fs.delete(path, true);
+        LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
+      } else {
+        LOG.warn("Path '{}' does not exist.", cleanUpPath);
+      }
+      rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
+    } catch (Exception e) {
+      LOG.warn("Unable to delete path '{}' from file system. Will try next time. {}", cleanUpPath, e.getMessage());
+      return;
+    }
+
+    try {
+      if (oneOfMySiblingsWillTakeCareOfMyAncestors(path, rootPath, fs) || thereIsNothingMoreToDelete(fs, rootPath)) {
+        // BEWARE the eventual consistency of your blobstore!
+        try {
+          LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
+          legacyReplicaPathRepository.delete(cleanUpPath);
+        } catch (ObjectOptimisticLockingFailureException e) {
+          LOG.debug(
+              "Failed to delete path '{}': probably already cleaned up by process running at same time. Ok to ignore. {}",
+              cleanUpPath, e.getMessage());
+        }
+      }
+    } catch (Exception e) {
+      LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
+    }
+  }
+
   @Override
   public void cleanUp(Instant referenceTime) {
     try {
@@ -54,32 +99,11 @@ public class FileSystemHousekeepingService implements HousekeepingService {
           .findByCreationTimestampLessThanEqual(referenceTime.getMillis());
       for (LegacyReplicaPath cleanUpPath : pathsToDelete) {
         cleanUpPath = fixIncompleteRecord(cleanUpPath);
-        LOG.info("Deleting path '{}' from file system", cleanUpPath);
-        Path path = new Path(cleanUpPath.getPath());
-        FileSystem fs = path.getFileSystem(conf);
-        Path rootPath;
-        try {
-          fs.delete(path, true);
-          rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
-          LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
-        } catch (Exception e) {
-          LOG.warn("Unable to delete path '{}' from file system. Will try next time", cleanUpPath, e);
-          continue;
-        }
-        if (oneOfMySiblingsWillTakeCareOfMyAncestors(path, rootPath, fs) || thereIsNothingMoreToDelete(fs, rootPath)) {
-          // BEWARE the eventual consistency of your blobstore!
-          try {
-            LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
-            legacyReplicaPathRepository.delete(cleanUpPath);
-          } catch (ObjectOptimisticLockingFailureException e) {
-            LOG.info(
-                "Failed to delete path '{}' from housekeeping database: probably already cleaned up by process running at same time. Ok to ignore",
-                cleanUpPath);
-          }
-        }
+        housekeepPath(cleanUpPath);
       }
     } catch (Exception e) {
-      throw new RuntimeException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()), e);
+      throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
+          e);
     }
   }
 
@@ -110,7 +134,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     }
     Path parent = path.getParent();
     if (fs.exists(parent) && isEmpty(fs, parent)) {
-      LOG.debug("Deleting parent path '{}'", parent);
+      LOG.info("Deleting parent path '{}'", parent);
       fs.delete(parent, false);
     }
     return deleteParents(fs, parent, eventId);
@@ -125,7 +149,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     try {
       legacyReplicaPathRepository.save(cleanUpPath);
     } catch (Exception e) {
-      throw new RuntimeException(format("Unable to schedule path %s for deletion", cleanUpPath.getPath()), e);
+      throw new HousekeepingException(format("Unable to schedule path %s for deletion", cleanUpPath.getPath()), e);
     }
   }
 

@@ -53,6 +53,12 @@
 
     <dependency>
       <groupId>com.hotels</groupId>
+      <artifactId>circus-train-avro</artifactId>
+      <version>11.5.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.hotels</groupId>
       <artifactId>housekeeping</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -20,14 +20,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +53,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -58,7 +63,7 @@ import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(FileSystem.class)
+@PrepareForTest({ FileSystemHousekeepingService.class, FileSystem.class })
 public class FileSystemHousekeepingServiceTest {
 
   @Rule
@@ -93,7 +98,7 @@ public class FileSystemHousekeepingServiceTest {
     val1Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=1").getCanonicalPath());
     val2Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=2").getCanonicalPath());
     val3Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=3").getCanonicalPath());
-    service = new FileSystemHousekeepingService(legacyReplicationPathRepository, conf);
+    service = PowerMockito.spy(new FileSystemHousekeepingService(legacyReplicationPathRepository, conf));
     cleanUpPath1 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val1Path.toString());
     cleanUpPath2 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val2Path.toString());
     cleanUpPath3 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val3Path.toString());
@@ -122,6 +127,79 @@ public class FileSystemHousekeepingServiceTest {
     verify(legacyReplicationPathRepository).delete(cleanUpPath2);
     verify(legacyReplicationPathRepository).delete(cleanUpPath3);
     deleted(eventPath);
+  }
+
+  @Test
+  public void housekeepingPathsWithOneFileSystemLoadFailureCleansUpOtherPaths() throws Exception {
+    PowerMockito.doReturn(null).when(service, "fileSystemForPath", eq(new Path(cleanUpPath1.getPath())));
+    PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(new Path(cleanUpPath2.getPath())));
+    PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(new Path(cleanUpPath3.getPath())));
+
+    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
+        .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3));
+
+    service.cleanUp(now);
+
+    verify(spyFs, times(0)).delete(eq(new Path(cleanUpPath1.getPath())), eq(true));
+    verify(spyFs).delete(eq(new Path(cleanUpPath2.getPath())), eq(true));
+    verify(spyFs).delete(eq(new Path(cleanUpPath3.getPath())), eq(true));
+
+    verify(legacyReplicationPathRepository, times(0)).delete(cleanUpPath1);
+    verify(legacyReplicationPathRepository).delete(cleanUpPath2);
+    verify(legacyReplicationPathRepository).delete(cleanUpPath3);
+  }
+
+  @Test
+  public void housekeepingPathThatDoesntExistSkipsDeleteAndRemovesPathFromHousekeepingDatabase() throws Exception {
+    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
+        .thenReturn(Arrays.asList(cleanUpPath1));
+    doReturn(false).when(spyFs).exists(any(Path.class));
+
+    service.cleanUp(now);
+
+    verify(spyFs, times(0)).delete(eq(new Path(cleanUpPath1.getPath())), eq(true));
+    verifyPrivate(service).invoke("deleteParents", eq(spyFs), eq(new Path(cleanUpPath1.getPath())), anyString());
+    verify(legacyReplicationPathRepository, times(1)).delete(cleanUpPath1);
+  }
+
+  @Test
+  public void deleteFailureDoesntRemovePathFromHousekeepingDatabase() throws Exception {
+    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
+        .thenReturn(Arrays.asList(cleanUpPath1));
+    doThrow(new RuntimeException()).when(spyFs).delete(eq(new Path(cleanUpPath1.getPath())), eq(true));
+
+    service.cleanUp(now);
+
+    verify(spyFs, times(1)).delete(eq(new Path(cleanUpPath1.getPath())), eq(true));
+    verify(legacyReplicationPathRepository, times(0)).delete(cleanUpPath1);
+  }
+
+  @Test
+  public void siblingCheckFailureDoesntFailHousekeeping() throws Exception {
+    PowerMockito.doThrow(new RuntimeException()).when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors",
+        any(Path.class), any(Path.class), any(FileSystem.class));
+
+    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
+        .thenReturn(Arrays.asList(cleanUpPath1));
+
+    service.cleanUp(now);
+
+    verify(legacyReplicationPathRepository, times(0)).delete(cleanUpPath1);
+  }
+
+  @Test
+  public void nothingMoreToDeleteFailureDoesntFailHousekeeping() throws Exception {
+    PowerMockito.doThrow(new RuntimeException()).when(service, "thereIsNothingMoreToDelete", any(FileSystem.class),
+        any(Path.class));
+    PowerMockito.doReturn(false).when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors", any(Path.class),
+        any(Path.class), any(FileSystem.class));
+
+    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
+        .thenReturn(Arrays.asList(cleanUpPath1));
+
+    service.cleanUp(now);
+
+    verify(legacyReplicationPathRepository, times(0)).delete(cleanUpPath1);
   }
 
   @Test
@@ -201,7 +279,7 @@ public class FileSystemHousekeepingServiceTest {
         .thenReturn(Arrays.asList(cleanUpPath4));
 
     doCallRealMethod().when(spyFs).delete(val4Path, true);
-    doReturn(false).when(spyFs).exists(val4Path);
+    doCallRealMethod().when(spyFs).exists(val4Path);
     doReturn(false).when(spyFs).exists(eventPath);
     service.cleanUp(now);
 
@@ -253,8 +331,8 @@ public class FileSystemHousekeepingServiceTest {
     deleted(val1Path, val2Path, val3Path);
   }
 
-  @Test(expected = RuntimeException.class)
-  public void repositoryDeletionFails() throws Exception {
+  @Test
+  public void repositoryDeletionFailsHousekeepingContinues() throws Exception {
     doThrow(new RuntimeException()).when(legacyReplicationPathRepository).delete(cleanUpPath1);
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath1));
