@@ -8,7 +8,7 @@ You can obtain Housekeeping from Maven Central :
 # Overview
 A database-backed module that stores orphaned paths in a table for later clean up.
 
-# Configuration
+# Housekeeping Configuration
 The housekeeping module defaults to using the H2 Database Engine, however this module can be configured
 to use any flavour of SQL database that is supported by JDBC, Spring Boot and Hibernate. Using a database which is not in-memory should be preferred when spinning up short-lived instances for jobs before tearing them down. This ensures that the orphaned data will be stored in a persistent database and will be considered for housekeeping even if the cluster ceases to exist.
 
@@ -207,6 +207,27 @@ Or in YAML
     jasypt:
       encryptor:
         password: ${JASYPT_ENCRYPTOR_PASSWORD:}
+
+
+# Housekeeping Vacuum Tool
+A tool that can be used to interrogate and remove orphaned data which has been scheduled for Housekeeping.
+
+### Usage
+
+Run with your respective replication YAML configuration file:
+
+    $HOUSEKEEPING_TOOL_HOME/bin/vacuum.sh \
+      --config=<your-config>.yml \
+      [--dry-run=true] \
+      [--partition-batch-size=1000] \
+      [--expected-path-count=10000]
+
+Vacuum looks for any files and folders in the data locations of your replicated tables that are not referenced in either the metastore or housekeeping database. Any paths discovered are again scheduled for removal via the housekeeping process. The respective files and folders will then be removed at a time determined by the specific configuration of your housekeeping process.
+
+We use the housekeeping process for data removal in this scenario as it has useful logic for determining when ancestral paths can also be removed.
+
+More information on configuring the housekeeping-vacuum-tool can be found [here](housekeeping-vacuum-tool/README.md)
+
 
 # Legal
 This project is available under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
