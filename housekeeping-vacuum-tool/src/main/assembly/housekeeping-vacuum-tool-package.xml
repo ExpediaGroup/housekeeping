@@ -9,13 +9,6 @@
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
       <useProjectArtifact>true</useProjectArtifact>
-      <includes>
-        <include>com.hotels:housekeeping-vacuum-tool</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>lib</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
   <fileSets>
