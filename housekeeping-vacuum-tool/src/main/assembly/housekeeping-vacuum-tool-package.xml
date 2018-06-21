@@ -16,6 +16,9 @@
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
+      <excludes>
+        <exclude>com.hotels:*</exclude>
+      </excludes>
     </dependencySet>
   </dependencySets>
   <fileSets>
