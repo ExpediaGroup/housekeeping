@@ -44,7 +44,7 @@ public class DataSourceTest {
   @Before
   public void init() {
     dataSource
-        .setUrl("jdbc:h2:/opt/circus-train/data/circus-train/housekeeping;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE");
+        .setUrl("jdbc:h2:/home/hadoop/housekeeping;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE");
   }
 
   @Test

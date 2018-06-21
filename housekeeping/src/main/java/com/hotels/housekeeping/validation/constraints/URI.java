@@ -53,7 +53,7 @@ import com.hotels.housekeeping.validation.constraintvalidators.URIValidator;
 @ReportAsSingleViolation
 @Pattern(regexp = "")
 public @interface URI {
-  String message() default "{com.hotels.bdp.circustrain.validation.URI.message}";
+  String message() default "{com.hotels.housekeeping.validation.constraints.URI.message}";
 
   Class<?>[] groups() default {};
 

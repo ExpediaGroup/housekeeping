@@ -32,7 +32,3 @@ target/
 
 # AWS credentials
 *.pem
-
-# Job Specific Config
-circus-train.yml
-
