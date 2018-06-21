@@ -5,10 +5,17 @@
     <format>tgz</format>
   </formats>
   <baseDirectory>housekeeping-vacuum-tool-${project.version}</baseDirectory>
+  <files>
+    <file>
+      <source>target/housekeeping-vacuum-tool-${project.version}-all.jar</source>
+      <outputDirectory>lib</outputDirectory>
+      <destName>housekeeping-vacuum-tool-all-latest.jar</destName>
+    </file>
+  </files>
   <dependencySets>
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
-      <useProjectArtifact>true</useProjectArtifact>
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
   <fileSets>
