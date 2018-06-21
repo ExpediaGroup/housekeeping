@@ -96,7 +96,7 @@
               <outputFile>target/housekeeping-vacuum-tool-${project.version}-all.jar</outputFile>
               <artifactSet>
                 <includes>
-                  <include>com.hotels:*</include>
+                  <include>com.hotels:housekeeping-vacuum-tool</include>
                   <include>com.google.guava:guava</include>
                 </includes>
               </artifactSet>
