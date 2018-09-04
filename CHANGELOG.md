@@ -1,4 +1,8 @@
-## TBD
+## [2.0.0] 2018-06-22
+### Changed
+* Refactored module to include the Vacuum Tool (was previously part of [Circus Train](https://github.com/HotelsDotCom/circus-train)). See [#17](https://github.com/HotelsDotCom/housekeeping/issues/17).
+
+## [1.0.4] 2018-04-25
 ### Changed
 * Default Housekeeping configuration is now provided via `@Bean` `housekeepingEnvironment` only if the bean is not already provided.
 ### Fixed
