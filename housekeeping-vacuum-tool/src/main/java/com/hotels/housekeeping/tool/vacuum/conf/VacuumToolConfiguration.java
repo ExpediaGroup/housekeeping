@@ -40,6 +40,7 @@ import com.hotels.hcommon.hive.metastore.client.api.MetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.conditional.ConditionalMetaStoreClientFactoryManager;
 import com.hotels.hcommon.hive.metastore.client.conditional.ThriftHiveMetaStoreClientFactory;
 import com.hotels.hcommon.hive.metastore.client.supplier.HiveMetaStoreClientSupplier;
+import com.hotels.hcommon.hive.metastore.client.tunnelling.MetastoreTunnel;
 import com.hotels.hcommon.hive.metastore.client.tunnelling.TunnellingMetaStoreClientSupplierBuilder;
 import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
@@ -150,7 +151,8 @@ public class VacuumToolConfiguration {
   }
 
   @Bean
-  ConditionalMetaStoreClientFactoryManager ConditionalMetaStoreClientFactoryManager(List<ConditionalMetaStoreClientFactory> factories) {
+  ConditionalMetaStoreClientFactoryManager ConditionalMetaStoreClientFactoryManager(
+      List<ConditionalMetaStoreClientFactory> factories) {
     return new ConditionalMetaStoreClientFactoryManager(factories);
   }
 

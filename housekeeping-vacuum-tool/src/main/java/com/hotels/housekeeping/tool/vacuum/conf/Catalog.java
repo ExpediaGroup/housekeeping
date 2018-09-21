@@ -15,14 +15,16 @@
  */
 package com.hotels.housekeeping.tool.vacuum.conf;
 
-import javax.validation.Valid;
-
 import java.util.List;
 import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
+import com.hotels.hcommon.hive.metastore.client.tunnelling.MetastoreTunnel;
 
 @Configuration
 @ConfigurationProperties(prefix = "catalog")

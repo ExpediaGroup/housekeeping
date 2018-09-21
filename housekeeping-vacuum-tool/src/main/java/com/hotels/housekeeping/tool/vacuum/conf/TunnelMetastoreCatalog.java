@@ -15,6 +15,7 @@
  */
 package com.hotels.housekeeping.tool.vacuum.conf;
 
+import com.hotels.hcommon.hive.metastore.client.tunnelling.MetastoreTunnel;
 
 public interface TunnelMetastoreCatalog extends MetastoreCatalog {
 
