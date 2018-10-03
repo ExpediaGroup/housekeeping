@@ -29,7 +29,12 @@
 
 ##### Vacuum Tool configured with MySQL Housekeeping database
 
-Add your JDBC driver to `$VACUUM_TOOL_HOME/lib/` or some other location on the classpath of the Vacuum tool.
+In order to use an external JDBC-compliant database, the JDBC driver for this database must be made available on the CLASSPATH of the vacuum tool. 
+This can be achieved by one of the following:
+* Adding the path to the driver jar file to the Housekeeping bootstrap CLASSPATH (e.g. `export HOUSEKEEPING_CLASSPATH=/path/to/mysql-connector-java-x.y.z.jar`). 
+* Placing the driver jar file in `$VACUUM_TOOL_HOME/lib/`.
+
+The configuration then needs to be updated to be something like below:
 
     catalog:
       name: vacuum_tool
@@ -52,9 +57,9 @@ Add your JDBC driver to `$VACUUM_TOOL_HOME/lib/` or some other location on the c
         password: foo
 
 
-
-
 ##### Vacuum Tool configured with H2 Housekeeping database
+
+The Vacuum tool already has the required H2 drivers on its CLASSPATH so the only change required to use H2 is to create a configuration file similar to below:
 
     catalog:
       name: vacuum_tool
