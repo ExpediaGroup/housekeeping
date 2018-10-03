@@ -19,6 +19,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <excludes>
         <exclude>com.google.guava:guava</exclude>
+        <exclude>com.hotels:hcommon-hive-metastore</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
