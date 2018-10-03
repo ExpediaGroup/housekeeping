@@ -1,14 +1,25 @@
-<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
   <id>bin</id>
   <formats>
     <format>tgz</format>
   </formats>
   <baseDirectory>housekeeping-vacuum-tool-${project.version}</baseDirectory>
+  <files>
+    <file>
+      <source>target/housekeeping-vacuum-tool-${project.version}-all.jar</source>
+      <outputDirectory>lib</outputDirectory>
+      <destName>housekeeping-vacuum-tool-all-latest.jar</destName>
+    </file>
+  </files>
   <dependencySets>
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
-      <useProjectArtifact>true</useProjectArtifact>
+      <useProjectArtifact>false</useProjectArtifact>
+      <excludes>
+        <exclude>com.google.guava:guava</exclude>
+      </excludes>
     </dependencySet>
   </dependencySets>
   <fileSets>
