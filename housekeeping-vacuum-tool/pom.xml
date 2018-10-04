@@ -82,7 +82,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.3</version>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -95,6 +95,7 @@
               <artifactSet>
                 <includes>
                   <include>com.hotels:housekeeping-vacuum-tool</include>
+                  <include>com.hotels:hcommon-hive-metastore</include>
                   <include>com.google.guava:guava</include>
                 </includes>
               </artifactSet>

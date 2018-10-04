@@ -1,6 +1,9 @@
 ## [TBD] - TBD
 ### Changed
 * Refactored general metastore tunnelling code to leverage hcommon-hive-metastore libraries. See [#23](https://github.com/HotelsDotCom/housekeeping/issues/23).
+* Upgraded hotels-oss-parent to 2.3.3 (was 2.0.6).
+* Packaging vaccuum-tool results in a jar with a new name: housekeeping-vacuum-tool-all-latest.jar.
+* Removed the hcommon-hive-metastore jar from the lib folder and shaded it into housekeeping-vacuum-tool.
 
 ## [2.0.0] - 2018-06-22
 ### Changed
