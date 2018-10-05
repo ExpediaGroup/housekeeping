@@ -1,4 +1,4 @@
-## [TBD] - TBD
+## [2.1.0] - 2018-10-05
 ### Changed
 * Refactored general metastore tunnelling code to leverage hcommon-hive-metastore libraries. See [#23](https://github.com/HotelsDotCom/housekeeping/issues/23).
 * Upgraded hotels-oss-parent to 2.3.3 (was 2.0.6).
