@@ -28,7 +28,7 @@ If your project utilises Spring YAML you can define your Housekeeping within the
         # The package of your driver class
         driver-class-name: com.mysql.cj.jdbc.Driver
         # JDBC URL for your Database
-        url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/housekeeping_db
+        url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
         # Database Username
         username: bdp
         # Database Password
