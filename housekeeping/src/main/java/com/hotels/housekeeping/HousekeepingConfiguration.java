@@ -15,10 +15,10 @@
  */
 package com.hotels.housekeeping;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class HousekeepingConfiguration {
         .put("spring.jpa.properties.hibernate.default_schema", "${housekeeping.schema-name:housekeeping}")
         .put("spring.datasource.initialize", true)
         .put("spring.datasource.max-wait", 10000)
-        .put("spring.datasource.max-active", 50)
+        .put("spring.datasource.max-active", 2)
         .put("spring.datasource.test-on-borrow", true)
         .put("spring.datasource.schema", "${housekeeping.db-init-script:classpath:/schema.sql}")
         .put("housekeeping.h2.database", "${instance.home}/data/${instance.name}/housekeeping")
