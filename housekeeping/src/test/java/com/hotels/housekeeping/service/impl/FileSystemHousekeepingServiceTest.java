@@ -99,9 +99,9 @@ public class FileSystemHousekeepingServiceTest {
     val2Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=2").getCanonicalPath());
     val3Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=3").getCanonicalPath());
     service = PowerMockito.spy(new FileSystemHousekeepingService(legacyReplicationPathRepository, conf));
-    cleanUpPath1 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val1Path.toString());
-    cleanUpPath2 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val2Path.toString());
-    cleanUpPath3 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val3Path.toString());
+    cleanUpPath1 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val1Path.toString(), null, null);
+    cleanUpPath2 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val2Path.toString(), null, null);
+    cleanUpPath3 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val3Path.toString(), null, null);
   }
 
   @Test
@@ -176,8 +176,10 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void siblingCheckFailureDoesntFailHousekeeping() throws Exception {
-    PowerMockito.doThrow(new RuntimeException()).when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors",
-        any(Path.class), any(Path.class), any(FileSystem.class));
+    PowerMockito
+        .doThrow(new RuntimeException())
+        .when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors", any(Path.class), any(Path.class),
+            any(FileSystem.class));
 
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath1));
@@ -189,10 +191,13 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void nothingMoreToDeleteFailureDoesntFailHousekeeping() throws Exception {
-    PowerMockito.doThrow(new RuntimeException()).when(service, "thereIsNothingMoreToDelete", any(FileSystem.class),
-        any(Path.class));
-    PowerMockito.doReturn(false).when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors", any(Path.class),
-        any(Path.class), any(FileSystem.class));
+    PowerMockito
+        .doThrow(new RuntimeException())
+        .when(service, "thereIsNothingMoreToDelete", any(FileSystem.class), any(Path.class));
+    PowerMockito
+        .doReturn(false)
+        .when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors", any(Path.class), any(Path.class),
+            any(FileSystem.class));
 
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath1));
@@ -273,7 +278,8 @@ public class FileSystemHousekeepingServiceTest {
   @Test
   public void eventuallyConsistentCleanUpOnlyKeys() throws Exception {
     Path val4Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=2", "val=4").getCanonicalPath());
-    LegacyReplicaPath cleanUpPath4 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val4Path.toString());
+    LegacyReplicaPath cleanUpPath4 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val4Path.toString(),
+        null, null);
 
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
         .thenReturn(Arrays.asList(cleanUpPath4));

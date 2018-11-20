@@ -1,3 +1,7 @@
+## TBD
+### Changed
+* Added db name and table name columns to housekeeping tables. See [#30](https://github.com/HotelsDotCom/housekeeping/issues/30).
+
 ## [2.1.0] - 2018-10-05
 ### Changed
 * Refactored general metastore tunnelling code to leverage hcommon-hive-metastore libraries. See [#23](https://github.com/HotelsDotCom/housekeeping/issues/23).

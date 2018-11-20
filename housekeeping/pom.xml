@@ -8,7 +8,6 @@
     <version>2.1.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>com.hotels</groupId>
   <artifactId>housekeeping</artifactId>
 
   <properties>

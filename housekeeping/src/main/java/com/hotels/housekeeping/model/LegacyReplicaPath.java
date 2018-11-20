@@ -17,22 +17,30 @@ package com.hotels.housekeeping.model;
 
 public interface LegacyReplicaPath {
 
-  public long getId();
+  long getId();
 
-  public String getEventId();
+  String getEventId();
 
-  public void setEventId(String eventId);
+  void setEventId(String eventId);
 
-  public String getPathEventId();
+  String getPathEventId();
 
-  public void setPathEventId(String pathEventId);
+  void setPathEventId(String pathEventId);
 
-  public String getPath();
+  String getPath();
 
-  public void setPath(String path);
+  void setPath(String path);
 
-  public long getCreationTimestamp();
+  long getCreationTimestamp();
 
-  public void setCreationTimestamp(long creationTimestamp);
+  void setCreationTimestamp(long creationTimestamp);
+
+  String getMetastoreDatabaseName();
+
+  void setMetastoreDatabaseName(String metastoreDatabaseName);
+
+  String getMetastoreTableName();
+
+  void setMetastoreTableName(String metastoreTableName);
 
 }

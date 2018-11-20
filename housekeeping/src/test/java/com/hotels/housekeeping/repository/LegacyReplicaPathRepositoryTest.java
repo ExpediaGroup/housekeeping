@@ -92,16 +92,19 @@ public class LegacyReplicaPathRepositoryTest {
     List<LegacyReplicaPath> searchResults = repository.findByCreationTimestampLessThanEqual(referenceData.getMillis());
     assertThat(searchResults.size(), is(2));
     assertCleanUpPath(searchResults.get(0), 1L, "eventId_1", "eventId_0", "file:/foo/bar/0",
-        parse("2016-04-07T11:13:28Z"));
+        parse("2016-04-07T11:13:28Z"), null, null);
     assertCleanUpPath(searchResults.get(1), 2L, "eventId_2", "eventId_1", "file:/foo/bar/1",
-        parse("2016-04-07T11:25:15Z"));
+        parse("2016-04-07T11:25:15Z"), "metastore_db2", "metastore_table2");
   }
 
   @Test
   @DatabaseSetup("classpath:/com/hotels/housekeeping/repository/legacyReplicaPath-initial-test-data.xml")
   @ExpectedDatabase(value = "classpath:/com/hotels/housekeeping/repository/legacyReplicaPath-after-save-test.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
   public void save() {
-    repository.save(new HousekeepingLegacyReplicaPath("eventId_4", "eventId_3", "file:/foo/bar/3"));
+    repository.save(new HousekeepingLegacyReplicaPath("eventId_4", "eventId_3", "file:/foo/bar/3", null, null));
+    repository
+        .save(new HousekeepingLegacyReplicaPath("eventId_5", "eventId_4", "file:/foo/bar/4", "metastore_database",
+            "metastore_table"));
   }
 
   private void assertCleanUpPath(
@@ -110,11 +113,15 @@ public class LegacyReplicaPathRepositoryTest {
       String expectedEventId,
       String expectedPathEventId,
       String expectedPath,
-      Instant expectedCreationTimestamp) {
+      Instant expectedCreationTimestamp,
+      String metastoreDatabaseName,
+      String metastoreTableName) {
     assertThat(actual.getId(), is(expectedId));
     assertThat(actual.getEventId(), is(expectedEventId));
     assertThat(actual.getPathEventId(), is(expectedPathEventId));
     assertThat(actual.getPath(), is(expectedPath));
     assertThat(actual.getCreationTimestamp(), is(expectedCreationTimestamp.getMillis()));
+    assertThat(actual.getMetastoreDatabaseName(), is(metastoreDatabaseName));
+    assertThat(actual.getMetastoreTableName(), is(metastoreTableName));
   }
 }
