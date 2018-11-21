@@ -43,13 +43,13 @@ public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
   @Column(name = "creation_timestamp", nullable = false, updatable = false)
   protected long creationTimestamp;
 
-  @Column(name = "path_event_id", nullable = true, length = 250)
+  @Column(name = "path_event_id", length = 250)
   protected String pathEventId;
 
-  @Column(name = "metastore_database_name")
+  @Column(name = "metastore_database_name", length = 512)
   protected String metastoreDatabaseName;
 
-  @Column(name = "metastore_table_name")
+  @Column(name = "metastore_table_name", length = 512)
   protected String metastoreTableName;
 
   protected EntityLegacyReplicaPath() {}
