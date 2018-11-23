@@ -23,7 +23,7 @@
 |`housekeeping.datasource.url` |No| JDBC URL for your database. Defaults to H2 filesystem database if not specified. |
 |`housekeeping.datasource.username` |No| Username for your database. |
 |`housekeeping.datasource.password` |No| Password for your database. |
-|`housekeeping.db-init-script`|No|A file containing a script to initialise your database/schema can be provided if it does not already exist.|
+|`housekeeping.db-init-script`|No|A file containing a script to initialise your schema can be provided if it does not already exist.|
 
 
 #### Example YAML Configurations:
@@ -80,7 +80,7 @@ The Vacuum tool already has the required H2 drivers on its CLASSPATH so the only
           username: user
           password: foo
 
-If the schema does not exist already, a `db-init-script` can be provided to initialise the schema, as shown in the following example:
+If the schema does not already exist, a `db-init-script` can be provided to initialise it, as shown in the following example:
 
     ...
     housekeeping:
