@@ -75,7 +75,7 @@ The Vacuum tool already has the required H2 drivers on its CLASSPATH so the only
       schema-name: my_db
       h2:
           # Location of H2 DB on filesystem
-          database: /home/hadoop/vacuumtest/mydb/${housekeeping.schema-name}
+          database: /home/hadoop/vacuumtest/data/${housekeeping.schema-name}
       dataSource:
           username: user
           password: foo
