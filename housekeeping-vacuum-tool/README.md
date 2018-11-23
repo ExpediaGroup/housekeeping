@@ -88,7 +88,7 @@ If the schema does not already exist, a `db-init-script` can be provided to init
       db-init-schript: file:///tmp/schema.sql
     ...
 
-Where `schema.sql` contains: `CREATE SCHEMA IF NOT EXISTS my_db;`
+Where `/tmp/schema.sql` contains: `CREATE SCHEMA IF NOT EXISTS my_db;`
 
 #### Performing a Vacuum
 
