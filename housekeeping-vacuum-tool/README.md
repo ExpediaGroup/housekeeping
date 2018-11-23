@@ -23,7 +23,7 @@
 |`housekeeping.datasource.url` |No| JDBC URL for your database. Defaults to H2 filesystem database if not specified. |
 |`housekeeping.datasource.username` |No| Username for your database. |
 |`housekeeping.datasource.password` |No| Password for your database. |
-|`housekeeping.db-init-script`|No|A file containing a script to initialise your schema can be provided if it does not already exist.|
+|`housekeeping.db-init-script`|No|A file containing a script to initialise your schema can be provided if it does not already exist. Defaults to `classpath:/schema.sql`|
 
 
 #### Example YAML Configurations:
@@ -53,7 +53,7 @@ The configuration then needs to be updated to be something like below:
       schema-name: my_db
       dataSource:
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://db-host:3306
+        url: jdbc:mysql://db-host:3306/${housekeeping.schema-name}
         username: user
         password: foo
 
@@ -85,7 +85,7 @@ If the schema does not already exist, a `db-init-script` can be provided to init
     ...
     housekeeping:
       schema-name: my_db
-      db-init-schript: file:///tmp/schema.sql
+      db-init-script: file:///tmp/schema.sql
     ...
 
 Where `/tmp/schema.sql` contains: `CREATE SCHEMA IF NOT EXISTS my_db;`
