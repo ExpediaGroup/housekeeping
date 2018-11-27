@@ -174,20 +174,22 @@ class VacuumToolApplication implements ApplicationRunner {
       ConsistencyCheck.checkUnvisitedPath(fs, unvisitedMetastorePath);
     }
     for (Path toRemove : pathsToRemove) {
-      removePath(toRemove);
+      removePath(toRemove, table.getDbName(), table.getTableName());
     }
-    LOG.info("Table '{}' vacuum path summary; filesystem: {}, metastore: {}, housekeeping: {}, remove: {}.",
-        Warehouse.getQualifiedName(table), listStatus.length, metaStorePathCount, housekeepingPathCount,
-        pathsToRemove.size());
+    LOG
+        .info("Table '{}' vacuum path summary; filesystem: {}, metastore: {}, housekeeping: {}, remove: {}.",
+            Warehouse.getQualifiedName(table), listStatus.length, metaStorePathCount, housekeepingPathCount,
+            pathsToRemove.size());
   }
 
   @VisibleForTesting
-  void removePath(Path toRemove) {
+  void removePath(Path toRemove, String databaseName, String tableName) {
     LOG.info("REMOVE path '{}', dereferenced and can be deleted.", toRemove);
     if (!isDryRun) {
       String previousEventId = EventIdExtractor.extractFrom(toRemove);
-      housekeepingService.scheduleForHousekeeping(
-          new HousekeepingLegacyReplicaPath(vacuumEventId, previousEventId, toRemove.toUri().toString()));
+      housekeepingService
+          .scheduleForHousekeeping(new HousekeepingLegacyReplicaPath(vacuumEventId, previousEventId,
+              toRemove.toUri().toString(), databaseName, tableName));
       LOG.info("Scheduled path '{}' for deletion.", toRemove);
     } else {
       LOG.warn("DRY RUN ENABLED: path '{}' left as is.", toRemove);

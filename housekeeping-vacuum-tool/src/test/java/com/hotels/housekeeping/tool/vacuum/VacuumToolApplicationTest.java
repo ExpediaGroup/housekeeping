@@ -136,7 +136,7 @@ public class VacuumToolApplicationTest {
     when(clientSupplier.get()).thenReturn(client);
 
     LegacyReplicaPath legacyReplicaPath = new HousekeepingLegacyReplicaPath("eventId", PARTITION_EVENT_1,
-        partitionLocation1);
+        partitionLocation1, DATABASE_NAME, PARTITIONED_TABLE_NAME);
     when(legacyReplicaPathRepository.findAll()).thenReturn(Arrays.<LegacyReplicaPath> asList(legacyReplicaPath));
 
     when(unpartitionedTable.getDbName()).thenReturn(DATABASE_NAME);
@@ -163,13 +163,15 @@ public class VacuumToolApplicationTest {
   public void removePath() {
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
         housekeepingService, replications, false, (short) 100, 1000);
-    tool.removePath(new Path(partitionLocation1));
+    tool.removePath(new Path(partitionLocation1), "db", "table");
 
     verify(housekeepingService).scheduleForHousekeeping(pathCaptor.capture());
     LegacyReplicaPath legacyReplicaPath = pathCaptor.getValue();
     assertThat(legacyReplicaPath.getPath(), is(partitionLocation1));
     assertThat(legacyReplicaPath.getPathEventId(), is(PARTITION_EVENT_1));
     assertThat(legacyReplicaPath.getEventId().startsWith("vacuum-"), is(true));
+    assertThat(legacyReplicaPath.getMetastoreDatabaseName(), is("db"));
+    assertThat(legacyReplicaPath.getMetastoreTableName(), is("table"));
   }
 
   @Test
@@ -201,8 +203,10 @@ public class VacuumToolApplicationTest {
         .thenReturn(Collections.singletonList(partition));
 
     // The HK references path 2
-    when(legacyReplicaPathRepository.findAll()).thenReturn(
-        Collections.singletonList(new HousekeepingLegacyReplicaPath("eventId", PARTITION_EVENT_2, partitionLocation2)));
+    when(legacyReplicaPathRepository.findAll())
+        .thenReturn(Collections
+            .singletonList(new HousekeepingLegacyReplicaPath("eventId", PARTITION_EVENT_2, partitionLocation2,
+                DATABASE_NAME, PARTITIONED_TABLE_NAME)));
 
     // So we expect path 3 to be scheduled for removal
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,

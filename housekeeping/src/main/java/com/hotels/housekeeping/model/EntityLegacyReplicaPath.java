@@ -43,8 +43,14 @@ public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
   @Column(name = "creation_timestamp", nullable = false, updatable = false)
   protected long creationTimestamp;
 
-  @Column(name = "path_event_id", nullable = true, length = 250)
+  @Column(name = "path_event_id", length = 250)
   protected String pathEventId;
+
+  @Column(name = "metastore_database_name", length = 512)
+  protected String metastoreDatabaseName;
+
+  @Column(name = "metastore_table_name", length = 512)
+  protected String metastoreTableName;
 
   protected EntityLegacyReplicaPath() {}
 
@@ -93,6 +99,26 @@ public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
     this.creationTimestamp = creationTimestamp;
   }
 
+  @Override
+  public String getMetastoreDatabaseName() {
+    return metastoreDatabaseName;
+  }
+
+  @Override
+  public void setMetastoreDatabaseName(String metastoreDatabaseName) {
+    this.metastoreDatabaseName = metastoreDatabaseName;
+  }
+
+  @Override
+  public String getMetastoreTableName() {
+    return metastoreTableName;
+  }
+
+  @Override
+  public void setMetastoreTableName(String metastoreTableName) {
+    this.metastoreTableName = metastoreTableName;
+  }
+
   @PrePersist
   protected void onPersist() {
     setCreationTimestamp(new Instant().getMillis());
@@ -107,6 +133,8 @@ public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
         .add("pathEventId", pathEventId)
         .add("path", path)
         .add("creationTimestamp", creationTimestamp)
+        .add("metastoreDatabaseName", metastoreDatabaseName)
+        .add("metastoreTableName", metastoreTableName)
         .toString();
   }
 
