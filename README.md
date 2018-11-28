@@ -34,12 +34,11 @@ If your project utilises Spring YAML you can define your Housekeeping within the
         # Database Password
         password: Ch4ll3ng3
 
-You can override Spring Boot (HikariCP/hibernate) settings in the YAML by providing the relevant properties. Housekeeping defaults are added with lower precedence.
-For example override the default connection pool size to 5 add this:
+You can override Spring Boot (HikariCP/Hibernate) settings in the YAML by providing the relevant properties. Housekeeping defaults are added with lower precedence. For example, to override the default connection pool maximum active size to 5 add this:
 
     spring.datasource.max-active: 5 
     
- See Spring boot documentation for a full list of properties that can be set.   
+ Refer to the Spring Boot documentation for a full list of properties that can be set.   
     
 ## Programmatic Housekeeping Configuration
 Housekeeping allows you to configure your housekeeping job in a more fine grained manner by providing a certain set of Spring beans in your application.
