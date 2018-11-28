@@ -73,22 +73,13 @@ The Vacuum tool already has the required H2 drivers on its CLASSPATH so the only
 
     housekeeping:
       schema-name: my_db
+      db-init-script: file:///tmp/schema.sql
       h2:
           # Location of H2 DB on filesystem
           database: /home/hadoop/vacuumtest/data/${housekeeping.schema-name}
       dataSource:
           username: user
           password: foo
-
-If the schema does not already exist, a `db-init-script` can be provided to initialise it, as shown in the following example:
-
-    ...
-    housekeeping:
-      schema-name: my_db
-      db-init-script: file:///tmp/schema.sql
-    ...
-
-Where `/tmp/schema.sql` contains: `CREATE SCHEMA IF NOT EXISTS my_db;`
 
 #### Performing a Vacuum
 

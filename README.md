@@ -33,6 +33,16 @@ If your project utilises Spring YAML you can define your Housekeeping within the
         username: bdp
         # Database Password
         password: Ch4ll3ng3
+        
+If the schema does not already exist and the `db-init-script` is in a different location than the default `classpath:/schema.sql`, then a custom path can be provided to initialise it, as shown in the following example:
+
+    ...
+    housekeeping:
+      schema-name: my_db
+      db-init-script: file:///tmp/schema.sql
+    ...
+
+Where `/tmp/schema.sql` contains: `CREATE SCHEMA IF NOT EXISTS my_db;`
 
 ## Programmatic Housekeeping Configuration
 Housekeeping allows you to configure your housekeeping job in a more fine grained manner by providing a certain set of Spring beans in your application.
