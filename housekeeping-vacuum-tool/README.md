@@ -23,6 +23,7 @@
 |`housekeeping.datasource.url` |No| JDBC URL for your database. Defaults to H2 filesystem database if not specified. |
 |`housekeeping.datasource.username` |No| Username for your database. |
 |`housekeeping.datasource.password` |No| Password for your database. |
+|`housekeeping.db-init-script`|No|A file containing a script to initialise your schema can be provided if it does not already exist. Defaults to `classpath:/schema.sql`|
 
 
 #### Example YAML Configurations:
@@ -52,7 +53,7 @@ The configuration then needs to be updated to be something like below:
       schema-name: my_db
       dataSource:
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://db-host:3306
+        url: jdbc:mysql://db-host:3306/${housekeeping.schema-name}
         username: user
         password: foo
 
@@ -72,13 +73,13 @@ The Vacuum tool already has the required H2 drivers on its CLASSPATH so the only
 
     housekeeping:
       schema-name: my_db
+      db-init-script: file:///tmp/schema.sql
       h2:
           # Location of H2 DB on filesystem
-          database: /home/hadoop/vacuumtest/mydb/housekeeping
+          database: /home/hadoop/vacuumtest/data/${housekeeping.schema-name}
       dataSource:
           username: user
           password: foo
-
 
 #### Performing a Vacuum
 
