@@ -34,7 +34,7 @@ If your project utilises Spring YAML you can define your Housekeeping within the
         # Database Password
         password: Ch4ll3ng3
         
-If the schema does not already exist and the `db-init-script` is in a different location than the default `classpath:/schema.sql`, then a custom path can be provided to initialise it, as shown in the following example:
+If the schema does not already exist and the `db-init-script` is not in the default location (`classpath:/schema.sql`), then a custom path can be provided to initialise it, as shown in the following example:
 
     ...
     housekeeping:
