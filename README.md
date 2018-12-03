@@ -44,6 +44,12 @@ If the schema does not already exist and the `db-init-script` is not in the defa
 
 Where `/tmp/schema.sql` contains: `CREATE SCHEMA IF NOT EXISTS my_db;`
 
+You can override Spring Boot (HikariCP/Hibernate) settings in the YAML by providing the relevant properties. Housekeeping defaults are added with lower precedence. For example, to override the default connection pool maximum active size to 5 add this:
+
+    spring.datasource.max-active: 5 
+    
+ Refer to the Spring Boot documentation for a full list of properties that can be set.   
+    
 ## Programmatic Housekeeping Configuration
 Housekeeping allows you to configure your housekeeping job in a more fine grained manner by providing a certain set of Spring beans in your application.
 
