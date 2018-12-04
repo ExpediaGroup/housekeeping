@@ -2,7 +2,7 @@
 
 # Overview
 
-The Housekeeping Vacuum Tool looks for any files and folders in the data locations of a Hive table that are not referenced in either the Hive metastore or the Housekeeping database. Any paths discovered are considered "orphaned data" and are then scheduled for removal via the Housekeeping process. The tool is typically used  if previously orphaned path locations have been lost (which can happen if the Housekeeping database has become corrupt or a previous Housekeeping run did not finish gracefully due to some unexpected failure or being killed prematurely etc.) By running the Vacuum Tool against a Hive table one can identify data that is no longer referenced by Hive and is thus a candidate for deletion.  
+The Housekeeping Vacuum Tool looks for any files and folders in the data locations of a Hive table that are not referenced in either the Hive metastore or the Housekeeping database. Any paths discovered are considered "orphaned data" and are then scheduled for removal via the Housekeeping process. The tool is typically used if previously orphaned path locations have been lost (which can happen if the Housekeeping database has become corrupt or a previous Housekeeping run did not finish gracefully due to some unexpected failure or being killed prematurely etc.) By running the Vacuum Tool against a Hive table one can identify data that is no longer referenced by Hive and is thus a candidate for deletion.  
 
 ## Install
 
