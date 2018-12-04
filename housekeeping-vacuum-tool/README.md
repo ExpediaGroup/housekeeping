@@ -2,13 +2,13 @@
 
 # Overview
 
-The Housekeeping Vacuum Tool looks for any files and folders in the data locations of a Hive table that are not referenced in either the Hive metastore or the Housekeeping database. Any paths discovered are considered "orphaned data" and are then scheduled for removal via the Housekeeping process. This can be useful if a Housekeeping database has become corrupt and previous orphaned path locations have been lost. By running the Vacuum Tool against a Hive table one can identify data that is no longer referenced by Hive and is thus a candidate for deletion.  
+The Housekeeping Vacuum Tool looks for any files and folders in the data locations of a Hive table that are not referenced in either the Hive metastore or the Housekeeping database. Any paths discovered are considered "orphaned data" and are then scheduled for removal via the Housekeeping process. The tool is typically used  if previously orphaned path locations have been lost (which can happen if the Housekeeping database has become corrupt or a previous Housekeeping run did not finish gracefully due to some unexpected failure or being killed prematurely etc.) By running the Vacuum Tool against a Hive table one can identify data that is no longer referenced by Hive and is thus a candidate for deletion.  
 
 ## Install
 
 ### Pre-requisites
 
-The Vacuum Tool makes use of various Hadoop and Hive libraries and executables so these must be installed on the machine where the tool will be run.
+The Vacuum Tool makes use of various Hadoop and Hive libraries and client executables so these must be installed on the machine where the tool will be run. It does not require a Hadoop cluster, a Hadoop client "jump box" will suffice.
 
 #### EMR 
 
@@ -31,6 +31,8 @@ Although it's not necessary, we recommend exporting the environment variable `HO
 
 ## Usage
 
+**Note:** _All updates to the table being vacuumed must be paused for the duration of the vacuum process otherwise there is a risk that folders that have been newly created but not yet added to the metastore will be considered candidates for housekeeping._
+
 Run with your respective replication YAML configuration file:
 
     $HOUSEKEEPING_TOOL_HOME/bin/vacuum.sh \
@@ -40,8 +42,6 @@ Run with your respective replication YAML configuration file:
       [--expected-path-count=10000]
       
 The `dry-run` option allows you to observe the status of paths on the file system, the metastore, and the Housekeeping database without actually scheduling anything for deletion. The `partition-batch-size` and `expected-path-count` allow you to tune memory demands should you hit heap limits with large numbers of partitions.
-
-**Note:** _All updates to the table being vacuumed must be paused for the duration of the vacuum process otherwise there is a risk that folders that have been newly created but not yet added to the metastore will be considered candidates for housekeeping._
 
 ## YAML Configuration
 
