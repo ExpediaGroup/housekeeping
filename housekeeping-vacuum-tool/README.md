@@ -2,7 +2,7 @@
 
 # Overview
 
-The Housekeeping Vacuum Tool looks for any files and folders in the data locations a Hive table that are not referenced in either the Hive metastore or the Housekeeping database. Any paths discovered are considered "orphaned data" and are then scheduled for removal via the Housekeeping process. This can be useful if a Housekeeping database has become corrupt and previous orphaned path locations have been lost. By running the Vacuum Tool against a Hive table one can identify data that is no longer referenced by Hive and is thus a candidate for deletion.  
+The Housekeeping Vacuum Tool looks for any files and folders in the data locations of a Hive table that are not referenced in either the Hive metastore or the Housekeeping database. Any paths discovered are considered "orphaned data" and are then scheduled for removal via the Housekeeping process. This can be useful if a Housekeeping database has become corrupt and previous orphaned path locations have been lost. By running the Vacuum Tool against a Hive table one can identify data that is no longer referenced by Hive and is thus a candidate for deletion.  
 
 ## Usage
 
@@ -15,6 +15,8 @@ Run with your respective replication YAML configuration file:
       [--expected-path-count=10000]
       
 The `dry-run` option allows you to observe the status of paths on the file system, the metastore, and the Housekeeping database without actually scheduling anything for deletion. The `partition-batch-size` and `expected-path-count` allow you to tune memory demands should you hit heap limits with large numbers of partitions.
+
+**Note:** _All updates to the table being vacuumed must be paused for the duration of the vacuum process otherwise there is a risk that folders that have been newly created but not yet added to the metastore will be considered candidates for housekeeping._
 
 ## YAML Configuration
 
