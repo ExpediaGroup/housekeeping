@@ -4,6 +4,31 @@
 
 The Housekeeping Vacuum Tool looks for any files and folders in the data locations of a Hive table that are not referenced in either the Hive metastore or the Housekeeping database. Any paths discovered are considered "orphaned data" and are then scheduled for removal via the Housekeeping process. This can be useful if a Housekeeping database has become corrupt and previous orphaned path locations have been lost. By running the Vacuum Tool against a Hive table one can identify data that is no longer referenced by Hive and is thus a candidate for deletion.  
 
+## Install
+
+### Pre-requisites
+
+The Vacuum Tool makes use of various Hadoop and Hive libraries and executables so these must be installed on the machine where the tool will be run.
+
+#### EMR 
+
+If you are planning to run the Vacuum Tool on EMR you may need to set up the EMR classpath by exporting the following environment variables before calling the `bin/vacuum.sh` script:
+
+        export HCAT_LIB=/usr/lib/hive-hcatalog/share/hcatalog/
+        export HIVE_LIB=/usr/lib/hive/lib/
+
+Note that the paths above are correct as of when this document was last updated but may differ across EMR versions, refer to the [EMR release guide](http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html) for more up to date information if necessary.
+
+### Unpack and set up the Vacuum Tool
+
+[Download the TGZ](https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.hotels&a=housekeeping-vacuum-tool&p=tgz&v=RELEASE&c=bin) from Maven central and then uncompress the file by executing:
+
+    tar -xzf housekeeping-vacuum-tool-<version>-bin.tgz
+
+Although it's not necessary, we recommend exporting the environment variable `HOUSEKEEPING_TOOL_HOME` by setting its value to wherever you extracted it to:
+
+    export HOUSEKEEPING_TOOL_HOME=/<foo>/<bar>/housekeeping-vacuum-tool-<version>
+
 ## Usage
 
 Run with your respective replication YAML configuration file:
