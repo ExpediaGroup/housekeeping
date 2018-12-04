@@ -224,26 +224,9 @@ Or in YAML
       encryptor:
         password: ${JASYPT_ENCRYPTOR_PASSWORD:}
 
-
 # Housekeeping Vacuum Tool
-A tool that can be used to interrogate and remove orphaned data which has been scheduled for Housekeeping.
 
-### Usage
-
-Run with your respective replication YAML configuration file:
-
-    $HOUSEKEEPING_TOOL_HOME/bin/vacuum.sh \
-      --config=<your-config>.yml \
-      [--dry-run=true] \
-      [--partition-batch-size=1000] \
-      [--expected-path-count=10000]
-
-Vacuum looks for any files and folders in the data locations of your replicated tables that are not referenced in either the metastore or housekeeping database. Any paths discovered are again scheduled for removal via the housekeeping process. The respective files and folders will then be removed at a time determined by the specific configuration of your housekeeping process.
-
-We use the housekeeping process for data removal in this scenario as it has useful logic for determining when ancestral paths can also be removed.
-
-More information on configuring the housekeeping-vacuum-tool can be found [here](housekeeping-vacuum-tool/README.md)
-
+Housekeeping also provides a "Vacuum" tool that can be run against a Hive table to detect any orphaned data that is available for Housekeeping. For more information on running and configuring this refer to the [housekeeping-vacuum-tool documentation](housekeeping-vacuum-tool/README.md).
 
 # Legal
 This project is available under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
