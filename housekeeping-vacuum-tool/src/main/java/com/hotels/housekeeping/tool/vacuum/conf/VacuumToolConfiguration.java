@@ -46,6 +46,7 @@ import com.hotels.hcommon.hive.metastore.conf.HiveConfFactory;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
 import com.hotels.housekeeping.service.impl.FileSystemHousekeepingService;
+import com.hotels.housekeeping.tool.vacuum.validate.TablesValidator;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -161,5 +162,10 @@ public class VacuumToolConfiguration {
       LegacyReplicaPathRepository legacyReplicaPathRepository,
       @Qualifier("baseConf") org.apache.hadoop.conf.Configuration baseConf) {
     return new FileSystemHousekeepingService(legacyReplicaPathRepository, baseConf);
+  }
+
+  @Bean
+  TablesValidator tablesValidator(TablesValidation tablesValidation) {
+    return new TablesValidator(tablesValidation);
   }
 }

@@ -1,4 +1,6 @@
 ## TBD
+### Added
+* Added validation of configured tables, see README: tables-validation. 
 ### Changed
 * Added db name and table name columns to housekeeping tables. See [#30](https://github.com/HotelsDotCom/housekeeping/issues/30).
 * Changed default max-active connection pool size from 50 to 2 as it was unnecessarily large and having multiple housekeeping jobs was causing RDS issues (too many open connections).
