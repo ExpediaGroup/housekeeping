@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2016-2018 Expedia Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.hotels.housekeeping.tool.vacuum.validate;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -7,6 +22,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.hive.metastore.IMetaStoreClient;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
@@ -19,7 +35,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.google.common.collect.Lists;
 
 import com.hotels.housekeeping.tool.vacuum.conf.Table;
-import com.hotels.housekeeping.tool.vacuum.conf.TablesValidation;
+import com.hotels.housekeeping.tool.vacuum.conf.TablesValidationConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TablesValidatorTest {
@@ -33,7 +49,7 @@ public class TablesValidatorTest {
   private final List<Table> tables = new ArrayList<>();
   private final Table table1 = new Table();
   private final Table table2 = new Table();
-  private final TablesValidation emptyTablesValidation = new TablesValidation();
+  private final TablesValidationConfig emptyTablesValidation = new TablesValidationConfig();
 
   private final org.apache.hadoop.hive.metastore.api.Table hiveTable1 = new org.apache.hadoop.hive.metastore.api.Table();
   private final org.apache.hadoop.hive.metastore.api.Table hiveTable2 = new org.apache.hadoop.hive.metastore.api.Table();
@@ -54,11 +70,28 @@ public class TablesValidatorTest {
     hiveTable2.setTableName(TABLE2);
     hiveTable2.setParameters(new HashMap<String, String>());
 
-    emptyTablesValidation.setCheckPropertyExists(new ArrayList<String>());
+    emptyTablesValidation.setHiveTableProperties(new ArrayList<String>());
   }
 
   @Test
-  public void validateAllOk() throws Exception {
+  public void validateAllOkNothingToCheck() throws Exception {
+    when(metastore.getTable(DATABASE, TABLE1)).thenReturn(hiveTable1);
+    when(metastore.getTable(DATABASE, TABLE2)).thenReturn(hiveTable2);
+
+    TablesValidator validator = new TablesValidator(emptyTablesValidation);
+    ValidationResult validationResult = validator.validate(metastore, tables);
+
+    assertThat(validationResult.isValid(), is(true));
+    assertThat(validationResult.getValidationFailures().size(), is(0));
+  }
+
+  @Test
+  public void validateAllOkPropertyExists() throws Exception {
+    emptyTablesValidation.setHiveTableProperties(Lists.newArrayList("prop1"));
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("prop1", "");
+    hiveTable1.setParameters(parameters);
+    hiveTable2.setParameters(parameters);
     when(metastore.getTable(DATABASE, TABLE1)).thenReturn(hiveTable1);
     when(metastore.getTable(DATABASE, TABLE2)).thenReturn(hiveTable2);
 
@@ -96,9 +129,9 @@ public class TablesValidatorTest {
     hiveTable2.setParameters(parameters2);
     when(metastore.getTable(DATABASE, TABLE2)).thenReturn(hiveTable2);
 
-    TablesValidation tablesValidation = new TablesValidation();
-    tablesValidation.setCheckPropertyExists(Lists.newArrayList("prop1", "prop2"));
-    TablesValidator validator = new TablesValidator(tablesValidation);
+    TablesValidationConfig tablesValidationConfig = new TablesValidationConfig();
+    tablesValidationConfig.setHiveTableProperties(Lists.newArrayList("prop1", "prop2"));
+    TablesValidator validator = new TablesValidator(tablesValidationConfig);
     ValidationResult validationResult = validator.validate(metastore, tables);
 
     assertThat(validationResult.isValid(), is(false));
@@ -114,9 +147,9 @@ public class TablesValidatorTest {
     hiveTable2.setParameters(null);
     when(metastore.getTable(DATABASE, TABLE2)).thenReturn(hiveTable2);
 
-    TablesValidation tablesValidation = new TablesValidation();
-    tablesValidation.setCheckPropertyExists(Lists.newArrayList("prop1"));
-    TablesValidator validator = new TablesValidator(tablesValidation);
+    TablesValidationConfig tablesValidationConfig = new TablesValidationConfig();
+    tablesValidationConfig.setHiveTableProperties(Lists.newArrayList("prop1"));
+    TablesValidator validator = new TablesValidator(tablesValidationConfig);
     ValidationResult validationResult = validator.validate(metastore, tables);
 
     assertThat(validationResult.isValid(), is(false));

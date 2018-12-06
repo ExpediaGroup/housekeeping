@@ -104,6 +104,10 @@ public class VacuumToolApplicationTest {
   private TablesValidator tablesValidator;
   @Mock
   private ValidationResult validationResult;
+  @Mock
+  private ValidationFailure validationFailure1;
+  @Mock
+  private ValidationFailure validationFailure2;
   @Captor
   private ArgumentCaptor<LegacyReplicaPath> pathCaptor;
 
@@ -242,17 +246,8 @@ public class VacuumToolApplicationTest {
 
     when(validationResult.isValid()).thenReturn(false);
     List<ValidationFailure> validationFailures = new ArrayList<>();
-    validationFailures.add(new ValidationFailure() {
-      @Override
-      public String getMessage() {
-        return "Validation failed on table xyz";
-      }
-
-      @Override
-      public String getQualifiedTableName() {
-        return DATABASE_NAME + "." + PARTITIONED_TABLE_NAME;
-      }
-    });
+    validationFailures.add(validationFailure1);
+    validationFailures.add(validationFailure2);
     when(validationResult.getValidationFailures()).thenReturn(validationFailures);
     when(tablesValidator.validate(client, replications.getTables())).thenReturn(validationResult);
 
@@ -263,6 +258,8 @@ public class VacuumToolApplicationTest {
       fail("Should have thrown an exception to stop vacuuming and sort out the invalid config");
     } catch (Exception e) {
       verifyZeroInteractions(housekeepingService);
+      verify(validationFailure1).getMessage();
+      verify(validationFailure2).getMessage();
     }
   }
 

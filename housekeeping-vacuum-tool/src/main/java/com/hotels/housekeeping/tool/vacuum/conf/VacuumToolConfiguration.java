@@ -165,7 +165,7 @@ public class VacuumToolConfiguration {
   }
 
   @Bean
-  TablesValidator tablesValidator(TablesValidation tablesValidation) {
-    return new TablesValidator(tablesValidation);
+  TablesValidator tablesValidator(TablesValidationConfig tablesValidationConfig) {
+    return new TablesValidator(tablesValidationConfig);
   }
 }

@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2016-2018 Expedia Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.hotels.housekeeping.tool.vacuum.validate;
 
 import java.util.Collections;
@@ -8,14 +23,14 @@ import org.apache.hadoop.hive.metastore.IMetaStoreClient;
 import org.apache.thrift.TException;
 
 import com.hotels.housekeeping.tool.vacuum.conf.Table;
-import com.hotels.housekeeping.tool.vacuum.conf.TablesValidation;
+import com.hotels.housekeeping.tool.vacuum.conf.TablesValidationConfig;
 
 public class TablesValidator {
 
-  private final TablesValidation tableValidation;
+  private final TablesValidationConfig tableValidationConfig;
 
-  public TablesValidator(TablesValidation tableValidation) {
-    this.tableValidation = tableValidation;
+  public TablesValidator(TablesValidationConfig tableValidationConfig) {
+    this.tableValidationConfig = tableValidationConfig;
   }
 
   /**
@@ -31,7 +46,7 @@ public class TablesValidator {
             .getTable(table.getDatabaseName(), table.getTableName());
         Map<String, String> parameters = getParameters(hiveTable.getParameters());
         if (!allPropertiesExist(parameters)) {
-          result.addValidationFailure(new PropertyValidationFailure(table, tableValidation, parameters));
+          result.addValidationFailure(new PropertyValidationFailure(table, tableValidationConfig, parameters));
         }
       } catch (TException e) {
         result.addValidationFailure(new UnexpectedValidationFailure(table, e));
@@ -48,7 +63,7 @@ public class TablesValidator {
   }
 
   private boolean allPropertiesExist(Map<String, String> parameters) {
-    for (String propertyName : tableValidation.getCheckPropertyExists()) {
+    for (String propertyName : tableValidationConfig.getHiveTableProperties()) {
       if (!parameters.containsKey(propertyName)) {
         return false;
       }
