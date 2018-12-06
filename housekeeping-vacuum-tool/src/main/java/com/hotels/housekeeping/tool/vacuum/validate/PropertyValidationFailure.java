@@ -40,7 +40,7 @@ class PropertyValidationFailure implements ValidationFailure {
 
   @Override
   public String getMessage() {
-    String validationConfig = new Yaml().dumpAsMap(tablesValidationConfig);
+    String validationConfig = new Yaml().dump(tablesValidationConfig.getHiveTableProperties());
     return "Property validation failed expected these properties: "
         + validationConfig
         + "but got these table parameters \n'"

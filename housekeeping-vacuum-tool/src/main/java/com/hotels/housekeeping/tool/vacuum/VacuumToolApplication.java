@@ -140,7 +140,7 @@ class VacuumToolApplication implements ApplicationRunner {
         LOG.error("Table: " + validationFailure.getQualifiedTableName() + ". " + validationFailure.getMessage());
       }
       throw new RuntimeException(
-          "Configuration contains tables that are not valid for Vacuuming, please remove those tables or change validation rules. See the README for more details on how to configure the validation rules");
+          "Configuration contains tables that are not valid for Vacuuming, please remove those tables or change validation rules. See the log for details on which tables are invalid. See the README for more details on how to configure the validation rules");
     }
   }
 
