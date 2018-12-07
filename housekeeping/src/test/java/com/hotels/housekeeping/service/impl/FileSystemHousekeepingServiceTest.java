@@ -82,7 +82,7 @@ public class FileSystemHousekeepingServiceTest {
   private LegacyReplicaPath cleanUpPath2;
   private LegacyReplicaPath cleanUpPath3;
 
-  private @Mock LegacyReplicaPathRepository legacyReplicationPathRepository;
+  private @Mock LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicationPathRepository;
   private @Spy final FileSystem spyFs = new LocalFileSystem();
   private final Configuration conf = new Configuration();
 
