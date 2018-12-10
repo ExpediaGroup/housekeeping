@@ -50,7 +50,7 @@ public class TablesValidator {
           result.addValidationFailure(new PropertyValidationFailure(table, tableValidationConfig, parameters));
         }
       } catch (NoSuchObjectException e) {
-        result.addValidationFailure(new UnexpectedValidationFailure(table, e));
+        result.addValidationFailure(new MissingTableValidationFailure(table));
       } catch (TException e) {
         throw new RuntimeException(e);
       }
