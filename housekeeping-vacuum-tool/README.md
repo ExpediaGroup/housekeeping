@@ -65,7 +65,7 @@ The `dry-run` option allows you to observe the status of paths on the file syste
 |`housekeeping.datasource.username` |No| Username for your database.|
 |`housekeeping.datasource.password` |No| Password for your database.|
 |`housekeeping.db-init-script`|No|A file containing a script to initialise your schema can be provided if it does not already exist. Defaults to `classpath:/schema.sql`.|
-|`tables-validation.hive-table-properties`|No| A list of Hive table properties that need to exist in every configured table, if any of property does not exist the vaccuum tool won't run. Override (to custom property or empty list) if you vaccuum tables that are not replicated by [Circus Train](https://github.com/HotelsDotCom/circus-train). We always recommend running with `--dry-run=true` first and carefully look at the results. Default is: `com.hotels.bdp.circustrain.replication.event`|
+|`tables-validation.hive-table-properties`|No| A list of Hive table properties that need to exist in every configured table. If any of these properties do not exist then the vacuum tool won't run. Set this to a custom property or an empty list if you vacuum tables that are not replicated by [Circus Train](https://github.com/HotelsDotCom/circus-train). We always recommend running with `--dry-run=true` first and carefully reviewing the results before doing a "real" vacuum. Default is `com.hotels.bdp.circustrain.replication.event`.|
 
 ### Example YAML Configurations
 
