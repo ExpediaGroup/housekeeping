@@ -54,6 +54,9 @@ import com.hotels.housekeeping.service.HousekeepingService;
 import com.hotels.housekeeping.service.impl.EventIdExtractor;
 import com.hotels.housekeeping.tool.vacuum.conf.Table;
 import com.hotels.housekeeping.tool.vacuum.conf.Tables;
+import com.hotels.housekeeping.tool.vacuum.validate.TablesValidator;
+import com.hotels.housekeeping.tool.vacuum.validate.ValidationFailure;
+import com.hotels.housekeeping.tool.vacuum.validate.ValidationResult;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -74,12 +77,15 @@ class VacuumToolApplication implements ApplicationRunner {
   private Set<Path> housekeepingPaths;
   private IMetaStoreClient metastore;
 
+  private final TablesValidator tablesValidator;
+
   @Autowired
   VacuumToolApplication(
       @Value("#{hiveConf}") HiveConf conf,
       @Value("#{metaStoreClientSupplier}") Supplier<CloseableMetaStoreClient> clientSupplier,
       LegacyReplicaPathRepository legacyReplicaPathRepository,
       HousekeepingService housekeepingService,
+      TablesValidator tablesValidator,
       Tables tables,
       @Value("${dry-run:false}") boolean isDryRun,
       @Value("${partition-batch-size:1000}") short batchSize,
@@ -88,6 +94,7 @@ class VacuumToolApplication implements ApplicationRunner {
     this.clientSupplier = clientSupplier;
     this.legacyReplicaPathRepository = legacyReplicaPathRepository;
     this.housekeepingService = housekeepingService;
+    this.tablesValidator = tablesValidator;
     this.isDryRun = isDryRun;
     this.batchSize = batchSize;
     this.expectedPathCount = expectedPathCount;
@@ -104,10 +111,12 @@ class VacuumToolApplication implements ApplicationRunner {
 
     try {
       metastore = clientSupplier.get();
+      validate(metastore, tables);
       housekeepingPaths = fetchHousekeepingPaths(legacyReplicaPathRepository);
       for (Table table : tables) {
         String databaseName = table.getDatabaseName();
         String tableName = table.getTableName();
+
         LOG.info("Vacuuming table '{}.{}'.", databaseName, tableName);
         try {
           vacuumTable(databaseName, tableName);
@@ -121,6 +130,21 @@ class VacuumToolApplication implements ApplicationRunner {
       if (metastore != null) {
         metastore.close();
       }
+    }
+  }
+
+  private void validate(IMetaStoreClient metastore, List<Table> tables) {
+    ValidationResult validationResult = tablesValidator.validate(metastore, tables);
+    if (!validationResult.isValid()) {
+      for (ValidationFailure validationFailure : validationResult.getValidationFailures()) {
+        LOG
+            .error("Validation error for table '"
+                + validationFailure.getQualifiedTableName()
+                + "': "
+                + validationFailure.getMessage());
+      }
+      throw new RuntimeException(
+          "Configuration contains tables that are not considered valid for Vacuuming, please remove these tables or change the validation rules. See the log for details on which tables are invalid. See the README for more details on how to configure the validation rules");
     }
   }
 
@@ -139,7 +163,6 @@ class VacuumToolApplication implements ApplicationRunner {
   void vacuumTable(String databaseName, String tableName)
     throws MetaException, TException, NoSuchObjectException, URISyntaxException, IOException {
     org.apache.hadoop.hive.metastore.api.Table table = metastore.getTable(databaseName, tableName);
-
     TablePathResolver pathResolver = TablePathResolver.Factory.newTablePathResolver(metastore, table);
     Path tableBaseLocation = pathResolver.getTableBaseLocation();
     Path globPath = pathResolver.getGlobPath();

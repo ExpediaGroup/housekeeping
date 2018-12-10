@@ -48,7 +48,7 @@ The `dry-run` option allows you to observe the status of paths on the file syste
 |Property|Required|Description|
 |:----|:----:|:----|
 |`catalog.name`|Yes|A name for the source catalog for events and logging.|
-|`catalog.hive-metastore-uris`|No|Fully qualified URI of the source cluster's Hive metastore Thrift service. If not specified values are taken from the `hive-site.xml` on the Hadoop classpath of the machine that's running the Housekeeping vacuum tool. This property mimics the Hive property "hive.metastore.uris" and allows multiple comma separated URIs.|
+|`catalog.hive-metastore-uris`|Yes|Fully qualified URI of the source cluster's Hive metastore Thrift service. This property mimics the Hive property "hive.metastore.uris" and allows multiple comma separated URIs.|
 |`catalog.site-xml`|No|A list of Hadoop configuration XML files to add to the configuration for the source.|
 |`catalog.configuration-properties`|No|A list of `key: value` pairs to add to the Hadoop configuration for the source.|
 |`catalog.metastore-tunnel.route`|No|A SSH tunnel can be used to connect to source metastores. The tunnel may consist of one or more hops which must be declared in this property.|
@@ -65,6 +65,7 @@ The `dry-run` option allows you to observe the status of paths on the file syste
 |`housekeeping.datasource.username` |No| Username for your database.|
 |`housekeeping.datasource.password` |No| Password for your database.|
 |`housekeeping.db-init-script`|No|A file containing a script to initialise your schema can be provided if it does not already exist. Defaults to `classpath:/schema.sql`.|
+|`tables-validation.hive-table-properties`|No| A list of Hive table properties that need to exist in every configured table. If any of these properties do not exist then the vacuum tool won't run. Set this to a custom property or an empty list if you vacuum tables that are not replicated by [Circus Train](https://github.com/HotelsDotCom/circus-train). We always recommend running with `--dry-run=true` first and carefully reviewing the results before doing a "real" vacuum. Default is `com.hotels.bdp.circustrain.replication.event`.|
 
 ### Example YAML Configurations
 

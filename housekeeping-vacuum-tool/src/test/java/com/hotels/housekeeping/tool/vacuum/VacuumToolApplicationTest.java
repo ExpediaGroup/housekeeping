@@ -17,13 +17,17 @@ package com.hotels.housekeeping.tool.vacuum;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -54,6 +58,9 @@ import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
 import com.hotels.housekeeping.tool.vacuum.conf.Table;
 import com.hotels.housekeeping.tool.vacuum.conf.Tables;
+import com.hotels.housekeeping.tool.vacuum.validate.TablesValidator;
+import com.hotels.housekeeping.tool.vacuum.validate.ValidationFailure;
+import com.hotels.housekeeping.tool.vacuum.validate.ValidationResult;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VacuumToolApplicationTest {
@@ -93,6 +100,14 @@ public class VacuumToolApplicationTest {
   private LegacyReplicaPathRepository legacyReplicaPathRepository;
   @Mock
   private HousekeepingService housekeepingService;
+  @Mock
+  private TablesValidator tablesValidator;
+  @Mock
+  private ValidationResult validationResult;
+  @Mock
+  private ValidationFailure validationFailure1;
+  @Mock
+  private ValidationFailure validationFailure2;
   @Captor
   private ArgumentCaptor<LegacyReplicaPath> pathCaptor;
 
@@ -162,7 +177,7 @@ public class VacuumToolApplicationTest {
   @Test
   public void removePath() {
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, replications, false, (short) 100, 1000);
+        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
     tool.removePath(new Path(partitionLocation1), "db", "table");
 
     verify(housekeepingService).scheduleForHousekeeping(pathCaptor.capture());
@@ -177,7 +192,7 @@ public class VacuumToolApplicationTest {
   @Test
   public void fetchHousekeepingPaths() throws Exception {
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, replications, false, (short) 100, 1000);
+        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
     Set<Path> paths = tool.fetchHousekeepingPaths(legacyReplicaPathRepository);
 
     assertThat(paths.size(), is(1));
@@ -207,10 +222,12 @@ public class VacuumToolApplicationTest {
         .thenReturn(Collections
             .singletonList(new HousekeepingLegacyReplicaPath("eventId", PARTITION_EVENT_2, partitionLocation2,
                 DATABASE_NAME, PARTITIONED_TABLE_NAME)));
+    when(validationResult.isValid()).thenReturn(true);
+    when(tablesValidator.validate(client, replications.getTables())).thenReturn(validationResult);
 
     // So we expect path 3 to be scheduled for removal
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, replications, false, (short) 100, 1000);
+        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
     tool.run(null);
 
     verify(housekeepingService, times(1)).scheduleForHousekeeping(pathCaptor.capture());
@@ -218,6 +235,32 @@ public class VacuumToolApplicationTest {
     assertThat(legacyReplicaPath.getPath(), is(partitionLocation3));
     assertThat(legacyReplicaPath.getPathEventId(), is(PARTITION_EVENT_3));
     assertThat(legacyReplicaPath.getEventId().startsWith("vacuum-"), is(true));
+  }
+
+  @Test
+  public void runValidationFails() throws Exception {
+    Table table = new Table();
+    table.setDatabaseName(DATABASE_NAME);
+    table.setTableName(PARTITIONED_TABLE_NAME);
+    replications.setTables(Collections.singletonList(table));
+
+    when(validationResult.isValid()).thenReturn(false);
+    List<ValidationFailure> validationFailures = new ArrayList<>();
+    validationFailures.add(validationFailure1);
+    validationFailures.add(validationFailure2);
+    when(validationResult.getValidationFailures()).thenReturn(validationFailures);
+    when(tablesValidator.validate(client, replications.getTables())).thenReturn(validationResult);
+
+    VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
+        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
+    try {
+      tool.run(null);
+      fail("Should have thrown an exception to stop vacuuming and sort out the invalid config");
+    } catch (Exception e) {
+      verifyZeroInteractions(housekeepingService);
+      verify(validationFailure1).getMessage();
+      verify(validationFailure2).getMessage();
+    }
   }
 
 }

@@ -1,5 +1,6 @@
 ## TBD
-
+### Added
+* Added validation of configured tables, see README: tables-validation. 
 ### Changed
 * Database objects are fetched using paging to have an upper limit on the number of them. See [#40](https://github.com/HotelsDotCom/housekeeping/issues/40).
 * Added db name and table name columns to housekeeping tables. See [#30](https://github.com/HotelsDotCom/housekeeping/issues/30).
