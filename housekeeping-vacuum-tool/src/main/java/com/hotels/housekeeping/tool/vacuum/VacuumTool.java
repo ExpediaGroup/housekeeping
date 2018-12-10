@@ -40,16 +40,17 @@ public class VacuumTool {
     logVersionInfo();
 
     try {
-      SpringApplication.exit(new SpringApplicationBuilder(VacuumTool.class)
-          .properties("spring.config.location:${config:null}")
-          .properties("instance.name:${catalog.name}")
-          .properties("instance.home:${user.home}")
-          .registerShutdownHook(true)
-          .bannerMode(Mode.OFF)
-          .registerShutdownHook(true)
-          .listeners(new ConfigFileValidationApplicationListener())
-          .build()
-          .run(args));
+      SpringApplication
+          .exit(new SpringApplicationBuilder(VacuumTool.class)
+              .properties("spring.config.location:${config:null}")
+              .properties("instance.name:${catalog.name}")
+              .properties("instance.home:${user.home}")
+              .registerShutdownHook(true)
+              .bannerMode(Mode.OFF)
+              .registerShutdownHook(true)
+              .listeners(new ConfigFileValidationApplicationListener())
+              .build()
+              .run(args));
     } catch (BeanCreationException e) {
       if (e.getMostSpecificCause() instanceof BindException) {
         printVacuumToolHelp(((BindException) e.getMostSpecificCause()).getAllErrors());

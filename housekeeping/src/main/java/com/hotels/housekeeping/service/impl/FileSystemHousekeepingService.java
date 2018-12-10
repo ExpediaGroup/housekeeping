@@ -82,9 +82,9 @@ public class FileSystemHousekeepingService implements HousekeepingService {
           LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
           legacyReplicaPathRepository.delete(cleanUpPath);
         } catch (ObjectOptimisticLockingFailureException e) {
-          LOG.debug(
-              "Failed to delete path '{}': probably already cleaned up by process running at same time. Ok to ignore. {}",
-              cleanUpPath, e.getMessage());
+          LOG
+              .debug("Failed to delete path '{}': probably already cleaned up by process running at same time. "
+                  + "Ok to ignore. {}", cleanUpPath, e.getMessage());
         }
       }
     } catch (Exception e) {
