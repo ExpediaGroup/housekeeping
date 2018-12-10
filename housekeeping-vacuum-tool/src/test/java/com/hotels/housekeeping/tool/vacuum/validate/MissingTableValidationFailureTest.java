@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import com.hotels.housekeeping.tool.vacuum.conf.Table;
 
-public class UnexpectedValidationFailureTest {
+public class MissingTableValidationFailureTest {
 
   private final Table table = new Table();
 
@@ -35,12 +35,10 @@ public class UnexpectedValidationFailureTest {
   }
 
   @Test
-  public void unexpectedValidationFailure() {
-    UnexpectedValidationFailure failure = new UnexpectedValidationFailure(table,
-        new Exception("oh no", new Exception("unexpectedValidationFailure cause")));
+  public void missingTableValidationFailure() {
+    MissingTableValidationFailure failure = new MissingTableValidationFailure(table);
     String message = failure.getMessage();
-    assertThat(message, containsString("oh no"));
-    assertThat(message, containsString("unexpectedValidationFailure cause"));
+    assertThat(message, containsString("Table does not exist."));
     assertThat(failure.getQualifiedTableName(), is("db.table"));
   }
 
