@@ -134,13 +134,17 @@ class VacuumToolApplication implements ApplicationRunner {
   }
 
   private void validate(IMetaStoreClient metastore, List<Table> tables) {
-    ValidationResult validateResult = tablesValidator.validate(metastore, tables);
-    if (!validateResult.isValid()) {
-      for (ValidationFailure validationFailure : validateResult.getValidationFailures()) {
-        LOG.error("Table: " + validationFailure.getQualifiedTableName() + ". " + validationFailure.getMessage());
+    ValidationResult validationResult = tablesValidator.validate(metastore, tables);
+    if (!validationResult.isValid()) {
+      for (ValidationFailure validationFailure : validationResult.getValidationFailures()) {
+        LOG
+            .error("Validation error for table '"
+                + validationFailure.getQualifiedTableName()
+                + "': "
+                + validationFailure.getMessage());
       }
       throw new RuntimeException(
-          "Configuration contains tables that are not valid for Vacuuming, please remove those tables or change validation rules. See the log for details on which tables are invalid. See the README for more details on how to configure the validation rules");
+          "Configuration contains tables that are not considered valid for Vacuuming, please remove these tables or change the validation rules. See the log for details on which tables are invalid. See the README for more details on how to configure the validation rules");
     }
   }
 

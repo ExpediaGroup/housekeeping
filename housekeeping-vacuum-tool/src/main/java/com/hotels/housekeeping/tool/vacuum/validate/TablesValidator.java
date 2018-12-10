@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.hive.metastore.IMetaStoreClient;
+import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.thrift.TException;
 
 import com.hotels.housekeeping.tool.vacuum.conf.Table;
@@ -44,18 +45,20 @@ public class TablesValidator {
       try {
         org.apache.hadoop.hive.metastore.api.Table hiveTable = metastore
             .getTable(table.getDatabaseName(), table.getTableName());
-        Map<String, String> parameters = getParameters(hiveTable.getParameters());
+        Map<String, String> parameters = extractParameters(hiveTable.getParameters());
         if (!allPropertiesExist(parameters)) {
           result.addValidationFailure(new PropertyValidationFailure(table, tableValidationConfig, parameters));
         }
-      } catch (TException e) {
+      } catch (NoSuchObjectException e) {
         result.addValidationFailure(new UnexpectedValidationFailure(table, e));
+      } catch (TException e) {
+        throw new RuntimeException(e);
       }
     }
     return result;
   }
 
-  private Map<String, String> getParameters(Map<String, String> parameters) {
+  private Map<String, String> extractParameters(Map<String, String> parameters) {
     if (parameters == null) {
       return Collections.emptyMap();
     }

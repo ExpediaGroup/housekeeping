@@ -17,6 +17,7 @@ package com.hotels.housekeeping.tool.vacuum.validate;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import org.apache.hadoop.hive.metastore.IMetaStoreClient;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
+import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -118,13 +120,13 @@ public class TablesValidatorTest {
   @Test
   public void validateFailsOnTableProperty() throws Exception {
     // table 1 has all properties set
-    HashMap<String, String> parameters = new HashMap<>();
+    Map<String, String> parameters = new HashMap<>();
     parameters.put("prop1", "");
     parameters.put("prop2", "");
     hiveTable1.setParameters(parameters);
     when(metastore.getTable(DATABASE, TABLE1)).thenReturn(hiveTable1);
     // table 2 has not
-    HashMap<String, String> parameters2 = new HashMap<>();
+    Map<String, String> parameters2 = new HashMap<>();
     parameters2.put("prop1", "");
     hiveTable2.setParameters(parameters2);
     when(metastore.getTable(DATABASE, TABLE2)).thenReturn(hiveTable2);
@@ -158,4 +160,16 @@ public class TablesValidatorTest {
     assertThat(validationResult.getValidationFailures().get(1).getQualifiedTableName(), is(DATABASE + "." + TABLE2));
   }
 
+  @Test
+  public void validateWrapsTException() throws Exception {
+    when(metastore.getTable(DATABASE, TABLE1)).thenThrow(new TException("Connection Failure"));
+
+    TablesValidator validator = new TablesValidator(emptyTablesValidation);
+    try {
+      validator.validate(metastore, tables);
+      fail("Exception should have been thrown");
+    } catch (RuntimeException e) {
+      assertThat(e.getCause().getMessage(), is("Connection Failure"));
+    }
+  }
 }

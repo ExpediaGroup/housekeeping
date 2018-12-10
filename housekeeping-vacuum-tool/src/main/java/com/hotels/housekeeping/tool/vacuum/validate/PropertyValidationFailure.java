@@ -35,15 +35,14 @@ class PropertyValidationFailure implements ValidationFailure {
     this.table = table;
     this.tablesValidationConfig = tablesValidationConfig;
     this.tableParameters = tableParameters;
-
   }
 
   @Override
   public String getMessage() {
     String validationConfig = new Yaml().dump(tablesValidationConfig.getHiveTableProperties());
-    return "Property validation failed expected these properties: "
+    return "Property validation failed expected these properties: '"
         + validationConfig
-        + "but got these table parameters \n'"
+        + "' but got these table parameters \n'"
         + tableParameters
         + "'";
   }
@@ -52,4 +51,5 @@ class PropertyValidationFailure implements ValidationFailure {
   public String getQualifiedTableName() {
     return table.getDatabaseName() + "." + table.getTableName();
   }
+
 }

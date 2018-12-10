@@ -46,4 +46,5 @@ class UnexpectedValidationFailure implements ValidationFailure {
   public String getQualifiedTableName() {
     return table.getDatabaseName() + "." + table.getTableName();
   }
+
 }
