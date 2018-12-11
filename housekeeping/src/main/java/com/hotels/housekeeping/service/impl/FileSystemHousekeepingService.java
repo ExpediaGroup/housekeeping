@@ -32,14 +32,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import com.hotels.housekeeping.HousekeepingException;
+import com.hotels.housekeeping.conf.Housekeeping;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
 
 public class FileSystemHousekeepingService implements HousekeepingService {
   private static final Logger LOG = LoggerFactory.getLogger(FileSystemHousekeepingService.class);
-
-  private static final int DEFAULT_PAGE_SIZE = 1000;
 
   private final LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository;
 
@@ -50,7 +49,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
   public FileSystemHousekeepingService(
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf) {
-    this(legacyReplicaPathRepository, conf, DEFAULT_PAGE_SIZE);
+    this(legacyReplicaPathRepository, conf, Housekeeping.DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE);
   }
 
   public FileSystemHousekeepingService(
@@ -116,7 +115,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       Page<LegacyReplicaPath> page;
       do {
         page = legacyReplicaPathRepository.findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
-        proceesPage(page);
+        processPage(page);
       } while (page.hasNext());
     } catch (Exception e) {
       throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
@@ -124,7 +123,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     }
   }
 
-  private void proceesPage(Page<LegacyReplicaPath> page) {
+  private void processPage(Page<LegacyReplicaPath> page) {
     for (LegacyReplicaPath cleanUpPath : page) {
       cleanUpPath = fixIncompleteRecord(cleanUpPath);
       housekeepPath(cleanUpPath);

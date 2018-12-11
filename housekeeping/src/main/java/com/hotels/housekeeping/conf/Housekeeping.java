@@ -27,6 +27,8 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "housekeeping")
 public class Housekeeping {
 
+  public static final int DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE = 500;
+
   @NotNull(message = "housekeeping.expiredPathDuration must not be null")
   private Duration expiredPathDuration = Duration.standardDays(3);
 
@@ -35,7 +37,7 @@ public class Housekeeping {
   private DataSource dataSource = new DataSource();
 
   @Min(1)
-  private int fetchLegacyReplicaPathPageSize = 500;
+  private int fetchLegacyReplicaPathPageSize = DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE;
 
   public Duration getExpiredPathDuration() {
     return expiredPathDuration;

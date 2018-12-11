@@ -52,9 +52,9 @@ Full list of configuration options:
 |`housekeeping.db-init-script`|No|Database init script to use. Default: 'classpath:/schema.sql'
 |`housekeeping.data-source.driver-class-name`|No|Java classname of the database JDBC driver.|
 |`housekeeping.data-source.url`|No|JDBC connection URL.|
-|`housekeeping.data-source.username`|No|database user with access to schema.|
-|`housekeeping.data-source.password`|No|database user's password.|
-|`housekeeping.fetch-legacy-replica-path-page-size`|No| Page size of database fetch, tune this if you run out of memory or if it the query seems too slow. Higher number will use more memory. Default: '500'|
+|`housekeeping.data-source.username`|No|Database user with access to schema.|
+|`housekeeping.data-source.password`|No|Database user's password.|
+|`housekeeping.fetch-legacy-replica-path-page-size`|No|Number of paths to fetch on each call to the database, tune this if you run out of memory or if the query seems too slow. The higher the number, the more memory is required. Default: '500'|
 
 
 

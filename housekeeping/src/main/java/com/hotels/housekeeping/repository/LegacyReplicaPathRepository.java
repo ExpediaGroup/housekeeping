@@ -30,6 +30,6 @@ public interface LegacyReplicaPathRepository<T extends LegacyReplicaPath> extend
   // http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods
   List<T> findByCreationTimestampLessThanEqual(long creationTimestamp);
 
-  Page<T> findByCreationTimestampLessThanEqual(long creationTimestamp, Pageable pageAble);
+  Page<T> findByCreationTimestampLessThanEqual(long creationTimestamp, Pageable pageable);
 
 }
