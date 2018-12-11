@@ -56,6 +56,8 @@ import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
@@ -118,8 +120,25 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void cleanUp() throws Exception {
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3)));
+
+    service.cleanUp(now);
+
+    verify(legacyReplicationPathRepository).delete(cleanUpPath1);
+    verify(legacyReplicationPathRepository).delete(cleanUpPath2);
+    verify(legacyReplicationPathRepository).delete(cleanUpPath3);
+    deleted(eventPath);
+  }
+
+  @Test
+  public void cleanUpWithPaging() throws Exception {
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1), new PageRequest(0, 1), 3))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath2), new PageRequest(1, 1), 3))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath3), new PageRequest(2, 1), 3));
 
     service.cleanUp(now);
 
@@ -135,8 +154,9 @@ public class FileSystemHousekeepingServiceTest {
     PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(new Path(cleanUpPath2.getPath())));
     PowerMockito.doReturn(spyFs).when(service, "fileSystemForPath", eq(new Path(cleanUpPath3.getPath())));
 
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3)));
 
     service.cleanUp(now);
 
@@ -151,8 +171,9 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void housekeepingPathThatDoesntExistSkipsDeleteAndRemovesPathFromHousekeepingDatabase() throws Exception {
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1)));
     doReturn(false).when(spyFs).exists(any(Path.class));
 
     service.cleanUp(now);
@@ -164,8 +185,9 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void deleteFailureDoesntRemovePathFromHousekeepingDatabase() throws Exception {
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1)));
     doThrow(new RuntimeException()).when(spyFs).delete(eq(new Path(cleanUpPath1.getPath())), eq(true));
 
     service.cleanUp(now);
@@ -181,8 +203,9 @@ public class FileSystemHousekeepingServiceTest {
         .when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors", any(Path.class), any(Path.class),
             any(FileSystem.class));
 
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1)));
 
     service.cleanUp(now);
 
@@ -199,8 +222,9 @@ public class FileSystemHousekeepingServiceTest {
         .when(service, "oneOfMySiblingsWillTakeCareOfMyAncestors", any(Path.class), any(Path.class),
             any(FileSystem.class));
 
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1)));
 
     service.cleanUp(now);
 
@@ -209,8 +233,9 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void eventuallyConsistentCleanUpFull() throws Exception {
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3)));
 
     doReturn(false).when(spyFs).delete(val1Path, true);
     service.cleanUp(now);
@@ -222,8 +247,9 @@ public class FileSystemHousekeepingServiceTest {
     verify(legacyReplicationPathRepository).delete(cleanUpPath3);
 
     reset(legacyReplicationPathRepository);
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1)));
     reset(spyFs);
     doReturn(false).when(spyFs).delete(eventPath, false);
     doCallRealMethod().when(spyFs).delete(val1Path, true);
@@ -234,8 +260,9 @@ public class FileSystemHousekeepingServiceTest {
     verify(legacyReplicationPathRepository, never()).delete(cleanUpPath1);
 
     reset(legacyReplicationPathRepository);
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1)));
     doCallRealMethod().when(spyFs).delete(eventPath, false);
     service.cleanUp(now);
     deleted(eventPath);
@@ -244,8 +271,9 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void eventuallyConsistentCleanUpRemainingPartition() throws Exception {
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1, cleanUpPath2)));
 
     doReturn(false).when(spyFs).delete(val1Path, true);
     service.cleanUp(now);
@@ -256,8 +284,9 @@ public class FileSystemHousekeepingServiceTest {
     verify(legacyReplicationPathRepository).delete(cleanUpPath2);
 
     reset(legacyReplicationPathRepository);
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1)));
     doReturn(false).when(spyFs).delete(eventPath, false);
     doCallRealMethod().when(spyFs).delete(val1Path, true);
     service.cleanUp(now);
@@ -268,8 +297,10 @@ public class FileSystemHousekeepingServiceTest {
 
     reset(legacyReplicationPathRepository);
     // return empty list as val3Parh is still in use.
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Collections.<LegacyReplicaPath> emptyList());
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Collections.<LegacyReplicaPath> emptyList()));
+
     service.cleanUp(now);
     verify(legacyReplicationPathRepository, never()).delete(any(LegacyReplicaPath.class));
     exists(eventPath, val3Path);
@@ -281,11 +312,10 @@ public class FileSystemHousekeepingServiceTest {
     LegacyReplicaPath cleanUpPath4 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val4Path.toString(),
         null, null);
 
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath4));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath4)));
 
-    doCallRealMethod().when(spyFs).delete(val4Path, true);
-    doCallRealMethod().when(spyFs).exists(val4Path);
     doReturn(false).when(spyFs).exists(eventPath);
     service.cleanUp(now);
 
@@ -295,8 +325,9 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void cleanUpNonEmptyParent() throws Exception {
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1, cleanUpPath2)));
 
     service.cleanUp(now);
 
@@ -309,8 +340,9 @@ public class FileSystemHousekeepingServiceTest {
   @Test
   public void onePathCannotBeDeleted() throws Exception {
     doThrow(new IOException()).when(spyFs).delete(val2Path, true);
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3)));
 
     service.cleanUp(now);
 
@@ -324,8 +356,9 @@ public class FileSystemHousekeepingServiceTest {
   @Test
   public void filesystemParentPathDeletionFailsKeepsCleanUpPathForRetry() throws Exception {
     doThrow(new IOException("Can't delete parent!")).when(spyFs).delete(test1Path, false);
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1, cleanUpPath2, cleanUpPath3)));
 
     service.cleanUp(now);
 
@@ -340,8 +373,9 @@ public class FileSystemHousekeepingServiceTest {
   @Test
   public void repositoryDeletionFailsHousekeepingContinues() throws Exception {
     doThrow(new RuntimeException()).when(legacyReplicationPathRepository).delete(cleanUpPath1);
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1)));
 
     service.cleanUp(now);
   }
@@ -351,8 +385,9 @@ public class FileSystemHousekeepingServiceTest {
     doThrow(new ObjectOptimisticLockingFailureException("Error", new Exception()))
         .when(legacyReplicationPathRepository)
         .delete(cleanUpPath1);
-    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Arrays.asList(cleanUpPath1, cleanUpPath2));
+    when(legacyReplicationPathRepository
+        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1, cleanUpPath2)));
     service.cleanUp(now);
     // all paths will still be deleted
     deleted(val1Path, val2Path);

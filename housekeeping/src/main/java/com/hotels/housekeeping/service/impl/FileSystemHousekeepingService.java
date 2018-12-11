@@ -39,17 +39,27 @@ import com.hotels.housekeeping.service.HousekeepingService;
 public class FileSystemHousekeepingService implements HousekeepingService {
   private static final Logger LOG = LoggerFactory.getLogger(FileSystemHousekeepingService.class);
 
-  private static final int PAGE_SIZE = 100;
+  private static final int DEFAULT_PAGE_SIZE = 1000;
 
   private final LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository;
 
   private final Configuration conf;
 
+  private final int fetchLegacyReplicaPathPageSize;
+
   public FileSystemHousekeepingService(
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf) {
+    this(legacyReplicaPathRepository, conf, DEFAULT_PAGE_SIZE);
+  }
+
+  public FileSystemHousekeepingService(
+      LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
+      Configuration conf,
+      int fetchLegacyReplicaPathPageSize) {
     this.legacyReplicaPathRepository = legacyReplicaPathRepository;
     this.conf = conf;
+    this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
     // TODO remove this when there are no more records around that hit this.
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
@@ -102,21 +112,22 @@ public class FileSystemHousekeepingService implements HousekeepingService {
   @Override
   public void cleanUp(Instant referenceTime) {
     try {
-
-      Pageable pageRequest = new PageRequest(0, PAGE_SIZE);
-      Page<LegacyReplicaPath> page = legacyReplicaPathRepository
-          .findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
-      while (page.hasNext()) {
-        for (LegacyReplicaPath cleanUpPath : page) {
-          cleanUpPath = fixIncompleteRecord(cleanUpPath);
-          housekeepPath(cleanUpPath);
-        }
-        page = legacyReplicaPathRepository
-            .findByCreationTimestampLessThanEqual(referenceTime.getMillis(), page.nextPageable());
-      }
+      Pageable pageRequest = new PageRequest(0, fetchLegacyReplicaPathPageSize);
+      Page<LegacyReplicaPath> page;
+      do {
+        page = legacyReplicaPathRepository.findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
+        proceesPage(page);
+      } while (page.hasNext());
     } catch (Exception e) {
       throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
           e);
+    }
+  }
+
+  private void proceesPage(Page<LegacyReplicaPath> page) {
+    for (LegacyReplicaPath cleanUpPath : page) {
+      cleanUpPath = fixIncompleteRecord(cleanUpPath);
+      housekeepPath(cleanUpPath);
     }
   }
 

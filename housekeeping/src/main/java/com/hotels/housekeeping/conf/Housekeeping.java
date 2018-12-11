@@ -16,6 +16,7 @@
 package com.hotels.housekeeping.conf;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.Duration;
@@ -33,6 +34,9 @@ public class Housekeeping {
   @Valid
   private DataSource dataSource = new DataSource();
 
+  @Min(1)
+  private int fetchLegacyReplicaPathPageSize = 500;
+
   public Duration getExpiredPathDuration() {
     return expiredPathDuration;
   }
@@ -47,6 +51,14 @@ public class Housekeeping {
 
   public void setDataSource(DataSource dataSource) {
     this.dataSource = dataSource;
+  }
+
+  public int getFetchLegacyReplicaPathPageSize() {
+    return fetchLegacyReplicaPathPageSize;
+  }
+
+  public void setFetchLegacyReplicaPathPageSize(int fetchLegacyReplicaPathPageSize) {
+    this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
   }
 
 }

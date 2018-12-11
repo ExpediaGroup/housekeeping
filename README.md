@@ -44,6 +44,20 @@ If the schema does not already exist and the `db-init-script` is not in the defa
 
 Where `/tmp/schema.sql` contains: `CREATE SCHEMA IF NOT EXISTS my_db;`
 
+Full list of configuration options:
+|Property|Required|Description|
+|----|----|----|
+|`housekeeping.expired-path-duration`|No|Time To Live (TTL) of legacy replica paths in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) format: only days, hours, minutes and seconds can be specified in the expression.|
+|`housekeeping.schema-name`|Yes|Database schema name to use. Tables will be created or used (if already existing) using this schema. Default: 'housekeeping'|
+|`housekeeping.db-init-script`|No|Database init script to use. Default: 'classpath:/schema.sql'
+|`housekeeping.data-source.driver-class-name`|No|Java classname of the database JDBC driver.|
+|`housekeeping.data-source.url`|No|JDBC connection URL.|
+|`housekeeping.data-source.username`|No|database user with access to schema.|
+|`housekeeping.data-source.password`|No|database user's password.|
+|`housekeeping.fetch-legacy-replica-path-page-size`|No| Page size of database fetch, tune this if you run out of memory or if it the query seems too slow. Higher number will use more memory. Default: '500'|
+
+
+
 You can override Spring Boot (HikariCP/Hibernate) settings in the YAML by providing the relevant properties. Housekeeping defaults are added with lower precedence. For example, to override the default connection pool maximum active size to 5 add this:
 
     spring.datasource.max-active: 5 
@@ -74,8 +88,8 @@ Housekeeping comes with a default `HousekeepingService` implementation, however 
 
     @Bean
     HousekeepingService housekeepingService(
-        LegacyReplicaPathRepository legacyReplicaPathRepository) {
-      return new FileSystemHousekeepingService(legacyReplicaPathRepository, new org.apache.hadoop.conf.Configuration());
+        LegacyReplicaPathRepository legacyReplicaPathRepository, HouseKeeping houseKeeping) {
+      return new FileSystemHousekeepingService(legacyReplicaPathRepository, new org.apache.hadoop.conf.Configuration(), houseKeeping.getFetchLegacyReplicaPathPageSize());
     }
 
 The default provided housekeeping implementation creates a database named `housekeeping` and a table named `legacy_replica_path` to store the housekeeping data. To enable this database you must provide a _schema.sql_ file which contains any SQL code that must be run to initialise your database upon application startup. This is particularly important if running Housekeeping in your application for the first time.
