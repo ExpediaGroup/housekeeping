@@ -52,10 +52,10 @@ Full list of configuration options:
 |`housekeeping.db-init-script`|No|Database init script to use. Default: 'classpath:/schema.sql'
 |`housekeeping.data-source.driver-class-name`|No|Java classname of the database JDBC driver.|
 |`housekeeping.data-source.url`|No|JDBC connection URL.|
-|`housekeeping.h2.database`|No|If the `housekeeping.data-source.url` is not overridden then the default H2 database can be configured using this property which also controls where H2 will write its database files. Defaults to `${instance.home}/data/${instance.name}/housekeeping` (where `instance.home` and `instance.name` can be configured separately for more fine grained control).|
+|`housekeeping.h2.database`|No|If the `housekeeping.data-source.url` is not overridden then the default H2 database can be configured using this property which also controls where H2 will write its database files. Defaults to `${instance.home}/data/${instance.name}/housekeeping` (where `instance.home` and `instance.name` can be configured separately for more fine-grained control).|
 |`housekeeping.data-source.username`|No|Database user with access to schema.|
 |`housekeeping.data-source.password`|No|Database user's password.|
-|`housekeeping.fetch-legacy-replica-path-page-size`|No|Number of paths to fetch on each call to the database, tune this if you run out of memory or if the query seems too slow. The higher the number, the more memory is required. Default: '500'|
+|`housekeeping.fetch-legacy-replica-path-page-size`|No|Number of paths to fetch on each call to the database. Tune this if you run out of memory or if the query seems too slow. The higher the number, the more memory is required. Default: '500'|
 
 
 
@@ -89,8 +89,8 @@ Housekeeping comes with a default `HousekeepingService` implementation, however 
 
     @Bean
     HousekeepingService housekeepingService(
-        LegacyReplicaPathRepository legacyReplicaPathRepository, HouseKeeping houseKeeping) {
-      return new FileSystemHousekeepingService(legacyReplicaPathRepository, new org.apache.hadoop.conf.Configuration(), houseKeeping.getFetchLegacyReplicaPathPageSize());
+        LegacyReplicaPathRepository legacyReplicaPathRepository, Housekeeping housekeeping) {
+      return new FileSystemHousekeepingService(legacyReplicaPathRepository, new org.apache.hadoop.conf.Configuration(), housekeeping.getFetchLegacyReplicaPathPageSize());
     }
 
 The default provided housekeeping implementation creates a database named `housekeeping` and a table named `legacy_replica_path` to store the housekeeping data. To enable this database you must provide a _schema.sql_ file which contains any SQL code that must be run to initialise your database upon application startup. This is particularly important if running Housekeeping in your application for the first time.
