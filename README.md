@@ -45,6 +45,7 @@ If the schema does not already exist and the `db-init-script` is not in the defa
 Where `/tmp/schema.sql` contains: `CREATE SCHEMA IF NOT EXISTS my_db;`
 
 Full list of configuration options:
+
 |Property|Required|Description|
 |----|----|----|
 |`housekeeping.expired-path-duration`|No|Time To Live (TTL) of legacy replica paths in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) format: only days, hours, minutes and seconds can be specified in the expression.|
