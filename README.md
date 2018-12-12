@@ -52,7 +52,7 @@ Full list of configuration options:
 |`housekeeping.db-init-script`|No|Database init script to use. Default: 'classpath:/schema.sql'
 |`housekeeping.data-source.driver-class-name`|No|Java classname of the database JDBC driver.|
 |`housekeeping.data-source.url`|No|JDBC connection URL.|
-|`housekeeping.h2.database`|No|If the `housekeeping.data-source.url` is not overridden the defult H2 database is configured. The folder where H2 will write the database files is configured with this property. Defaults to `${instance.home}/data/${instance.name}/housekeeping`. Where `instance.home` and `instance.name` can be configured separately for more fine grained control.|
+|`housekeeping.h2.database`|No|If the `housekeeping.data-source.url` is not overridden then the default H2 database can be configured using this property which also controls where H2 will write its database files. Defaults to `${instance.home}/data/${instance.name}/housekeeping` (where `instance.home` and `instance.name` can be configured separately for more fine grained control).|
 |`housekeeping.data-source.username`|No|Database user with access to schema.|
 |`housekeeping.data-source.password`|No|Database user's password.|
 |`housekeeping.fetch-legacy-replica-path-page-size`|No|Number of paths to fetch on each call to the database, tune this if you run out of memory or if the query seems too slow. The higher the number, the more memory is required. Default: '500'|
