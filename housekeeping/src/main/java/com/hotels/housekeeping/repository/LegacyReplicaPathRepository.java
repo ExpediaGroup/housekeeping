@@ -17,6 +17,8 @@ package com.hotels.housekeeping.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -27,5 +29,7 @@ public interface LegacyReplicaPathRepository<T extends LegacyReplicaPath> extend
 
   // http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods
   List<T> findByCreationTimestampLessThanEqual(long creationTimestamp);
+
+  Page<T> findByCreationTimestampLessThanEqual(long creationTimestamp, Pageable pageable);
 
 }

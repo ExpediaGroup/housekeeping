@@ -16,6 +16,7 @@
 package com.hotels.housekeeping.conf;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.Duration;
@@ -26,12 +27,17 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "housekeeping")
 public class Housekeeping {
 
+  public static final int DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE = 500;
+
   @NotNull(message = "housekeeping.expiredPathDuration must not be null")
   private Duration expiredPathDuration = Duration.standardDays(3);
 
   @NotNull(message = "housekeeping.dataSource must not be null")
   @Valid
   private DataSource dataSource = new DataSource();
+
+  @Min(1)
+  private int fetchLegacyReplicaPathPageSize = DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE;
 
   public Duration getExpiredPathDuration() {
     return expiredPathDuration;
@@ -47,6 +53,14 @@ public class Housekeeping {
 
   public void setDataSource(DataSource dataSource) {
     this.dataSource = dataSource;
+  }
+
+  public int getFetchLegacyReplicaPathPageSize() {
+    return fetchLegacyReplicaPathPageSize;
+  }
+
+  public void setFetchLegacyReplicaPathPageSize(int fetchLegacyReplicaPathPageSize) {
+    this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
   }
 
 }

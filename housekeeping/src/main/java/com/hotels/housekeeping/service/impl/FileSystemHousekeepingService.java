@@ -18,7 +18,6 @@ package com.hotels.housekeeping.service.impl;
 import static java.lang.String.format;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -27,9 +26,13 @@ import org.apache.hadoop.fs.Path;
 import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import com.hotels.housekeeping.HousekeepingException;
+import com.hotels.housekeeping.conf.Housekeeping;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
@@ -37,13 +40,25 @@ import com.hotels.housekeeping.service.HousekeepingService;
 public class FileSystemHousekeepingService implements HousekeepingService {
   private static final Logger LOG = LoggerFactory.getLogger(FileSystemHousekeepingService.class);
 
-  private final LegacyReplicaPathRepository legacyReplicaPathRepository;
+  private final LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository;
 
   private final Configuration conf;
 
-  public FileSystemHousekeepingService(LegacyReplicaPathRepository legacyReplicaPathRepository, Configuration conf) {
+  private final int fetchLegacyReplicaPathPageSize;
+
+  public FileSystemHousekeepingService(
+      LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
+      Configuration conf) {
+    this(legacyReplicaPathRepository, conf, Housekeeping.DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE);
+  }
+
+  public FileSystemHousekeepingService(
+      LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
+      Configuration conf,
+      int fetchLegacyReplicaPathPageSize) {
     this.legacyReplicaPathRepository = legacyReplicaPathRepository;
     this.conf = conf;
+    this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
     // TODO remove this when there are no more records around that hit this.
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
@@ -82,9 +97,10 @@ public class FileSystemHousekeepingService implements HousekeepingService {
           LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
           legacyReplicaPathRepository.delete(cleanUpPath);
         } catch (ObjectOptimisticLockingFailureException e) {
-          LOG.debug(
-              "Failed to delete path '{}': probably already cleaned up by process running at same time. Ok to ignore. {}",
-              cleanUpPath, e.getMessage());
+          LOG
+              .debug(
+                  "Failed to delete path '{}': probably already cleaned up by process running at same time. Ok to ignore. {}",
+                  cleanUpPath, e.getMessage());
         }
       }
     } catch (Exception e) {
@@ -95,15 +111,22 @@ public class FileSystemHousekeepingService implements HousekeepingService {
   @Override
   public void cleanUp(Instant referenceTime) {
     try {
-      List<LegacyReplicaPath> pathsToDelete = legacyReplicaPathRepository
-          .findByCreationTimestampLessThanEqual(referenceTime.getMillis());
-      for (LegacyReplicaPath cleanUpPath : pathsToDelete) {
-        cleanUpPath = fixIncompleteRecord(cleanUpPath);
-        housekeepPath(cleanUpPath);
-      }
+      Pageable pageRequest = new PageRequest(0, fetchLegacyReplicaPathPageSize);
+      Page<LegacyReplicaPath> page;
+      do {
+        page = legacyReplicaPathRepository.findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
+        processPage(page);
+      } while (page.hasNext());
     } catch (Exception e) {
       throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
           e);
+    }
+  }
+
+  private void processPage(Page<LegacyReplicaPath> page) {
+    for (LegacyReplicaPath cleanUpPath : page) {
+      cleanUpPath = fixIncompleteRecord(cleanUpPath);
+      housekeepPath(cleanUpPath);
     }
   }
 
