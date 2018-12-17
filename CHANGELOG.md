@@ -1,4 +1,4 @@
-## TBD
+## [3.0.0] - 2018-12-12
 ### Added
 * vacuum-tool: Added validation of configured tables, see housekeeping-vacuum-tool/README.md: tables-validation. 
 ### Changed
