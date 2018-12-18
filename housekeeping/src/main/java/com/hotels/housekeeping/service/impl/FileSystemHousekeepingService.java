@@ -70,7 +70,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
         LOG.warn("Path '{}' does not exist.", cleanUpPath);
       }
       rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
-    } catch (IOException e) {
+    } catch (Exception e) {
       LOG.warn("Unable to delete path '{}' from file system. Will try next time. {}", cleanUpPath, e.getMessage());
       return;
     }

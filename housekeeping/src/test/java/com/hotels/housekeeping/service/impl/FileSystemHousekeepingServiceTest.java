@@ -82,7 +82,7 @@ public class FileSystemHousekeepingServiceTest {
   private LegacyReplicaPath cleanUpPath2;
   private LegacyReplicaPath cleanUpPath3;
 
-  private @Mock LegacyReplicaPathRepository legacyReplicationPathRepository;
+  private @Mock LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicationPathRepository;
   private @Spy final FileSystem spyFs = new LocalFileSystem();
   private final Configuration conf = new Configuration();
 
@@ -102,15 +102,6 @@ public class FileSystemHousekeepingServiceTest {
     cleanUpPath1 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val1Path.toString(), null, null);
     cleanUpPath2 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val2Path.toString(), null, null);
     cleanUpPath3 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val3Path.toString(), null, null);
-    int i = 0;
-    if (i <= 0) {
-      i++;
-    } else if (i > 10) {
-      i--;
-    } else {
-      i++;
-    }
-
   }
 
   @Test
