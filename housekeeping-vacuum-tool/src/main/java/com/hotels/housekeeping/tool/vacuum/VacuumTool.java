@@ -52,8 +52,9 @@ public class VacuumTool {
               .build()
               .run(args));
     } catch (BeanCreationException e) {
-      if (e.getMostSpecificCause() instanceof BindException) {
-        printVacuumToolHelp(((BindException) e.getMostSpecificCause()).getAllErrors());
+      Throwable mostSpecificCause = e.getMostSpecificCause();
+      if (mostSpecificCause instanceof BindException) {
+        printVacuumToolHelp(((BindException) mostSpecificCause).getAllErrors());
       }
       throw e;
     }

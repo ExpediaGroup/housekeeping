@@ -111,13 +111,11 @@ public class ManifestAttributes {
     if (jarLocation != null) {
       String containingJar = JAR_PROTOCOL + jarLocation.toString();
       Enumeration<URL> resources = protectionDomain.getClassLoader().getResources(META_INF_MANIFEST_MF);
-      if (resources != null) {
-        while (resources.hasMoreElements()) {
-          URL url = resources.nextElement();
-          if (url.toString().startsWith(containingJar)) {
-            LOG.debug("Found a manifest in location {}", url);
-            return url;
-          }
+      while (resources.hasMoreElements()) {
+        URL url = resources.nextElement();
+        if (url.toString().startsWith(containingJar)) {
+          LOG.debug("Found a manifest in location {}", url);
+          return url;
         }
       }
     }

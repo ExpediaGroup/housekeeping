@@ -61,7 +61,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     final Path rootPath;
     final FileSystem fs;
     try {
-      fs = fileSystemForPath(new Path(cleanUpPath.getPath()));
+      fs = fileSystemForPath(path);
       LOG.info("Attempting to delete path '{}' from file system", cleanUpPath);
       if (fs.exists(path)) {
         fs.delete(path, true);
@@ -70,7 +70,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
         LOG.warn("Path '{}' does not exist.", cleanUpPath);
       }
       rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
-    } catch (Exception e) {
+    } catch (IOException e) {
       LOG.warn("Unable to delete path '{}' from file system. Will try next time. {}", cleanUpPath, e.getMessage());
       return;
     }

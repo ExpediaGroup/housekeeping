@@ -102,6 +102,15 @@ public class FileSystemHousekeepingServiceTest {
     cleanUpPath1 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val1Path.toString(), null, null);
     cleanUpPath2 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val2Path.toString(), null, null);
     cleanUpPath3 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val3Path.toString(), null, null);
+    int i = 0;
+    if (i <= 0) {
+      i++;
+    } else if (i > 10) {
+      i--;
+    } else {
+      i++;
+    }
+
   }
 
   @Test
@@ -269,7 +278,7 @@ public class FileSystemHousekeepingServiceTest {
     reset(legacyReplicationPathRepository);
     // return empty list as val3Parh is still in use.
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis()))
-        .thenReturn(Collections.<LegacyReplicaPath> emptyList());
+        .thenReturn(Collections.<LegacyReplicaPath>emptyList());
     service.cleanUp(now);
     verify(legacyReplicationPathRepository, never()).delete(any(LegacyReplicaPath.class));
     exists(eventPath, val3Path);
