@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.hotels.housekeeping.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -27,5 +29,7 @@ public interface LegacyReplicaPathRepository<T extends LegacyReplicaPath> extend
 
   // http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods
   List<T> findByCreationTimestampLessThanEqual(long creationTimestamp);
+
+  Page<T> findByCreationTimestampLessThanEqual(long creationTimestamp, Pageable pageable);
 
 }

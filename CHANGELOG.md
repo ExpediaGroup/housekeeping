@@ -1,7 +1,8 @@
-## TBD
+## [3.0.0] - 2018-12-12
 ### Added
 * vacuum-tool: Added validation of configured tables, see housekeeping-vacuum-tool/README.md: tables-validation. 
 ### Changed
+* Database objects are fetched using paging to have an upper limit on the number of them. See [#40](https://github.com/HotelsDotCom/housekeeping/issues/40).
 * Added db name and table name columns to housekeeping tables. See [#30](https://github.com/HotelsDotCom/housekeeping/issues/30).
 * Changed default max-active connection pool size from 50 to 2 as it was unnecessarily large and having multiple housekeeping jobs was causing RDS issues (too many open connections).
 
