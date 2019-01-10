@@ -50,10 +50,10 @@ public class HousekeepingConfiguration {
   private static final String HOUSEKEEPING_ENVIRONMENT = "housekeepingEnvironment";
 
   @Autowired
-  ConfigurableEnvironment env;
+  private ConfigurableEnvironment env;
 
   @Autowired
-  ApplicationContext springContext;
+  private ApplicationContext springContext;
 
   @PostConstruct
   public void postConstruct() {
@@ -66,7 +66,7 @@ public class HousekeepingConfiguration {
   public Map<String, Object> housekeepingEnvironment() {
     log.info("Loading default {}", HOUSEKEEPING_ENVIRONMENT);
     Map<String, Object> properties = ImmutableMap
-        .<String, Object> builder()
+        .<String, Object>builder()
         .put("spring.jpa.hibernate.ddl-auto", "update")
         .put("spring.jpa.hibernate.generate-ddl", true)
         .put("spring.jpa.properties.org.hibernate.envers.store_data_at_delete", true)

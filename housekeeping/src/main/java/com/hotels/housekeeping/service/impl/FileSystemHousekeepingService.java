@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     final Path rootPath;
     final FileSystem fs;
     try {
-      fs = fileSystemForPath(new Path(cleanUpPath.getPath()));
+      fs = fileSystemForPath(path);
       LOG.info("Attempting to delete path '{}' from file system", cleanUpPath);
       if (fs.exists(path)) {
         fs.delete(path, true);
@@ -98,9 +98,8 @@ public class FileSystemHousekeepingService implements HousekeepingService {
           legacyReplicaPathRepository.delete(cleanUpPath);
         } catch (ObjectOptimisticLockingFailureException e) {
           LOG
-              .debug(
-                  "Failed to delete path '{}': probably already cleaned up by process running at same time. Ok to ignore. {}",
-                  cleanUpPath, e.getMessage());
+              .debug("Failed to delete path '{}': probably already cleaned up by process running at same time. "
+                  + "Ok to ignore. {}", cleanUpPath, e.getMessage());
         }
       }
     } catch (Exception e) {

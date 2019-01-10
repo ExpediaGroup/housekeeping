@@ -19,6 +19,7 @@ import static com.hotels.hcommon.hive.metastore.util.LocationUtils.locationAsPat
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -52,8 +53,9 @@ class PartitionedTablePathResolver implements TablePathResolver {
     tableBaseLocation = locationAsPath(table);
     List<Partition> onePartition = metastore.listPartitions(table.getDbName(), table.getTableName(), (short) 1);
     if (onePartition.isEmpty()) {
-      LOG.warn("Table '{}' has no partitions, perhaps you can simply delete: {}.", Warehouse.getQualifiedName(table),
-          tableBaseLocation);
+      LOG
+          .warn("Table '{}' has no partitions, perhaps you can simply delete: {}.", Warehouse.getQualifiedName(table),
+              tableBaseLocation);
       throw new ConfigurationException();
     }
     Path partitionLocation = locationAsPath(onePartition.get(0));
@@ -80,7 +82,10 @@ class PartitionedTablePathResolver implements TablePathResolver {
     while (partitionIterator.hasNext()) {
       Partition partition = partitionIterator.next();
       Path location = PathUtils.normalise(locationAsPath(partition));
-      if (!location.toString().toLowerCase().startsWith(tableBaseLocation.toString().toLowerCase())) {
+      if (!location
+          .toString()
+          .toLowerCase(Locale.ROOT)
+          .startsWith(tableBaseLocation.toString().toLowerCase(Locale.ROOT))) {
         LOG.error("Check your configuration: '{}' does not appear to be part of '{}'.", location, tableBaseLocation);
         throw new ConfigurationException();
       }

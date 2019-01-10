@@ -100,8 +100,8 @@ public class VacuumToolConfiguration {
   Supplier<CloseableMetaStoreClient> metaStoreClientSupplier(
       Catalog catalog,
       @Value("#{hiveConf}") HiveConf hiveConf,
-      ConditionalMetaStoreClientFactoryManager ConditionalMetaStoreClientFactoryManager) {
-    MetaStoreClientFactory replicaMetaStoreClientFactory = ConditionalMetaStoreClientFactoryManager
+      ConditionalMetaStoreClientFactoryManager conditionalMetaStoreClientFactoryManager) {
+    MetaStoreClientFactory replicaMetaStoreClientFactory = conditionalMetaStoreClientFactoryManager
         .factoryForUri(catalog.getHiveMetastoreUris());
     return metaStoreClientSupplier(catalog.getName(), hiveConf, catalog.getMetastoreTunnel(),
         replicaMetaStoreClientFactory);
@@ -152,7 +152,7 @@ public class VacuumToolConfiguration {
   }
 
   @Bean
-  ConditionalMetaStoreClientFactoryManager ConditionalMetaStoreClientFactoryManager(
+  ConditionalMetaStoreClientFactoryManager conditionalMetaStoreClientFactoryManager(
       List<ConditionalMetaStoreClientFactory> factories) {
     return new ConditionalMetaStoreClientFactoryManager(factories);
   }

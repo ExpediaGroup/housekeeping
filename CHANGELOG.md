@@ -1,3 +1,8 @@
+## [TBD]
+### Changed
+* Refactored housekeeping and vacuum-tool to remove checkstyle and findbugs warnings, which does not impact functionality.
+* Upgraded `hotels-oss-parent` to 2.3.5 (was 2.3.3).
+
 ## [3.0.0] - 2018-12-12
 ### Added
 * vacuum-tool: Added validation of configured tables, see housekeeping-vacuum-tool/README.md: tables-validation. 
