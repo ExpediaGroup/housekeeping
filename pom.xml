@@ -9,7 +9,7 @@
   </parent>
   
   <artifactId>housekeeping-parent</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.3-SNAPSHOT</version>
   <inceptionYear>2016</inceptionYear>
   <packaging>pom</packaging>
 
@@ -22,7 +22,7 @@
     <connection>scm:git:git@github.com:HotelsDotCom/housekeeping.git</connection>
     <developerConnection>scm:git:git@github.com:HotelsDotCom/housekeeping.git</developerConnection>
     <url>https://github.com/HotelsDotCom/housekeeping</url>
-    <tag>housekeeping-parent-3.0.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
