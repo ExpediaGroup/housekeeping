@@ -1,4 +1,4 @@
-## TBD
+## [3.0.3] - 2019-01-15
 ### Fixed
 * Fixed never ending loop in paging query. See [#50](https://github.com/HotelsDotCom/housekeeping/issues/50).
 
