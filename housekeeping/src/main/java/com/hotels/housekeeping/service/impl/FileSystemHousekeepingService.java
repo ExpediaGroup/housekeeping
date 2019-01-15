@@ -63,12 +63,8 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
 
-  private FileSystem fileSystemForPath(Path path) {
-    try {
-      return path.getFileSystem(conf);
-    } catch (IOException e) {
-      throw new HousekeepingException(e);
-    }
+  private FileSystem fileSystemForPath(Path path) throws IOException {
+    return path.getFileSystem(conf);
   }
 
   private void housekeepPath(LegacyReplicaPath cleanUpPath) {
@@ -85,7 +81,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
         LOG.warn("Path '{}' does not exist.", cleanUpPath);
       }
       rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
-    } catch (Exception e) {
+    } catch (IOException e) {
       LOG.warn("Unable to delete path '{}' from file system. Will try next time. {}", cleanUpPath, e.getMessage());
       return;
     }
@@ -100,9 +96,11 @@ public class FileSystemHousekeepingService implements HousekeepingService {
           LOG
               .debug("Failed to delete path '{}': probably already cleaned up by process running at same time. "
                   + "Ok to ignore. {}", cleanUpPath, e.getMessage());
+        } catch (Exception e) {
+          LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
         }
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
       LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
     }
   }
@@ -150,8 +148,8 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     return !fs.exists(path) && !isEmpty(fs, rootPath);
   }
 
-  private Path deleteParents(FileSystem fs, Path path, String eventId) throws IOException {
-    if (eventId.equals(path.getName())) {
+  private Path deleteParents(FileSystem fs, Path path, String pathEventId) throws IOException {
+    if (pathEventId == null || pathEventId.equals(path.getName())) {
       return path;
     }
     Path parent = path.getParent();
@@ -159,7 +157,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       LOG.info("Deleting parent path '{}'", parent);
       fs.delete(parent, false);
     }
-    return deleteParents(fs, parent, eventId);
+    return deleteParents(fs, parent, pathEventId);
   }
 
   private boolean isEmpty(FileSystem fs, Path path) throws IOException {
