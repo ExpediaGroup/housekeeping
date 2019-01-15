@@ -58,6 +58,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
@@ -134,11 +135,17 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void cleanUpWithPaging() throws Exception {
-    when(legacyReplicationPathRepository
-        .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
-            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath1), new PageRequest(0, 1), 3))
-            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath2), new PageRequest(1, 1), 3))
-            .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath3), new PageRequest(2, 1), 3));
+    service = new FileSystemHousekeepingService(legacyReplicationPathRepository, conf, 1);
+    PageRequest pageRequest1 = new PageRequest(0, 1);
+    PageImpl<LegacyReplicaPath> page1 = new PageImpl<>(Arrays.asList(cleanUpPath1), pageRequest1, 3);
+    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis(), pageRequest1))
+        .thenReturn(page1);
+    Pageable pageRequest2 = pageRequest1.next();
+    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis(), pageRequest2))
+        .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath2), pageRequest2, 3));
+    Pageable pageRequest3 = pageRequest2.next();
+    when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis(), pageRequest3))
+        .thenReturn(new PageImpl<>(Arrays.asList(cleanUpPath3), pageRequest3, 3));
 
     service.cleanUp(now);
 
