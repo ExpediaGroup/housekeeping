@@ -109,11 +109,14 @@ public class FileSystemHousekeepingService implements HousekeepingService {
   public void cleanUp(Instant referenceTime) {
     try {
       Pageable pageRequest = new PageRequest(0, fetchLegacyReplicaPathPageSize);
-      Page<LegacyReplicaPath> page;
-      do {
+      Page<LegacyReplicaPath> page = legacyReplicaPathRepository
+          .findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
+      processPage(page);
+      while (page.hasNext()) {
+        pageRequest = pageRequest.next();
         page = legacyReplicaPathRepository.findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
         processPage(page);
-      } while (page.hasNext());
+      }
     } catch (Exception e) {
       throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
           e);
