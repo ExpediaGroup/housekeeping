@@ -2,16 +2,16 @@
 ### Fixed
 * Fixed never ending loop in paging query. See [#50](https://github.com/HotelsDotCom/housekeeping/issues/50).
 
-## [3.0.2] - 2019-01-15
+## [3.0.2] - 2019-01-15 [YANKED]
 ### Fixed
 * Fixed deletion of path entries in the database when `pathEventId` is null. See [#48](https://github.com/HotelsDotCom/housekeeping/issues/48).
 
-## [3.0.1] - 2019-01-10
+## [3.0.1] - 2019-01-10 [YANKED]
 ### Changed
 * Refactored housekeeping and vacuum-tool to remove checkstyle and findbugs warnings, which does not impact functionality.
 * Upgraded `hotels-oss-parent` to 2.3.5 (was 2.3.3).
 
-## [3.0.0] - 2018-12-12
+## [3.0.0] - 2018-12-12 [YANKED]
 ### Added
 * vacuum-tool: Added validation of configured tables, see housekeeping-vacuum-tool/README.md: tables-validation. 
 ### Changed
