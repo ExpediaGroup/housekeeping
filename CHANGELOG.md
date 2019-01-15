@@ -1,6 +1,6 @@
 ## [TBD]
 ### Fixed
-* Fixed deletion of path entries in the database when pathEventId is null. See [#48](https://github.com/HotelsDotCom/housekeeping/issues/48).
+* Fixed deletion of path entries in the database when `pathEventId` is null. See [#48](https://github.com/HotelsDotCom/housekeeping/issues/48).
 
 ## [3.0.1] - 2019-01-10
 ### Changed
