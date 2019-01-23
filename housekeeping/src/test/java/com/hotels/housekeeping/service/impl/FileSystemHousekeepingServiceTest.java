@@ -52,6 +52,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -327,7 +328,7 @@ public class FileSystemHousekeepingServiceTest {
     // return empty list as val3Parh is still in use.
     when(legacyReplicationPathRepository
         .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
-            .thenReturn(new PageImpl<>(Collections.<LegacyReplicaPath> emptyList()));
+            .thenReturn(new PageImpl<>(Collections.<LegacyReplicaPath>emptyList()));
 
     service.cleanUp(now);
     verify(legacyReplicationPathRepository, never()).delete(any(LegacyReplicaPath.class));
@@ -449,6 +450,17 @@ public class FileSystemHousekeepingServiceTest {
     matcher = pattern.matcher("s3://bucket-dj49488/ctp-20160726T162136.657Z-Vdqln6v7/2012/01/01/00/part-00000");
     matcher.matches();
     assertThat(matcher.group(1), is("ctp-20160726T162136.657Z-Vdqln6v7"));
+  }
+
+  @Test
+  public void housekeepPathWithNullParent() throws IOException {
+    Path nullParentPath = Mockito.mock(Path.class);
+    when(nullParentPath.getName()).thenReturn(test1Path.getName());
+    when(nullParentPath.getParent()).thenReturn(null);
+    when(nullParentPath.toUri()).thenReturn(test1Path.toUri());
+
+    Path deleteParents = service.deleteParents(spyFs, nullParentPath, PATH_EVENT_ID);
+    assertThat(deleteParents, is(nullParentPath));
   }
 
   private void deleted(Path... paths) {

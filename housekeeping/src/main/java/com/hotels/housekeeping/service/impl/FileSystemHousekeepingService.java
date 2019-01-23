@@ -31,6 +31,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import com.hotels.housekeeping.HousekeepingException;
 import com.hotels.housekeeping.conf.Housekeeping;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
@@ -151,8 +153,9 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     return !fs.exists(path) && !isEmpty(fs, rootPath);
   }
 
-  private Path deleteParents(FileSystem fs, Path path, String pathEventId) throws IOException {
-    if (pathEventId == null || pathEventId.equals(path.getName())) {
+  @VisibleForTesting
+  Path deleteParents(FileSystem fs, Path path, String pathEventId) throws IOException {
+    if (pathEventId == null || pathEventId.equals(path.getName()) || path.getParent() == null) {
       return path;
     }
     Path parent = path.getParent();
