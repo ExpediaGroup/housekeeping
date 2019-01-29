@@ -328,7 +328,7 @@ public class FileSystemHousekeepingServiceTest {
     // return empty list as val3Parh is still in use.
     when(legacyReplicationPathRepository
         .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
-            .thenReturn(new PageImpl<>(Collections.<LegacyReplicaPath>emptyList()));
+            .thenReturn(new PageImpl<>(Collections.<LegacyReplicaPath> emptyList()));
 
     service.cleanUp(now);
     verify(legacyReplicationPathRepository, never()).delete(any(LegacyReplicaPath.class));
@@ -461,6 +461,13 @@ public class FileSystemHousekeepingServiceTest {
 
     Path deleteParents = service.deleteParents(spyFs, nullParentPath, PATH_EVENT_ID);
     assertThat(deleteParents, is(nullParentPath));
+  }
+
+  @Test
+  public void deleteParentsStopRecursionIfParentIsNotEmpty() throws IOException {
+    Path path = new Path(tmpFolder.newFolder("foo", "bar", "shouldNotMatchPathEventId").getCanonicalPath());
+    Path rootPath = service.deleteParents(spyFs, path, PATH_EVENT_ID);
+    assertThat(rootPath, is(path.getParent()));
   }
 
   private void deleted(Path... paths) {
