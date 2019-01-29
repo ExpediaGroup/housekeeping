@@ -328,7 +328,7 @@ public class FileSystemHousekeepingServiceTest {
     // return empty list as val3Parh is still in use.
     when(legacyReplicationPathRepository
         .findByCreationTimestampLessThanEqual(eq(now.getMillis()), any(PageRequest.class)))
-            .thenReturn(new PageImpl<>(Collections.<LegacyReplicaPath> emptyList()));
+            .thenReturn(new PageImpl<>(Collections.<LegacyReplicaPath>emptyList()));
 
     service.cleanUp(now);
     verify(legacyReplicationPathRepository, never()).delete(any(LegacyReplicaPath.class));
