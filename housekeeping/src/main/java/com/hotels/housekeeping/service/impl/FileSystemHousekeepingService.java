@@ -159,9 +159,14 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       return path;
     }
     Path parent = path.getParent();
-    if (fs.exists(parent) && isEmpty(fs, parent)) {
-      LOG.info("Deleting parent path '{}'", parent);
-      fs.delete(parent, false);
+    if (fs.exists(parent)) {
+      if (isEmpty(fs, parent)) {
+        LOG.info("Deleting parent path '{}'", parent);
+        fs.delete(parent, false);
+        return deleteParents(fs, parent, pathEventId);
+      } else {
+        return parent;
+      }
     }
     return deleteParents(fs, parent, pathEventId);
   }
