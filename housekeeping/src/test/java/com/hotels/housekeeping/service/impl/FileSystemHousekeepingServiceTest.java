@@ -463,6 +463,13 @@ public class FileSystemHousekeepingServiceTest {
     assertThat(deleteParents, is(nullParentPath));
   }
 
+  @Test
+  public void deleteParentsStopRecursionIfParentIsNotEmpty() throws IOException {
+    Path path = new Path(tmpFolder.newFolder("foo", "bar", "shouldNotMatchPathEventId").getCanonicalPath());
+    Path rootPath = service.deleteParents(spyFs, path, PATH_EVENT_ID);
+    assertThat(rootPath, is(path.getParent()));
+  }
+
   private void deleted(Path... paths) {
     for (Path path : paths) {
       assertFalse(new File(path.toString()).exists());

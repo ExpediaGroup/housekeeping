@@ -1,3 +1,7 @@
+## TBD
+### Changed
+* Changed recursion logic to prevent unnecessary calls.
+
 ## [3.0.5] - 2019-01-23
 ### Fixed
 * NullPointerException when path does not have parent.
