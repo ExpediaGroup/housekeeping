@@ -59,12 +59,74 @@ public class HousekeepingConfiguration {
   public void postConstruct() {
     Map<String, Object> properties = (Map<String, Object>) springContext.getBean(HOUSEKEEPING_ENVIRONMENT);
     env.getPropertySources().addLast(new MapPropertySource(HOUSEKEEPING_ENVIRONMENT, properties));
+    log.info("--- env = {} ---", env);
+    log.info("--- env.getPropertySources() = {} ---", env.getPropertySources()); // ==
+                                                                                 // commandLineArgs,systemProperties,systemEnvironment,random,applicationConfig:
+                                                                                 // [file:/home/hadoop/specific-schema.yml],defaultProperties,housekeepingEnvironment]
+    log.info("--- env.getProperty(applicationConfig) = {} ---", env.getProperty("applicationConfig")); // == null
+    log.info("--- env.getProperty(housekeepingEnvironment) = {} ---", env.getProperty("housekeepingEnvironment")); // ==
+                                                                                                                   // null
+    log.info("--- env.getProperty(housekeeping.schema-name) = {} ---", env.getProperty("housekeeping.schema-name")); // ==
+                                                                                                                     // custom_database
+    log
+        .info("--- env.getProperty(housekeeping.db-init-script) = {} ---",
+            env.getProperty("housekeeping.db-init-script")); // == null
   }
 
   @Bean
   @ConditionalOnMissingBean(name = HOUSEKEEPING_ENVIRONMENT)
   public Map<String, Object> housekeepingEnvironment() {
-    log.info("Loading default {}", HOUSEKEEPING_ENVIRONMENT);
+
+    String schema = "${housekeeping.db-init-script:classpath:/schema.sql}";
+    log.info(">>> env = {} >>>", env);
+    log.info(">>> env.getPropertySources() = {} >>>", env.getPropertySources());
+    log.info(">>> env.getProperty(applicationConfig) = {} >>>", env.getProperty("applicationConfig"));
+    Object sysEnv = env.getPropertySources().get("systemEnvironment").getProperty("housekeeping.schema-name");
+    Object sysProp = env.getPropertySources().get("systemProperties").getProperty("housekeeping.schema-name");
+    Object defaultProp = env.getPropertySources().get("defaultProperties").getProperty("housekeeping.schema-name");
+    Object applicationConfig = env.getPropertySources().get("applicationConfig"); // == null
+    Object applicationConfigurationProperties = env.getPropertySources().get("applicationConfigurationProperties"); // ==
+                                                                                                                    // null
+    // hibernate.default_schema
+
+    // or applicationConfigurationProperties
+    log.info(">>> get(\"systemEnvironment\").getProperty(\"housekeeping.schema-name\") = {} >>>", sysEnv); // null
+    log.info(">>> get(\"systemProperties\").getProperty(\"housekeeping.schema-name\") = {} >>>", sysProp); // null
+    log.info(">>> get(\"defaultProperties\").getProperty(\"housekeeping.schema-name\") = {} >>>", defaultProp); // circus_train
+
+    String envPropertyString = ">>> env.getProperty({}) >>>";
+    String housekeepingSchema = "housekeeping.schema-name";
+    String hibernateSchema = "hibernate.default_schema";
+    String housekeepingInitScript = "housekeeping.db-init-script";
+    String initScript = env.getProperty(housekeepingInitScript);
+    String springSchema = "spring.datasource.schema";
+
+    log.info("{} = {} >>>", envPropertyString, housekeepingSchema, env.getProperty(housekeepingSchema)); // ==
+    log.info(">>> env.getProperty({}) = {} >>>", housekeepingSchema, env.getProperty(housekeepingSchema)); // ==
+                                                                                                           // custom_schema
+    log.info(">>> env.getProperty({}) = {} >>>", hibernateSchema, env.getProperty(hibernateSchema)); // == null
+    log.info(">>> env.getProperty({}) = {} >>>", housekeepingInitScript, env.getProperty(housekeepingInitScript)); // ==
+                                                                                                                   // null
+    log.info(">>> env.getProperty({}) = {} >>>", springSchema, env.getProperty(springSchema)); // doesn't exist yet;
+                                                                                               // housekeepingEnvironment
+
+    // if default property says that schema is circustrain but there is a different schema set, schema should be ""
+    if ("circus_train".equals(defaultProp) && !"circus_train".equals(env.getProperty(housekeepingSchema))) {
+      // schema = "";
+      log.info(">>> Schema would be null here >>>");
+    }
+
+    if (!defaultProp.equals(env.getProperty(housekeepingSchema))) {
+      log
+          .info(">>> default property is not equal to housekeeping.schema-name ; schema should become {} >>>",
+              initScript);
+      if (initScript != null) {
+        schema = env.getProperty("housekeeping.db-init-script");
+      } else {
+        schema = "";
+      }
+    }
+
     Map<String, Object> properties = ImmutableMap
         .<String, Object>builder()
         .put("spring.jpa.hibernate.ddl-auto", "update")
@@ -76,7 +138,7 @@ public class HousekeepingConfiguration {
         .put("spring.datasource.max-wait", 10000)
         .put("spring.datasource.max-active", 2)
         .put("spring.datasource.test-on-borrow", true)
-        .put("spring.datasource.schema", "${housekeeping.db-init-script:classpath:/schema.sql}")
+        .put("spring.datasource.schema", schema)
         .put("housekeeping.h2.database", "${instance.home}/data/${instance.name}/housekeeping")
         .put("housekeeping.data-source.url",
             "jdbc:h2:${housekeeping.h2.database};AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE")
