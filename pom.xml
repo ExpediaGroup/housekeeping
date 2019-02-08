@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.hotels</groupId>
     <artifactId>hotels-oss-parent</artifactId>
-    <version>2.3.5</version>
+    <version>3.0.0</version>
   </parent>
   
   <artifactId>housekeeping-parent</artifactId>
@@ -26,6 +26,7 @@
   </scm>
 
   <properties>
+	<jdk.version>1.7</jdk.version>
     <shade.prefix>${project.groupId}.shaded</shade.prefix>
     <hadoop.version>2.7.1</hadoop.version>
     <hive.version>2.3.2</hive.version>
