@@ -65,30 +65,6 @@ public class HousekeepingConfiguration {
   @ConditionalOnMissingBean(name = HOUSEKEEPING_ENVIRONMENT)
   public Map<String, Object> housekeepingEnvironment() {
 
-    Object defaultPropertiesSchema = env
-        .getPropertySources()
-        .get("defaultProperties")
-        .getProperty("housekeeping.schema-name");
-    log.info(">>> default properties schema = {} >>>", defaultPropertiesSchema); // circus_train
-
-    String housekeepingSchema = "housekeeping.schema-name";
-    String dbInitScript = env.getProperty("housekeeping.db-init-script");
-
-    log.info(">>> environment schema = {} >>>", env.getProperty("housekeeping.schema-name")); // == custom_schema
-
-    // we don't want apps to create dbs so it might be worth trying to remove the default schema.sql
-    String schema = "${housekeeping.db-init-script:classpath:/schema.sql}";
-    if (!defaultPropertiesSchema.equals(env.getProperty(housekeepingSchema))) {
-      log
-          .info(">>> default property is not equal to housekeeping.schema-name ; schema should become {} >>>",
-              dbInitScript);
-      if (dbInitScript != null) {
-        schema = env.getProperty("housekeeping.db-init-script");
-      } else {
-        schema = "";
-      }
-    }
-
     Map<String, Object> properties = ImmutableMap
         .<String, Object>builder()
         .put("spring.jpa.hibernate.ddl-auto", "update")
@@ -100,8 +76,9 @@ public class HousekeepingConfiguration {
         .put("spring.datasource.max-wait", 10000)
         .put("spring.datasource.max-active", 2)
         .put("spring.datasource.test-on-borrow", true)
-        .put("spring.datasource.schema", schema)
-        // "housekeeping" db hardcoded for h2
+        // have empty init script by default
+        .put("spring.datasource.schema", "${housekeeping.db-init-script: }")
+        // "housekeeping" db was hardcoded for h2
         .put("housekeeping.h2.database",
             "${instance.home}/data/${instance.name}/${housekeeping.schema-name:housekeeping}")
         .put("housekeeping.data-source.url",
