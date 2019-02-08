@@ -64,7 +64,7 @@ public class HousekeepingConfiguration {
   @Bean
   @ConditionalOnMissingBean(name = HOUSEKEEPING_ENVIRONMENT)
   public Map<String, Object> housekeepingEnvironment() {
-
+    log.info("Loading default {}", HOUSEKEEPING_ENVIRONMENT);
     Map<String, Object> properties = ImmutableMap
         .<String, Object>builder()
         .put("spring.jpa.hibernate.ddl-auto", "update")
