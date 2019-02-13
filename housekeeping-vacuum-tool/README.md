@@ -59,11 +59,11 @@ The `dry-run` option allows you to observe the status of paths on the file syste
 |`tables.database-name`|Yes|The Hive database name for the table the vacuum tool will interrogate.|
 |`tables.table-name`|Yes| The Hive table name for the table the vacuum tool will interrogate.|
 |`housekeeping.schema-name`|No|The schema name that is used in your housekeeping instance. Defaults to `housekeeping`.|
-|`housekeeping.h2.home`|No|The path to your H2 filesystem database specified as a full path. Defaults to `$HOME/data`.|
-|`housekeeping.datasource.driver-class-name` |No|The fully qualified class name of your database driver. Defaults to the H2 driver if not configured.|
-|`housekeeping.datasource.url` |No| JDBC URL for your database. Defaults to H2 filesystem database if not specified. |
-|`housekeeping.datasource.username` |No| Username for your database.|
-|`housekeeping.datasource.password` |No| Password for your database.|
+|`housekeeping.h2.database`|No|The path to your H2 filesystem database specified as a full path. Defaults to `${instance.home}/data/${instance.name}/housekeeping` (where `instance.home` and `instance.name` can be configured separately for more fine-grained control).|
+|`housekeeping.data-source.driver-class-name` |No|The fully qualified class name of your database driver. Defaults to the H2 driver if not configured.|
+|`housekeeping.data-source.url` |No| JDBC URL for your database. Defaults to H2 filesystem database if not specified. |
+|`housekeeping.data-source.username` |No| Username for your database.|
+|`housekeeping.data-source.password` |No| Password for your database.|
 |`housekeeping.db-init-script`|No|A file containing a script to initialise your schema can be provided if it does not already exist. Defaults to `classpath:/schema.sql`.|
 |`tables-validation.hive-table-properties`|No| A list of Hive table properties that need to exist in every configured table. If any of these properties do not exist then the vacuum tool won't run. Set this to a custom property or an empty list if you vacuum tables that are not replicated by [Circus Train](https://github.com/HotelsDotCom/circus-train). We always recommend running with `--dry-run=true` first and carefully reviewing the results before doing a "real" vacuum. Default is `com.hotels.bdp.circustrain.replication.event`.|
 
@@ -89,11 +89,13 @@ The configuration then needs to be updated to be something like below:
 
     housekeeping:
       schema-name: my_db
-      dataSource:
-        driverClassName: com.mysql.cj.jdbc.Driver
+      data-source:
+        driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://db-host:3306/${housekeeping.schema-name}
         username: user
         password: foo
+
+Note: To use MySQL and similar database systems, the schema specified in the configuration needs to exist, to make `housekeeping.data-source.url` a valid path. 
 
 #### Vacuum Tool configured with H2 Housekeeping database
 
@@ -114,6 +116,6 @@ The Vacuum tool already has the required H2 drivers on its CLASSPATH so the only
       h2:
           # Location of H2 DB on filesystem
           database: /home/hadoop/vacuumtest/data/${housekeeping.schema-name}
-      dataSource:
+      data-source:
           username: user
           password: foo

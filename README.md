@@ -18,6 +18,7 @@ In order to connect to your SQL database, you must place a database connector ja
 ## Spring YAML Housekeeping Configuration
 If your project utilises Spring YAML you can define your Housekeeping within the YAML. For example:
 
+```yaml
     housekeeping:
       # Name of the schema/database to use - defaults to housekeeping 
       schema-name: housekeeping
@@ -26,13 +27,14 @@ If your project utilises Spring YAML you can define your Housekeeping within the
       # Connection details
       data-source:
         # The package of your driver class
-        driver-class-name: com.mysql.jdbc.Driver
+        driver-class-name: com.mysql.cj.jdbc.Driver
         # JDBC URL for your Database
         url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
         # Database Username
         username: bdp
         # Database Password
         password: Ch4ll3ng3
+```
         
 If the schema does not already exist and the `db-init-script` is not in the default location (`classpath:/schema.sql`), then a custom path can be provided to initialise it, as shown in the following example:
 
@@ -161,7 +163,7 @@ The 'output' is your encrypted password. This encrypted password can then be use
     housekeeping:
       data-source:
         #The package of your driver class
-        driver-class-name: com.mysql.jdbc.Driver
+        driver-class-name: com.mysql.cj.jdbc.Driver
         #JDBC URL for your Database
         url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/housekeeping_db
         #Database Username

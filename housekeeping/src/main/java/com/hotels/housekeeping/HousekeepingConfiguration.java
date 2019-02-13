@@ -76,7 +76,7 @@ public class HousekeepingConfiguration {
         .put("spring.datasource.max-wait", 10000)
         .put("spring.datasource.max-active", 2)
         .put("spring.datasource.test-on-borrow", true)
-        // have empty init script by default
+        // have empty init script by default (instead of classpath:/schema.sql)
         .put("spring.datasource.schema", "${housekeeping.db-init-script: }")
         // "housekeeping" db was hardcoded for h2
         .put("housekeeping.h2.database",
