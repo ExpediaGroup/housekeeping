@@ -212,42 +212,45 @@ database.password=ENC(EHL/foiBKY2Ucy3oYmxdkFiXzWnOu7by)
 
 You can then access the decrypted username and password in your application by doing something akin to the following:
 
-    private @Autowired ConfigurableEnvironment env;
+```java
+private @Autowired ConfigurableEnvironment env;
 
-    @Bean(destroyMethod = "close")
-    DataSource housekeepingDataSource(
-        String driverClassName,
-        String jdbcUrl) {
+@Bean(destroyMethod = "close")
+DataSource housekeepingDataSource(
+    String driverClassName,
+    String jdbcUrl) {
 
-      String username = env.getProperty("database.username");
-      String password = env.getProperty("database.password");
+  String username = env.getProperty("database.username");
+  String password = env.getProperty("database.password");
 
-      return DataSourceBuilder
-          .create()
-          .driverClassName(driverClassName)
-          .url(jdbcUrl)
-          .username(username)
-          .password(password)
-          .build();
-    }
+  return DataSourceBuilder
+      .create()
+      .driverClassName(driverClassName)
+      .url(jdbcUrl)
+      .username(username)
+      .password(password)
+      .build();
+}
+```
 
 Or
 
-    @Bean(destroyMethod = "close")
-    DataSource housekeepingDataSource(
-        String driverClassName,
-        String jdbcUrl,
-        @Value("${database.username}") username,
-        @Value("${database.password}") password) {
-      return DataSourceBuilder
-          .create()
-          .driverClassName(driverClassName)
-          .url(jdbcUrl)
-          .username(username)
-          .password(password)
-          .build();
-    }
-
+```java
+@Bean(destroyMethod = "close")
+DataSource housekeepingDataSource(
+    String driverClassName,
+    String jdbcUrl,
+    @Value("${database.username}") username,
+    @Value("${database.password}") password) {
+  return DataSourceBuilder
+      .create()
+      .driverClassName(driverClassName)
+      .url(jdbcUrl)
+      .username(username)
+      .password(password)
+      .build();
+}
+```
 
 Finally, if you are using an encrypted password, when you run your application you must provide the application with your
 jasypt.encryptor.password 
