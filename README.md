@@ -259,17 +259,23 @@ There are a few approaches to doing so:
 
 Run your application with the jasypt.encryptor.password parameter:
 
-    java jar <your-jar>  --jasypt.encryptor.password=db_password
+```bash
+java jar <your-jar>  --jasypt.encryptor.password=db_password
+```
 
 Pass jasypt.encryptor.password as a system property by creating application.properties or application.yml and adding:
 
-    jasypt.encryptor.password=${JASYPT_ENCRYPTOR_PASSWORD:}
+```bash
+jasypt.encryptor.password=${JASYPT_ENCRYPTOR_PASSWORD:}
+```
 
 Or in YAML
 
-    jasypt:
-      encryptor:
-        password: ${JASYPT_ENCRYPTOR_PASSWORD:}
+```yaml
+jasypt:
+  encryptor:
+    password: ${JASYPT_ENCRYPTOR_PASSWORD:}
+```
 
 # Housekeeping Vacuum Tool
 
