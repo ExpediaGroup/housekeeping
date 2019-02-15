@@ -15,30 +15,39 @@ The housekeeping module defaults to using the H2 Database Engine, however this m
 In order to connect to your SQL database, you must place a database connector jar that is compatible with your database onto your application's classpath.
 
 ## Spring YAML Housekeeping Configuration
-If your project utilises Spring YAML you can define your Housekeeping within the YAML. For example:
+If your project utilises Spring YAML you can define your Housekeeping within the YAML. For example, Housekeeping can be set up to use a MySQL schema:
 
 ```yaml
 housekeeping:
-  # Name of the schema/database to use - defaults to housekeeping 
-  schema-name: housekeeping
-  # Location of the script file to initialize the schema 
-  db-init-script: classpath:/schema.sql
+  # Name of the schema/database to use
+  schema-name: my_db
   # Connection details
   data-source:
     # The package of your driver class
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # JDBC URL for your Database
-    url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
-    # Database Username
+    # JDBC URL for your database
+    url: jdbc:mysql://foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
+    # Database username
     username: bdp
-    # Database Password
+    # Database password
     password: Ch4ll3ng3
 ```
-        
+Note: To use MySQL and similar database systems, the schema specified in the configuration needs to exist, as the value for `housekeeping.data-source.url` needs to be a valid URI.
+
+Houseekeping can also be set up to use the default database engine and schema:
+
+```yaml
+housekeeping:
+  schema-name: my_db
+  db-init-script: classpath:/schema.sql
+  data-source:
+    username: bdp
+    password: Ch4ll3ng3
+```
+
 If the schema does not already exist and the `db-init-script` is not in the default location (`classpath:/schema.sql`), then a custom path can be provided to initialise it, as shown in the following example:
 
 ```yaml
-...
 housekeeping:
   schema-name: my_db
   db-init-script: file:///tmp/schema.sql
@@ -182,11 +191,8 @@ The 'output' is your encrypted password. This encrypted password can then be use
 ```yaml
 housekeeping:
   data-source:
-    # The package of your driver class
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # JDBC URL for your Database
     url: jdbc:mysql://foo1baz123.us-east-1.rds.amazonaws.com:3306/housekeeping
-    # Database Username
     username: bdp
     # Encrypted Database Password
     password: ENC(EHL/foiBKY2Ucy3oYmxdkFiXzWnOu7by)
