@@ -110,7 +110,7 @@ Note: To use MySQL and similar database systems, the schema specified in the con
 
 The Vacuum tool already has the required H2 drivers on its CLASSPATH so the only change required to use H2 is to create a configuration file similar to below:
 
-```
+```yaml
 catalog:
   name: vacuum_tool
   hive-metastore-uris: thrift://my-metastore-uri:9083
