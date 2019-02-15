@@ -34,7 +34,7 @@ housekeeping:
 ```
 Note: To use MySQL and similar database systems, the schema specified in the configuration needs to exist, as the value for `housekeeping.data-source.url` needs to be a valid URI.
 
-Houseekeping can also be set up to use the default database engine and schema:
+Houseekeping can also be set up to use the default database engine (H2) and schema:
 
 ```yaml
 housekeeping:

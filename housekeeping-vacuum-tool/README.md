@@ -110,21 +110,23 @@ Note: To use MySQL and similar database systems, the schema specified in the con
 
 The Vacuum tool already has the required H2 drivers on its CLASSPATH so the only change required to use H2 is to create a configuration file similar to below:
 
-    catalog:
-      name: vacuum_tool
-      hive-metastore-uris: thrift://my-metastore-uri:9083
+```yaml
+catalog:
+  name: vacuum_tool
+  hive-metastore-uris: thrift://my-metastore-uri:9083
 
-    tables:
-    -
-      database-name: db
-      table-name: table_1
+tables:
+- database-name: db
+  table-name: table_1
 
-    housekeeping:
-      schema-name: my_db
-      db-init-script: file:///tmp/schema.sql
-      h2:
-          # Location of H2 DB on filesystem
-          database: /home/hadoop/vacuumtest/data/${housekeeping.schema-name}
-      data-source:
-          username: user
-          password: foo
+housekeeping:
+  schema-name: my_db
+  db-init-script: file:///tmp/schema.sql
+  h2:
+      # Location of H2 DB on filesystem
+      database: /home/hadoop/vacuumtest/data/${housekeeping.schema-name}
+  data-source:
+      username: user
+      password: foo
+```
+          
