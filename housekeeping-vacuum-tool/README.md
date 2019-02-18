@@ -59,7 +59,7 @@ The `dry-run` option allows you to observe the status of paths on the file syste
 |`tables.database-name`|Yes|The Hive database name for the table the vacuum tool will interrogate.|
 |`tables.table-name`|Yes| The Hive table name for the table the vacuum tool will interrogate.|
 |`housekeeping.schema-name`|No|The schema name that is used in your housekeeping instance. Defaults to `housekeeping`.|
-|`housekeeping.h2.home`|No|The path to your H2 filesystem database specified as a full path. Defaults to `$HOME/data`.|
+|`housekeeping.h2.database`|No|If the `housekeeping.data-source.url` is not overridden then the default H2 database can be configured using this property which also controls where H2 will write its database files. Defaults to `${instance.home}/data/${instance.name}/${housekeeping.schema-name}` (where `instance.home`, `instance.name` and `housekeeping.schema-name` can be configured separately for more fine-grained control).|
 |`housekeeping.data-source.driver-class-name` |No|The fully qualified class name of your database driver. Defaults to the H2 driver if not configured.|
 |`housekeeping.data-source.url` |No| JDBC URL for your database. Defaults to H2 filesystem database if not specified. |
 |`housekeeping.data-source.username` |No| Username for your database.|
