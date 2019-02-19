@@ -16,27 +16,35 @@ to use any flavour of SQL database that is supported by JDBC, Spring Boot and Hi
 In order to connect to your SQL database, you must place a database connector jar that is compatible with your Database onto your application's classpath.
 
 ## Spring YAML Housekeeping Configuration
-If your project utilises Spring YAML you can define your Housekeeping within the YAML. For example:
+If your project utilises Spring YAML you can define your Housekeeping within the YAML. For example, Housekeeping can be set up to use a MySQL schema:
 
     housekeeping:
       # Name of the schema/database to use - defaults to housekeeping 
-      schema-name: housekeeping
-      # Location of the script file to initialize the schema - defaults to classpath:/schema.sql 
-      db-init-script: classpath:/schema.sql
+      schema-name: my_db
       # Connection details
       data-source:
         # The package of your driver class
-        driver-class-name: com.mysql.jdbc.Driver
-        # JDBC URL for your Database
-        url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
-        # Database Username
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        # JDBC URL for your database
+        url: jdbc:mysql://foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
+        # Database username
         username: bdp
-        # Database Password
+        # Database password
         password: Ch4ll3ng3
-        
+
+Note: To use MySQL and similar database systems, the schema specified in the configuration needs to exist, as the value for `housekeeping.data-source.url` needs to be a valid URI.
+
+Houseekeping can also be set up to use the default database engine (H2) and schema:
+
+	housekeeping:
+	  schema-name: my_db
+	  db-init-script: classpath:/schema.sql
+	  data-source:
+	    username: bdp
+	    password: Ch4ll3ng3
+
 If the schema does not already exist and the `db-init-script` is not in the default location (`classpath:/schema.sql`), then a custom path can be provided to initialise it, as shown in the following example:
 
-    ...
     housekeeping:
       schema-name: my_db
       db-init-script: file:///tmp/schema.sql
@@ -50,10 +58,10 @@ Full list of configuration options:
 |----|----|----|
 |`housekeeping.expired-path-duration`|No|Time To Live (TTL) of legacy replica paths in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) format: only days, hours, minutes and seconds can be specified in the expression.|
 |`housekeeping.schema-name`|Yes|Database schema name to use. Tables will be created or used (if already existing) using this schema. Default: 'housekeeping'|
-|`housekeeping.db-init-script`|No|Database init script to use. Default: 'classpath:/schema.sql'
+|`housekeeping.db-init-script`|No|Database init script to use.|
 |`housekeeping.data-source.driver-class-name`|No|Java classname of the database JDBC driver.|
 |`housekeeping.data-source.url`|No|JDBC connection URL.|
-|`housekeeping.h2.database`|No|If the `housekeeping.data-source.url` is not overridden then the default H2 database can be configured using this property which also controls where H2 will write its database files. Defaults to `${instance.home}/data/${instance.name}/housekeeping` (where `instance.home` and `instance.name` can be configured separately for more fine-grained control).|
+|`housekeeping.h2.database`|No|If the `housekeeping.data-source.url` is not overridden then the default H2 database can be configured using this property which also controls where H2 will write its database files. Defaults to `${instance.home}/data/${instance.name}/${housekeeping.schema-name}` (where `instance.home`, `instance.name` and `housekeeping.schema-name` can be configured separately for more fine-grained control).|
 |`housekeeping.data-source.username`|No|Database user with access to schema.|
 |`housekeeping.data-source.password`|No|Database user's password.|
 |`housekeeping.fetch-legacy-replica-path-page-size`|No|Number of paths to fetch on each call to the database. Tune this if you run out of memory or if the query seems too slow. The higher the number, the more memory is required. Default: '500'|
@@ -201,7 +209,7 @@ You can then access the decrypted username and password in your application by d
           .username(username)
           .password(password)
           .build();
-    }
+    }
 
 Or
 

@@ -76,8 +76,9 @@ public class HousekeepingConfiguration {
         .put("spring.datasource.max-wait", 10000)
         .put("spring.datasource.max-active", 2)
         .put("spring.datasource.test-on-borrow", true)
-        .put("spring.datasource.schema", "${housekeeping.db-init-script:classpath:/schema.sql}")
-        .put("housekeeping.h2.database", "${instance.home}/data/${instance.name}/housekeeping")
+        .put("spring.datasource.schema", "${housekeeping.db-init-script: }")
+        .put("housekeeping.h2.database",
+            "${instance.home}/data/${instance.name}/${housekeeping.schema-name:housekeeping}")
         .put("housekeeping.data-source.url",
             "jdbc:h2:${housekeeping.h2.database};AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE")
         .build();

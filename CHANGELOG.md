@@ -1,6 +1,12 @@
 ## TBD
 ### Changed
-* Changed recursion logic to prevent unnecessary calls.
+* Recursion logic to prevent unnecessary calls.
+* The name of the database file for h2 to reflect the name of the schema in the configuration file (instead of having `housekeeping.mv.db` for any schema name).
+* Updated `hotels-oss-parent` to 4.0.0 (was 2.3.5).
+
+### Fixed
+* Removed default script for creating a housekeeping schema to allow the use of schemas that are already created. See [#111](https://github.com/HotelsDotCom/circus-train/issues/111).
+* vacuum-tool: Added the configuration directory to the classpath by default.
 
 ## [3.0.5] - 2019-01-23
 ### Fixed
