@@ -1,7 +1,7 @@
 ## TBD
 ### Changed
-* Changed recursion logic to prevent unnecessary calls.
-* Changed the name of the database file for h2 to reflect the name of the schema in the configuration file (instead of having `housekeeping.mv.db` for any schema name).
+* Recursion logic to prevent unnecessary calls.
+* The name of the database file for h2 to reflect the name of the schema in the configuration file (instead of having `housekeeping.mv.db` for any schema name).
 * Updated `hotels-oss-parent` to 4.0.0 (was 2.3.5).
 
 ### Fixed
