@@ -1,4 +1,4 @@
-## TBD
+## [3.0.6] - 2019-02-20
 ### Changed
 * Recursion logic to prevent unnecessary calls.
 * The name of the database file for h2 to reflect the name of the schema in the configuration file (instead of having `housekeeping.mv.db` for any schema name).
