@@ -5,7 +5,7 @@
   <parent>
     <artifactId>housekeeping-parent</artifactId>
     <groupId>com.hotels</groupId>
-    <version>3.0.6</version>
+    <version>3.0.7-SNAPSHOT</version>
   </parent>
 
   <artifactId>housekeeping-vacuum-tool</artifactId>
