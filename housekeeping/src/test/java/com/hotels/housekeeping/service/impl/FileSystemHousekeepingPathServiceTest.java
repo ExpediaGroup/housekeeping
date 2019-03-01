@@ -15,13 +15,8 @@
  */
 package com.hotels.housekeeping.service.impl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
@@ -63,9 +58,6 @@ public class FileSystemHousekeepingPathServiceTest {
 
   @Before
   public void init() throws Exception {
-//    spyFs.initialize(spyFs.getUri(), conf);
-//    mockStatic(FileSystem.class);
-//    when(FileSystem.get(any(URI.class), any(Configuration.class))).thenReturn(spyFs);
     valPath = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=1").getCanonicalPath());
     service = PowerMockito.spy(new FileSystemHousekeepingPathService(legacyReplicationPathRepository));
     cleanUpPath = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, valPath.toString(), null, null);
@@ -81,35 +73,5 @@ public class FileSystemHousekeepingPathServiceTest {
   public void scheduleFails() {
     when(legacyReplicationPathRepository.save(cleanUpPath)).thenThrow(new RuntimeException());
     service.scheduleForHousekeeping(cleanUpPath);
-  }
-
-  // TODO remove this when there are no more records around that hit this.
-  @Test
-  public void regexp() {
-    Pattern pattern = Pattern.compile(EventIdExtractor.EVENT_ID_REGEXP);
-    assertThat(pattern.matcher("a/ctp-20160726T162136.657Z-Vdqln6v7").matches(), is(true));
-    assertThat(pattern.matcher("a/ctt-20160726T162136.657Z-Vdqln6v7").matches(), is(true));
-    assertThat(pattern.matcher("a/ctp-20000101T000000.000Z-Vdqln6v7").matches(), is(true));
-    assertThat(pattern.matcher("a/ctp-20991231T235959.999Z-Vdqln6v7").matches(), is(true));
-
-    assertThat(pattern.matcher("a/ctp-19990101T000000.000Z-Vdqln6v7").matches(), is(false));
-    assertThat(pattern.matcher("a/cta-19990101T000000.000Z-Vdqln6v7").matches(), is(false));
-    assertThat(pattern.matcher("a/ctp-20000101T000000.00Z-Vdqln6v7").matches(), is(false));
-    assertThat(pattern.matcher("a/ctp-20000101T000000.0000Z-Vdqln6v7").matches(), is(false));
-    assertThat(pattern.matcher("a/ctp-20000101T000000.000Z-dqln6v7").matches(), is(false));
-
-    assertThat(pattern.matcher("a/ctp-20991231T235959.999Z-Vdqln6v78").matches(), is(false));
-    assertThat(pattern.matcher("a/ctp-21001231T235959.999Z-Vdqln6v7").matches(), is(false));
-    assertThat(pattern.matcher("a/ctp-20993231T235959.999Z-Vdqln6v7").matches(), is(false));
-    assertThat(pattern.matcher("a/ctp-20991231T236959.999Z-Vdqln6v7").matches(), is(false));
-    assertThat(pattern.matcher("a/ctp-20991231T235969.999Z-Vdqln6v7").matches(), is(false));
-
-    Matcher matcher = pattern.matcher("s3://bucket-dj49488/ctt-20160726T162136.657Z-Vdqln6v7/part-00000");
-    matcher.matches();
-    assertThat(matcher.group(1), is("ctt-20160726T162136.657Z-Vdqln6v7"));
-
-    matcher = pattern.matcher("s3://bucket-dj49488/ctp-20160726T162136.657Z-Vdqln6v7/2012/01/01/00/part-00000");
-    matcher.matches();
-    assertThat(matcher.group(1), is("ctp-20160726T162136.657Z-Vdqln6v7"));
   }
 }
