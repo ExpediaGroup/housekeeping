@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
-import com.hotels.housekeeping.service.HousekeepingService;
+import com.hotels.housekeeping.service.HousekeepingPathService;
 import com.hotels.housekeeping.tool.vacuum.conf.Table;
 import com.hotels.housekeeping.tool.vacuum.conf.Tables;
 import com.hotels.housekeeping.tool.vacuum.validate.TablesValidator;
@@ -99,7 +99,7 @@ public class VacuumToolApplicationTest {
   @Mock
   private LegacyReplicaPathRepository legacyReplicaPathRepository;
   @Mock
-  private HousekeepingService housekeepingService;
+  private HousekeepingPathService housekeepingPathService;
   @Mock
   private TablesValidator tablesValidator;
   @Mock
@@ -177,10 +177,10 @@ public class VacuumToolApplicationTest {
   @Test
   public void removePath() {
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
+        housekeepingPathService, tablesValidator, replications, false, (short) 100, 1000);
     tool.removePath(new Path(partitionLocation1), "db", "table");
 
-    verify(housekeepingService).scheduleForHousekeeping(pathCaptor.capture());
+    verify(housekeepingPathService).scheduleForHousekeeping(pathCaptor.capture());
     LegacyReplicaPath legacyReplicaPath = pathCaptor.getValue();
     assertThat(legacyReplicaPath.getPath(), is(partitionLocation1));
     assertThat(legacyReplicaPath.getPathEventId(), is(PARTITION_EVENT_1));
@@ -192,7 +192,7 @@ public class VacuumToolApplicationTest {
   @Test
   public void fetchHousekeepingPaths() throws Exception {
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
+        housekeepingPathService, tablesValidator, replications, false, (short) 100, 1000);
     Set<Path> paths = tool.fetchHousekeepingPaths(legacyReplicaPathRepository);
 
     assertThat(paths.size(), is(1));
@@ -227,10 +227,10 @@ public class VacuumToolApplicationTest {
 
     // So we expect path 3 to be scheduled for removal
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
+        housekeepingPathService, tablesValidator, replications, false, (short) 100, 1000);
     tool.run(null);
 
-    verify(housekeepingService, times(1)).scheduleForHousekeeping(pathCaptor.capture());
+    verify(housekeepingPathService, times(1)).scheduleForHousekeeping(pathCaptor.capture());
     LegacyReplicaPath legacyReplicaPath = pathCaptor.getValue();
     assertThat(legacyReplicaPath.getPath(), is(partitionLocation3));
     assertThat(legacyReplicaPath.getPathEventId(), is(PARTITION_EVENT_3));
@@ -252,12 +252,12 @@ public class VacuumToolApplicationTest {
     when(tablesValidator.validate(client, replications.getTables())).thenReturn(validationResult);
 
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
+        housekeepingPathService, tablesValidator, replications, false, (short) 100, 1000);
     try {
       tool.run(null);
       fail("Should have thrown an exception to stop vacuuming and sort out the invalid config");
     } catch (Exception e) {
-      verifyZeroInteractions(housekeepingService);
+      verifyZeroInteractions(housekeepingPathService);
       verify(validationFailure1).getMessage();
       verify(validationFailure2).getMessage();
     }

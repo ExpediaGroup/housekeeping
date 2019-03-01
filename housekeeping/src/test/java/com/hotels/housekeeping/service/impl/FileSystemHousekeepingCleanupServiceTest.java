@@ -62,13 +62,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
+import com.hotels.housekeeping.conf.Housekeeping;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ FileSystemHousekeepingService.class, FileSystem.class })
-public class FileSystemHousekeepingServiceTest {
+@PrepareForTest({ FileSystemHousekeepingCleanupService.class, FileSystem.class })
+public class FileSystemHousekeepingCleanupServiceTest {
 
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
@@ -90,7 +91,7 @@ public class FileSystemHousekeepingServiceTest {
   private @Spy final FileSystem spyFs = new LocalFileSystem();
   private final Configuration conf = new Configuration();
 
-  private FileSystemHousekeepingService service;
+  private FileSystemHousekeepingCleanupService service;
 
   @Before
   public void init() throws Exception {
@@ -102,22 +103,11 @@ public class FileSystemHousekeepingServiceTest {
     val1Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=1").getCanonicalPath());
     val2Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=2").getCanonicalPath());
     val3Path = new Path(tmpFolder.newFolder("foo", "bar", PATH_EVENT_ID, "test=1", "val=3").getCanonicalPath());
-    service = PowerMockito.spy(new FileSystemHousekeepingService(legacyReplicationPathRepository, conf));
+    service = PowerMockito.spy(new FileSystemHousekeepingCleanupService(legacyReplicationPathRepository, conf,
+        Housekeeping.DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE));
     cleanUpPath1 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val1Path.toString(), null, null);
     cleanUpPath2 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val2Path.toString(), null, null);
     cleanUpPath3 = new HousekeepingLegacyReplicaPath(EVENT_ID, PATH_EVENT_ID, val3Path.toString(), null, null);
-  }
-
-  @Test
-  public void sheduleForHousekeeping() {
-    service.scheduleForHousekeeping(cleanUpPath1);
-    verify(legacyReplicationPathRepository).save(cleanUpPath1);
-  }
-
-  @Test(expected = RuntimeException.class)
-  public void scheduleFails() {
-    when(legacyReplicationPathRepository.save(cleanUpPath1)).thenThrow(new RuntimeException());
-    service.scheduleForHousekeeping(cleanUpPath1);
   }
 
   @Test
@@ -136,7 +126,7 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void cleanUpWithPaging() throws Exception {
-    service = new FileSystemHousekeepingService(legacyReplicationPathRepository, conf, 1);
+    service = new FileSystemHousekeepingCleanupService(legacyReplicationPathRepository, conf, 1);
     PageRequest pageRequest1 = new PageRequest(0, 1);
     PageImpl<LegacyReplicaPath> page1 = new PageImpl<>(Arrays.asList(cleanUpPath1), pageRequest1, 3);
     when(legacyReplicationPathRepository.findByCreationTimestampLessThanEqual(now.getMillis(), pageRequest1))

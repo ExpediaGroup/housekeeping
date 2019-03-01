@@ -50,7 +50,7 @@ import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
-import com.hotels.housekeeping.service.HousekeepingService;
+import com.hotels.housekeeping.service.HousekeepingPathService;
 import com.hotels.housekeeping.service.impl.EventIdExtractor;
 import com.hotels.housekeeping.tool.vacuum.conf.Table;
 import com.hotels.housekeeping.tool.vacuum.conf.Tables;
@@ -67,7 +67,7 @@ class VacuumToolApplication implements ApplicationRunner {
   private final HiveConf conf;
   private final Supplier<CloseableMetaStoreClient> clientSupplier;
   private final LegacyReplicaPathRepository legacyReplicaPathRepository;
-  private final HousekeepingService housekeepingService;
+  private final HousekeepingPathService housekeepingPathService;
   private final List<Table> tables;
   private final String vacuumEventId;
   private final boolean isDryRun;
@@ -84,7 +84,7 @@ class VacuumToolApplication implements ApplicationRunner {
       @Value("#{hiveConf}") HiveConf conf,
       @Value("#{metaStoreClientSupplier}") Supplier<CloseableMetaStoreClient> clientSupplier,
       LegacyReplicaPathRepository legacyReplicaPathRepository,
-      HousekeepingService housekeepingService,
+      HousekeepingPathService housekeepingPathService,
       TablesValidator tablesValidator,
       Tables tables,
       @Value("${dry-run:false}") boolean isDryRun,
@@ -93,7 +93,7 @@ class VacuumToolApplication implements ApplicationRunner {
     this.conf = conf;
     this.clientSupplier = clientSupplier;
     this.legacyReplicaPathRepository = legacyReplicaPathRepository;
-    this.housekeepingService = housekeepingService;
+    this.housekeepingPathService = housekeepingPathService;
     this.tablesValidator = tablesValidator;
     this.isDryRun = isDryRun;
     this.batchSize = batchSize;
@@ -212,7 +212,7 @@ class VacuumToolApplication implements ApplicationRunner {
     LOG.info("REMOVE path '{}', dereferenced and can be deleted.", toRemove);
     if (!isDryRun) {
       String previousEventId = EventIdExtractor.extractFrom(toRemove);
-      housekeepingService
+      housekeepingPathService
           .scheduleForHousekeeping(new HousekeepingLegacyReplicaPath(vacuumEventId, previousEventId,
               toRemove.toUri().toString(), databaseName, tableName));
       LOG.info("Scheduled path '{}' for deletion.", toRemove);

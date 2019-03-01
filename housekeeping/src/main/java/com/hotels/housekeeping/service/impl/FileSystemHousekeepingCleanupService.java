@@ -34,13 +34,12 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.housekeeping.HousekeepingException;
-import com.hotels.housekeeping.conf.Housekeeping;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
-import com.hotels.housekeeping.service.HousekeepingService;
+import com.hotels.housekeeping.service.HousekeepingCleanupService;
 
-public class FileSystemHousekeepingService implements HousekeepingService {
-  private static final Logger LOG = LoggerFactory.getLogger(FileSystemHousekeepingService.class);
+public class FileSystemHousekeepingCleanupService implements HousekeepingCleanupService {
+  private static final Logger LOG = LoggerFactory.getLogger(FileSystemHousekeepingCleanupService.class);
 
   private final LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository;
 
@@ -48,13 +47,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
 
   private final int fetchLegacyReplicaPathPageSize;
 
-  public FileSystemHousekeepingService(
-      LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
-      Configuration conf) {
-    this(legacyReplicaPathRepository, conf, Housekeeping.DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE);
-  }
-
-  public FileSystemHousekeepingService(
+  public FileSystemHousekeepingCleanupService(
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf,
       int fetchLegacyReplicaPathPageSize) {
@@ -65,8 +58,29 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
 
-  private FileSystem fileSystemForPath(Path path) throws IOException {
-    return path.getFileSystem(conf);
+  @Override
+  public void cleanUp(Instant referenceTime) {
+    try {
+      Pageable pageRequest = new PageRequest(0, fetchLegacyReplicaPathPageSize);
+      Page<LegacyReplicaPath> page = legacyReplicaPathRepository
+          .findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
+      processPage(page);
+      while (page.hasNext()) {
+        pageRequest = pageRequest.next();
+        page = legacyReplicaPathRepository.findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
+        processPage(page);
+      }
+    } catch (Exception e) {
+      throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
+          e);
+    }
+  }
+
+  private void processPage(Page<LegacyReplicaPath> page) {
+    for (LegacyReplicaPath cleanUpPath : page) {
+      cleanUpPath = fixIncompleteRecord(cleanUpPath);
+      housekeepPath(cleanUpPath);
+    }
   }
 
   private void housekeepPath(LegacyReplicaPath cleanUpPath) {
@@ -107,29 +121,26 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     }
   }
 
-  @Override
-  public void cleanUp(Instant referenceTime) {
-    try {
-      Pageable pageRequest = new PageRequest(0, fetchLegacyReplicaPathPageSize);
-      Page<LegacyReplicaPath> page = legacyReplicaPathRepository
-          .findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
-      processPage(page);
-      while (page.hasNext()) {
-        pageRequest = pageRequest.next();
-        page = legacyReplicaPathRepository.findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
-        processPage(page);
-      }
-    } catch (Exception e) {
-      throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
-          e);
-    }
+  private FileSystem fileSystemForPath(Path path) throws IOException {
+    return path.getFileSystem(conf);
   }
 
-  private void processPage(Page<LegacyReplicaPath> page) {
-    for (LegacyReplicaPath cleanUpPath : page) {
-      cleanUpPath = fixIncompleteRecord(cleanUpPath);
-      housekeepPath(cleanUpPath);
+  @VisibleForTesting
+  Path deleteParents(FileSystem fs, Path path, String pathEventId) throws IOException {
+    if (pathEventId == null || pathEventId.equals(path.getName()) || path.getParent() == null) {
+      return path;
     }
+    Path parent = path.getParent();
+    if (fs.exists(parent)) {
+      if (isEmpty(fs, parent)) {
+        LOG.info("Deleting parent path '{}'", parent);
+        fs.delete(parent, false);
+        return deleteParents(fs, parent, pathEventId);
+      } else {
+        return parent;
+      }
+    }
+    return deleteParents(fs, parent, pathEventId);
   }
 
   // TODO remove this when there are no more records around that hit this.
@@ -153,35 +164,8 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     return !fs.exists(path) && !isEmpty(fs, rootPath);
   }
 
-  @VisibleForTesting
-  Path deleteParents(FileSystem fs, Path path, String pathEventId) throws IOException {
-    if (pathEventId == null || pathEventId.equals(path.getName()) || path.getParent() == null) {
-      return path;
-    }
-    Path parent = path.getParent();
-    if (fs.exists(parent)) {
-      if (isEmpty(fs, parent)) {
-        LOG.info("Deleting parent path '{}'", parent);
-        fs.delete(parent, false);
-        return deleteParents(fs, parent, pathEventId);
-      } else {
-        return parent;
-      }
-    }
-    return deleteParents(fs, parent, pathEventId);
-  }
-
   private boolean isEmpty(FileSystem fs, Path path) throws IOException {
     return !fs.exists(path) || fs.listStatus(path).length == 0;
-  }
-
-  @Override
-  public void scheduleForHousekeeping(LegacyReplicaPath cleanUpPath) {
-    try {
-      legacyReplicaPathRepository.save(cleanUpPath);
-    } catch (Exception e) {
-      throw new HousekeepingException(format("Unable to schedule path %s for deletion", cleanUpPath.getPath()), e);
-    }
   }
 
 }

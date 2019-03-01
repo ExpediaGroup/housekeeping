@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@ package com.hotels.housekeeping.service;
 
 import org.joda.time.Instant;
 
-import com.hotels.housekeeping.model.LegacyReplicaPath;
-
-public interface HousekeepingService {
+public interface HousekeepingCleanupService {
 
   /**
    * Deletes all paths from the file system which are older than {@code referenceTime}.
@@ -27,12 +25,5 @@ public interface HousekeepingService {
    * @param referenceTime path deletion reference time
    */
   void cleanUp(Instant referenceTime);
-
-  /**
-   * Schedules a file system path for deletion.
-   *
-   * @param cleanUpPath file system path encapsulation
-   */
-  void scheduleForHousekeeping(LegacyReplicaPath cleanUpPath);
 
 }
