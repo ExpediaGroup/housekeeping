@@ -1,3 +1,7 @@
+## TBD
+### Changed
+* Split `HousekeepingService` interface in to `HousekeepingPathService` and `HousekeepingCleanupService` to separate functionality. See [#46](https://github.com/HotelsDotCom/housekeeping/issues/46).
+
 ## [3.0.6] - 2019-02-20
 ### Changed
 * Recursion logic to prevent unnecessary calls.
