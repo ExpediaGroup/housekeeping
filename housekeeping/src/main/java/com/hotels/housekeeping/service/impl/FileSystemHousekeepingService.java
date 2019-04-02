@@ -18,6 +18,13 @@ package com.hotels.housekeeping.service.impl;
 import static java.lang.String.format;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -71,64 +78,84 @@ public class FileSystemHousekeepingService implements HousekeepingService {
 
   private void housekeepPath(LegacyReplicaPath cleanUpPath) {
     final Path path = new Path(cleanUpPath.getPath());
-    final Path rootPath;
     final FileSystem fs;
+    boolean cleanUpPathExists = true;
     try {
       fs = fileSystemForPath(path);
       LOG.info("Attempting to delete path '{}' from file system", cleanUpPath);
       if (fs.exists(path)) {
         fs.delete(path, true);
+        cleanUpPathExists = false;
         LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
       } else {
+        cleanUpPathExists = false;
         LOG.warn("Path '{}' does not exist.", cleanUpPath);
       }
-      rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
+      deleteParents(fs, path, cleanUpPath.getPathEventId());
     } catch (IOException e) {
       LOG.warn("Unable to delete path '{}' from file system. Will try next time. {}", cleanUpPath, e.getMessage());
-      return;
     }
 
-    try {
-      if (oneOfMySiblingsWillTakeCareOfMyAncestors(path, rootPath, fs) || thereIsNothingMoreToDelete(fs, rootPath)) {
-        // BEWARE the eventual consistency of your blobstore!
-        try {
-          LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
-          legacyReplicaPathRepository.delete(cleanUpPath);
-        } catch (ObjectOptimisticLockingFailureException e) {
-          LOG
-              .debug("Failed to delete path '{}': probably already cleaned up by process running at same time. "
-                  + "Ok to ignore. {}", cleanUpPath, e.getMessage());
-        } catch (Exception e) {
-          LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
-        }
+    if (!cleanUpPathExists) {
+      // BEWARE the eventual consistency of your blobstore!
+      try {
+        LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
+        legacyReplicaPathRepository.delete(cleanUpPath);
+      } catch (ObjectOptimisticLockingFailureException e) {
+        LOG
+            .debug("Failed to delete path '{}': probably already cleaned up by process running at same time. "
+                + "Ok to ignore. {}", cleanUpPath, e.getMessage());
+      } catch (Exception e) {
+        LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
       }
-    } catch (IOException e) {
-      LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
     }
   }
 
   @Override
   public void cleanUp(Instant referenceTime) {
+    ExecutorService executor = Executors.newFixedThreadPool(10);
     try {
       Pageable pageRequest = new PageRequest(0, fetchLegacyReplicaPathPageSize);
       Page<LegacyReplicaPath> page = legacyReplicaPathRepository
           .findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
-      processPage(page);
-      while (page.hasNext()) {
-        pageRequest = pageRequest.next();
+      processPage(page, executor);
+      int pagesProcessed = 1;
+      int totalPages = page.getTotalPages();
+      // We keep fetching the first page while we have pages. Because we are deleting entries the number of pages
+      // changes so we use the total number of pages from the first request to loop over all pages once.
+      while (page.hasNext() && pagesProcessed < totalPages) {
         page = legacyReplicaPathRepository.findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
-        processPage(page);
+        processPage(page, executor);
+        pagesProcessed++;
       }
-    } catch (Exception e) {
+    } catch (Throwable e) {
       throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
           e);
+    } finally {
+      executor.shutdownNow();
     }
   }
 
-  private void processPage(Page<LegacyReplicaPath> page) {
-    for (LegacyReplicaPath cleanUpPath : page) {
-      cleanUpPath = fixIncompleteRecord(cleanUpPath);
-      housekeepPath(cleanUpPath);
+  private void processPage(Page<LegacyReplicaPath> page, ExecutorService executor) throws Throwable {
+    List<Future<Void>> futures = new ArrayList<>(page.getSize());
+    for (final LegacyReplicaPath cleanUpPath : page) {
+      Future<Void> future = executor.submit(new Callable<Void>() {
+
+        @Override
+        public Void call() throws Exception {
+          LegacyReplicaPath path = fixIncompleteRecord(cleanUpPath);
+          housekeepPath(path);
+          return null;
+        }
+      });
+      futures.add(future);
+    }
+    for (Future<Void> future : futures) {
+      try {
+        future.get();
+      } catch (ExecutionException e) {
+        throw e.getCause();
+      }
     }
   }
 
@@ -143,14 +170,6 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       }
     }
     return cleanUpPath;
-  }
-
-  private boolean thereIsNothingMoreToDelete(FileSystem fs, Path rootPath) throws IOException {
-    return !fs.exists(rootPath);
-  }
-
-  private boolean oneOfMySiblingsWillTakeCareOfMyAncestors(Path path, Path rootPath, FileSystem fs) throws IOException {
-    return !fs.exists(path) && !isEmpty(fs, rootPath);
   }
 
   @VisibleForTesting
@@ -172,6 +191,11 @@ public class FileSystemHousekeepingService implements HousekeepingService {
   }
 
   private boolean isEmpty(FileSystem fs, Path path) throws IOException {
+    // TODO PD this is wrong for S3AFileSystems when you have a path that has those empty ..$folder$ files.
+    // You need to do:
+    // S3AFileStatus s3fileStatus = (S3AFileStatus) fs.getFileStatus(path);
+    // s3fileStatus.isEmptyDirectory()
+    // That will correctly mark the folders as non-empty.
     return !fs.exists(path) || fs.listStatus(path).length == 0;
   }
 
