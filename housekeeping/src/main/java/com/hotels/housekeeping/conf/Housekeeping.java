@@ -29,6 +29,8 @@ public class Housekeeping {
 
   public static final int DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE = 500;
 
+  public static final int DEFAULT_NUMBER_OF_CLEANUP_THREADS = 10;
+
   @NotNull(message = "housekeeping.expiredPathDuration must not be null")
   private Duration expiredPathDuration = Duration.standardDays(3);
 
@@ -38,6 +40,9 @@ public class Housekeeping {
 
   @Min(1)
   private int fetchLegacyReplicaPathPageSize = DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE;
+
+  @Min(1)
+  private int numberOfCleanupThreads = DEFAULT_NUMBER_OF_CLEANUP_THREADS;
 
   public Duration getExpiredPathDuration() {
     return expiredPathDuration;
@@ -63,4 +68,11 @@ public class Housekeeping {
     this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
   }
 
+  public int getNumberOfCleanupThreads() {
+    return numberOfCleanupThreads;
+  }
+
+  public void setNumberOfCleanupThreads(int numberOfCleanupThreads) {
+    this.numberOfCleanupThreads = numberOfCleanupThreads;
+  }
 }

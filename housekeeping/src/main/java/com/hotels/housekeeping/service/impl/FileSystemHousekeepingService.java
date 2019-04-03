@@ -55,19 +55,24 @@ public class FileSystemHousekeepingService implements HousekeepingService {
 
   private final int fetchLegacyReplicaPathPageSize;
 
+  private final int numberOfCleanupThreads;
+
   public FileSystemHousekeepingService(
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf) {
-    this(legacyReplicaPathRepository, conf, Housekeeping.DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE);
+    this(legacyReplicaPathRepository, conf, Housekeeping.DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE,
+        Housekeeping.DEFAULT_NUMBER_OF_CLEANUP_THREADS);
   }
 
   public FileSystemHousekeepingService(
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf,
-      int fetchLegacyReplicaPathPageSize) {
+      int fetchLegacyReplicaPathPageSize,
+      int numberOfCleanupThreads) {
     this.legacyReplicaPathRepository = legacyReplicaPathRepository;
     this.conf = conf;
     this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
+    this.numberOfCleanupThreads = numberOfCleanupThreads;
     // TODO remove this when there are no more records around that hit this.
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
@@ -84,9 +89,10 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       fs = fileSystemForPath(path);
       LOG.info("Attempting to delete path '{}' from file system", cleanUpPath);
       if (fs.exists(path)) {
-        fs.delete(path, true);
-        cleanUpPathExists = false;
-        LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
+        if (fs.delete(path, true)) {
+          cleanUpPathExists = false;
+          LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
+        }
       } else {
         cleanUpPathExists = false;
         LOG.warn("Path '{}' does not exist.", cleanUpPath);
@@ -113,7 +119,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
 
   @Override
   public void cleanUp(Instant referenceTime) {
-    ExecutorService executor = Executors.newFixedThreadPool(10);
+    ExecutorService executor = Executors.newFixedThreadPool(numberOfCleanupThreads);
     try {
       Pageable pageRequest = new PageRequest(0, fetchLegacyReplicaPathPageSize);
       Page<LegacyReplicaPath> page = legacyReplicaPathRepository
