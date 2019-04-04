@@ -28,7 +28,6 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.joda.time.Instant;
 import org.slf4j.Logger;
@@ -42,6 +41,8 @@ import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.housekeeping.HousekeepingException;
 import com.hotels.housekeeping.conf.Housekeeping;
+import com.hotels.housekeeping.fs.HousekeepingFileSystem;
+import com.hotels.housekeeping.fs.HousekeepingFileSystemFactory;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
@@ -57,6 +58,8 @@ public class FileSystemHousekeepingService implements HousekeepingService {
 
   private final int numberOfCleanupThreads;
 
+  private final HousekeepingFileSystemFactory housekeepingFileSystemFactory;
+
   public FileSystemHousekeepingService(
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf) {
@@ -69,6 +72,17 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       Configuration conf,
       int fetchLegacyReplicaPathPageSize,
       int numberOfCleanupThreads) {
+    this(new HousekeepingFileSystemFactory(), legacyReplicaPathRepository, conf, fetchLegacyReplicaPathPageSize,
+        numberOfCleanupThreads);
+  }
+
+  FileSystemHousekeepingService(
+      HousekeepingFileSystemFactory housekeepingFileSystemFactory,
+      LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
+      Configuration conf,
+      int fetchLegacyReplicaPathPageSize,
+      int numberOfCleanupThreads) {
+    this.housekeepingFileSystemFactory = housekeepingFileSystemFactory;
     this.legacyReplicaPathRepository = legacyReplicaPathRepository;
     this.conf = conf;
     this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
@@ -77,13 +91,13 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
 
-  private FileSystem fileSystemForPath(Path path) throws IOException {
-    return path.getFileSystem(conf);
+  private HousekeepingFileSystem fileSystemForPath(Path path) throws IOException {
+    return housekeepingFileSystemFactory.newInstance(path.getFileSystem(conf));
   }
 
   private void housekeepPath(LegacyReplicaPath cleanUpPath) {
     final Path path = new Path(cleanUpPath.getPath());
-    final FileSystem fs;
+    final HousekeepingFileSystem fs;
     boolean cleanUpPathExists = true;
     try {
       fs = fileSystemForPath(path);
@@ -179,13 +193,13 @@ public class FileSystemHousekeepingService implements HousekeepingService {
   }
 
   @VisibleForTesting
-  Path deleteParents(FileSystem fs, Path path, String pathEventId) throws IOException {
+  Path deleteParents(HousekeepingFileSystem fs, Path path, String pathEventId) throws IOException {
     if (pathEventId == null || pathEventId.equals(path.getName()) || path.getParent() == null) {
       return path;
     }
     Path parent = path.getParent();
     if (fs.exists(parent)) {
-      if (isEmpty(fs, parent)) {
+      if (fs.isEmpty(parent)) {
         LOG.info("Deleting parent path '{}'", parent);
         fs.delete(parent, false);
         return deleteParents(fs, parent, pathEventId);
@@ -194,15 +208,6 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       }
     }
     return deleteParents(fs, parent, pathEventId);
-  }
-
-  private boolean isEmpty(FileSystem fs, Path path) throws IOException {
-    // TODO PD this is wrong for S3AFileSystems when you have a path that has those empty ..$folder$ files.
-    // You need to do:
-    // S3AFileStatus s3fileStatus = (S3AFileStatus) fs.getFileStatus(path);
-    // s3fileStatus.isEmptyDirectory()
-    // That will correctly mark the folders as non-empty.
-    return !fs.exists(path) || fs.listStatus(path).length == 0;
   }
 
   @Override
