@@ -98,36 +98,38 @@ public class FileSystemHousekeepingService implements HousekeepingService {
   private void housekeepPath(LegacyReplicaPath cleanUpPath) {
     final Path path = new Path(cleanUpPath.getPath());
     final HousekeepingFileSystem fs;
-    boolean cleanUpPathExists = true;
     try {
       fs = fileSystemForPath(path);
       LOG.info("Attempting to delete path '{}' from file system", cleanUpPath);
       if (fs.exists(path)) {
         if (fs.delete(path, true)) {
-          cleanUpPathExists = false;
           LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
+          deleteFromDatabase(cleanUpPath);
         }
       } else {
-        cleanUpPathExists = false;
         LOG.warn("Path '{}' does not exist.", cleanUpPath);
+        deleteFromDatabase(cleanUpPath);
       }
-      deleteParents(fs, path, cleanUpPath.getPathEventId());
+      try {
+        deleteParents(fs, path, cleanUpPath.getPathEventId());
+      } catch (IOException e) {
+        LOG.warn("Unable to delete parent of '{}' from file system. {}", cleanUpPath, e.getMessage());
+      }
     } catch (IOException e) {
       LOG.warn("Unable to delete path '{}' from file system. Will try next time. {}", cleanUpPath, e.getMessage());
     }
+  }
 
-    if (!cleanUpPathExists) {
-      // BEWARE the eventual consistency of your blobstore!
-      try {
-        LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
-        legacyReplicaPathRepository.delete(cleanUpPath);
-      } catch (ObjectOptimisticLockingFailureException e) {
-        LOG
-            .debug("Failed to delete path '{}': probably already cleaned up by process running at same time. "
-                + "Ok to ignore. {}", cleanUpPath, e.getMessage());
-      } catch (Exception e) {
-        LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
-      }
+  private void deleteFromDatabase(LegacyReplicaPath cleanUpPath) {
+    try {
+      LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
+      legacyReplicaPathRepository.delete(cleanUpPath);
+    } catch (ObjectOptimisticLockingFailureException e) {
+      LOG
+          .debug("Failed to delete path '{}': probably already cleaned up by process running at same time. "
+              + "Ok to ignore. {}", cleanUpPath, e.getMessage());
+    } catch (Exception e) {
+      LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
     }
   }
 
