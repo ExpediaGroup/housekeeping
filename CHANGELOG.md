@@ -1,4 +1,4 @@
-## TBD
+## [3.1.0] - 2019-04-08
 ### Fixed 
 * Bug where not all DB path entries were looped over in the paging due to deletions.
 * Bug in `folder.isEmpty` call for S3AFileSystem that would incorrectly label a folder empty if it had Hadoop `<directoryname>_$folder$` objects.
