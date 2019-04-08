@@ -42,7 +42,7 @@ public class Housekeeping {
   private int fetchLegacyReplicaPathPageSize = DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE;
 
   @Min(1)
-  private int numberOfCleanupThreads = DEFAULT_NUMBER_OF_CLEANUP_THREADS;
+  private int cleanupThreads = DEFAULT_NUMBER_OF_CLEANUP_THREADS;
 
   public Duration getExpiredPathDuration() {
     return expiredPathDuration;
@@ -68,11 +68,11 @@ public class Housekeeping {
     this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
   }
 
-  public int getNumberOfCleanupThreads() {
-    return numberOfCleanupThreads;
+  public int getCleanupThreads() {
+    return cleanupThreads;
   }
 
-  public void setNumberOfCleanupThreads(int numberOfCleanupThreads) {
-    this.numberOfCleanupThreads = numberOfCleanupThreads;
+  public void setCleanupThreads(int cleanupThreads) {
+    this.cleanupThreads = cleanupThreads;
   }
 }

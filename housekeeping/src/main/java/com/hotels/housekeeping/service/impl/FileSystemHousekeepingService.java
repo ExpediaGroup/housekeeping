@@ -56,7 +56,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
 
   private final int fetchLegacyReplicaPathPageSize;
 
-  private final int numberOfCleanupThreads;
+  private final int cleanupThreads;
 
   private final HousekeepingFileSystemFactory housekeepingFileSystemFactory;
 
@@ -71,9 +71,9 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf,
       int fetchLegacyReplicaPathPageSize,
-      int numberOfCleanupThreads) {
+      int cleanupThreads) {
     this(new HousekeepingFileSystemFactory(), legacyReplicaPathRepository, conf, fetchLegacyReplicaPathPageSize,
-        numberOfCleanupThreads);
+        cleanupThreads);
   }
 
   FileSystemHousekeepingService(
@@ -81,12 +81,12 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf,
       int fetchLegacyReplicaPathPageSize,
-      int numberOfCleanupThreads) {
+      int cleanupThreads) {
     this.housekeepingFileSystemFactory = housekeepingFileSystemFactory;
     this.legacyReplicaPathRepository = legacyReplicaPathRepository;
     this.conf = conf;
     this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
-    this.numberOfCleanupThreads = numberOfCleanupThreads;
+    this.cleanupThreads = cleanupThreads;
     // TODO remove this when there are no more records around that hit this.
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
@@ -135,7 +135,7 @@ public class FileSystemHousekeepingService implements HousekeepingService {
 
   @Override
   public void cleanUp(Instant referenceTime) {
-    ExecutorService executor = Executors.newFixedThreadPool(numberOfCleanupThreads);
+    ExecutorService executor = Executors.newFixedThreadPool(cleanupThreads);
     try {
       Pageable pageRequest = new PageRequest(0, fetchLegacyReplicaPathPageSize);
       Page<LegacyReplicaPath> page = legacyReplicaPathRepository

@@ -23,7 +23,7 @@ public interface HousekeepingFileSystem {
 
   boolean exists(Path path) throws IOException;
 
-  boolean delete(Path path, boolean b) throws IOException;
+  boolean delete(Path path, boolean recursive) throws IOException;
 
   boolean isEmpty(Path path) throws IOException;
 
