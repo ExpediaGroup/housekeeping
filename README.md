@@ -1,4 +1,4 @@
-cleanup-threads# Housekeeping
+# Housekeeping
 
 # Start using
 You can obtain Housekeeping from Maven Central :
