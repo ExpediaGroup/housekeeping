@@ -18,10 +18,16 @@ package com.hotels.housekeeping.service.impl;
 import static java.lang.String.format;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.joda.time.Instant;
 import org.slf4j.Logger;
@@ -35,6 +41,8 @@ import com.google.common.annotations.VisibleForTesting;
 
 import com.hotels.housekeeping.HousekeepingException;
 import com.hotels.housekeeping.conf.Housekeeping;
+import com.hotels.housekeeping.fs.HousekeepingFileSystem;
+import com.hotels.housekeeping.fs.HousekeepingFileSystemFactory;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
 import com.hotels.housekeeping.service.HousekeepingService;
@@ -48,87 +56,128 @@ public class FileSystemHousekeepingService implements HousekeepingService {
 
   private final int fetchLegacyReplicaPathPageSize;
 
+  private final int cleanupThreads;
+
+  private final HousekeepingFileSystemFactory housekeepingFileSystemFactory;
+
   public FileSystemHousekeepingService(
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf) {
-    this(legacyReplicaPathRepository, conf, Housekeeping.DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE);
+    this(legacyReplicaPathRepository, conf, Housekeeping.DEFAULT_FETCH_LEGACY_REPLICA_PATH_PAGE_SIZE,
+        Housekeeping.DEFAULT_NUMBER_OF_CLEANUP_THREADS);
   }
 
   public FileSystemHousekeepingService(
       LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
       Configuration conf,
-      int fetchLegacyReplicaPathPageSize) {
+      int fetchLegacyReplicaPathPageSize,
+      int cleanupThreads) {
+    this(new HousekeepingFileSystemFactory(), legacyReplicaPathRepository, conf, fetchLegacyReplicaPathPageSize,
+        cleanupThreads);
+  }
+
+  FileSystemHousekeepingService(
+      HousekeepingFileSystemFactory housekeepingFileSystemFactory,
+      LegacyReplicaPathRepository<LegacyReplicaPath> legacyReplicaPathRepository,
+      Configuration conf,
+      int fetchLegacyReplicaPathPageSize,
+      int cleanupThreads) {
+    this.housekeepingFileSystemFactory = housekeepingFileSystemFactory;
     this.legacyReplicaPathRepository = legacyReplicaPathRepository;
     this.conf = conf;
     this.fetchLegacyReplicaPathPageSize = fetchLegacyReplicaPathPageSize;
+    this.cleanupThreads = cleanupThreads;
     // TODO remove this when there are no more records around that hit this.
     LOG.warn("{}.fixIncompleteRecord(LegacyReplicaPath) should be removed in future.", getClass());
   }
 
-  private FileSystem fileSystemForPath(Path path) throws IOException {
-    return path.getFileSystem(conf);
+  private HousekeepingFileSystem fileSystemForPath(Path path) throws IOException {
+    return housekeepingFileSystemFactory.newInstance(path.getFileSystem(conf));
   }
 
   private void housekeepPath(LegacyReplicaPath cleanUpPath) {
     final Path path = new Path(cleanUpPath.getPath());
-    final Path rootPath;
-    final FileSystem fs;
+    final HousekeepingFileSystem fs;
     try {
       fs = fileSystemForPath(path);
       LOG.info("Attempting to delete path '{}' from file system", cleanUpPath);
       if (fs.exists(path)) {
-        fs.delete(path, true);
-        LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
+        if (fs.delete(path, true)) {
+          LOG.info("Path '{}' has been deleted from file system", cleanUpPath);
+          deleteFromDatabase(cleanUpPath);
+        }
       } else {
         LOG.warn("Path '{}' does not exist.", cleanUpPath);
+        deleteFromDatabase(cleanUpPath);
       }
-      rootPath = deleteParents(fs, path, cleanUpPath.getPathEventId());
+      try {
+        deleteParents(fs, path, cleanUpPath.getPathEventId());
+      } catch (IOException e) {
+        LOG.warn("Unable to delete parent of '{}' from file system. {}", cleanUpPath, e.getMessage());
+      }
     } catch (IOException e) {
       LOG.warn("Unable to delete path '{}' from file system. Will try next time. {}", cleanUpPath, e.getMessage());
-      return;
     }
+  }
 
+  private void deleteFromDatabase(LegacyReplicaPath cleanUpPath) {
     try {
-      if (oneOfMySiblingsWillTakeCareOfMyAncestors(path, rootPath, fs) || thereIsNothingMoreToDelete(fs, rootPath)) {
-        // BEWARE the eventual consistency of your blobstore!
-        try {
-          LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
-          legacyReplicaPathRepository.delete(cleanUpPath);
-        } catch (ObjectOptimisticLockingFailureException e) {
-          LOG
-              .debug("Failed to delete path '{}': probably already cleaned up by process running at same time. "
-                  + "Ok to ignore. {}", cleanUpPath, e.getMessage());
-        } catch (Exception e) {
-          LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
-        }
-      }
-    } catch (IOException e) {
+      LOG.info("Deleting path '{}' from housekeeping database", cleanUpPath);
+      legacyReplicaPathRepository.delete(cleanUpPath);
+    } catch (ObjectOptimisticLockingFailureException e) {
+      LOG
+          .debug("Failed to delete path '{}': probably already cleaned up by process running at same time. "
+              + "Ok to ignore. {}", cleanUpPath, e.getMessage());
+    } catch (Exception e) {
       LOG.warn("Path '{}' was not deleted from the housekeeping database. {}", cleanUpPath, e.getMessage());
     }
   }
 
   @Override
   public void cleanUp(Instant referenceTime) {
+    ExecutorService executor = Executors.newFixedThreadPool(cleanupThreads);
     try {
       Pageable pageRequest = new PageRequest(0, fetchLegacyReplicaPathPageSize);
       Page<LegacyReplicaPath> page = legacyReplicaPathRepository
           .findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
-      processPage(page);
-      while (page.hasNext()) {
-        pageRequest = pageRequest.next();
+      processPage(page, executor);
+      int pagesProcessed = 1;
+      int totalPages = page.getTotalPages();
+      // We keep fetching the first page while we have pages. Because we are deleting entries the number of pages
+      // changes so we use the total number of pages from the first request to loop over all pages once.
+      while (page.hasNext() && pagesProcessed < totalPages) {
         page = legacyReplicaPathRepository.findByCreationTimestampLessThanEqual(referenceTime.getMillis(), pageRequest);
-        processPage(page);
+        processPage(page, executor);
+        pagesProcessed++;
       }
-    } catch (Exception e) {
+    } catch (Throwable e) {
       throw new HousekeepingException(format("Unable to execute housekeeping at instant %d", referenceTime.getMillis()),
           e);
+    } finally {
+      executor.shutdownNow();
     }
   }
 
-  private void processPage(Page<LegacyReplicaPath> page) {
-    for (LegacyReplicaPath cleanUpPath : page) {
-      cleanUpPath = fixIncompleteRecord(cleanUpPath);
-      housekeepPath(cleanUpPath);
+  private void processPage(Page<LegacyReplicaPath> page, ExecutorService executor) throws Throwable {
+    List<Future<Void>> futures = new ArrayList<>(page.getSize());
+    for (final LegacyReplicaPath cleanUpPath : page) {
+      Future<Void> future = executor.submit(new Callable<Void>() {
+
+        @Override
+        public Void call() throws Exception {
+          LegacyReplicaPath path = fixIncompleteRecord(cleanUpPath);
+          housekeepPath(path);
+          return null;
+        }
+      });
+      futures.add(future);
+    }
+    for (Future<Void> future : futures) {
+      try {
+        future.get();
+      } catch (ExecutionException e) {
+        throw e.getCause();
+      }
     }
   }
 
@@ -145,22 +194,14 @@ public class FileSystemHousekeepingService implements HousekeepingService {
     return cleanUpPath;
   }
 
-  private boolean thereIsNothingMoreToDelete(FileSystem fs, Path rootPath) throws IOException {
-    return !fs.exists(rootPath);
-  }
-
-  private boolean oneOfMySiblingsWillTakeCareOfMyAncestors(Path path, Path rootPath, FileSystem fs) throws IOException {
-    return !fs.exists(path) && !isEmpty(fs, rootPath);
-  }
-
   @VisibleForTesting
-  Path deleteParents(FileSystem fs, Path path, String pathEventId) throws IOException {
+  Path deleteParents(HousekeepingFileSystem fs, Path path, String pathEventId) throws IOException {
     if (pathEventId == null || pathEventId.equals(path.getName()) || path.getParent() == null) {
       return path;
     }
     Path parent = path.getParent();
     if (fs.exists(parent)) {
-      if (isEmpty(fs, parent)) {
+      if (fs.isEmpty(parent)) {
         LOG.info("Deleting parent path '{}'", parent);
         fs.delete(parent, false);
         return deleteParents(fs, parent, pathEventId);
@@ -169,10 +210,6 @@ public class FileSystemHousekeepingService implements HousekeepingService {
       }
     }
     return deleteParents(fs, parent, pathEventId);
-  }
-
-  private boolean isEmpty(FileSystem fs, Path path) throws IOException {
-    return !fs.exists(path) || fs.listStatus(path).length == 0;
   }
 
   @Override

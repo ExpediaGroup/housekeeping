@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.housekeeping;
+package com.hotels.housekeeping.fs;
 
-public class HousekeepingException extends RuntimeException {
-  private static final long serialVersionUID = 1L;
+import java.io.IOException;
 
-  public HousekeepingException(Throwable e) {
-    super(e);
-  }
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.s3a.S3AFileSystem;
 
-  public HousekeepingException(String message) {
-    super(message);
-  }
+public class HousekeepingFileSystemFactory {
 
-  public HousekeepingException(String message, Throwable cause) {
-    super(message, cause);
+  public HousekeepingFileSystem newInstance(FileSystem fileSystem) throws IOException {
+    if (fileSystem instanceof S3AFileSystem) {
+      return new HousekeepingS3AFileSystem((S3AFileSystem) fileSystem);
+    }
+    return new IdentityFileSystem(fileSystem);
   }
 
 }

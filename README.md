@@ -70,6 +70,7 @@ Full list of configuration options:
 |`housekeeping.data-source.username`|No|Database user with access to schema.|
 |`housekeeping.data-source.password`|No|Database user's password.|
 |`housekeeping.fetch-legacy-replica-path-page-size`|No|Number of paths to fetch on each call to the database. Tune this if you run out of memory or if the query seems too slow. The higher the number, the more memory is required. Default: '500'|
+|`housekeeping.cleanup-threads`|No|Number of threads used to cleanup the files. Default: '10'|
 
 
 

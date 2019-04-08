@@ -1,3 +1,9 @@
+## TBD
+### Fixed 
+* Bug where not all DB path entries were looped over in the paging due to deletions.
+* Bug in `folder.isEmpty` call for S3AFileSystem that would incorrectly label a folder empty if it had Hadoop `<directoryname>_$folder$` objects.
+* Logic for cleaning up paths that were deleted but were not getting deleted from the database and would never be cleaned up.
+
 ## [3.0.6] - 2019-02-20
 ### Changed
 * Recursion logic to prevent unnecessary calls.

@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hotels.housekeeping;
+package com.hotels.housekeeping.fs;
 
-public class HousekeepingException extends RuntimeException {
-  private static final long serialVersionUID = 1L;
+import java.io.IOException;
 
-  public HousekeepingException(Throwable e) {
-    super(e);
-  }
+import org.apache.hadoop.fs.Path;
 
-  public HousekeepingException(String message) {
-    super(message);
-  }
+public interface HousekeepingFileSystem {
 
-  public HousekeepingException(String message, Throwable cause) {
-    super(message, cause);
-  }
+  boolean exists(Path path) throws IOException;
+
+  boolean delete(Path path, boolean recursive) throws IOException;
+
+  boolean isEmpty(Path path) throws IOException;
 
 }
