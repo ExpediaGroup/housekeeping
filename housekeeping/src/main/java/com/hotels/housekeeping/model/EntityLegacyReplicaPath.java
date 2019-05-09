@@ -17,10 +17,12 @@ package com.hotels.housekeeping.model;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 import org.joda.time.Instant;
 
@@ -31,7 +33,9 @@ import com.google.common.base.Objects;
 public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GenericGenerator(name = "native", strategy = "native")
+  @Column(name = "id", updatable = false, nullable = false)
   protected long id;
 
   @Column(name = "event_id", nullable = false, length = 250)
