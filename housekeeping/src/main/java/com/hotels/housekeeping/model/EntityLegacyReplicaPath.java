@@ -23,13 +23,11 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.envers.Audited;
 import org.joda.time.Instant;
 
 import com.google.common.base.Objects;
 
 @MappedSuperclass
-@Audited
 public abstract class EntityLegacyReplicaPath implements LegacyReplicaPath {
 
   @Id

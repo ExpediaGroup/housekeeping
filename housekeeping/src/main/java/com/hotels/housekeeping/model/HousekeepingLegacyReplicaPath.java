@@ -19,11 +19,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.envers.Audited;
 
 @Entity
-// @Converter doesn't work with @Audited until https://hibernate.atlassian.net/browse/HHH-9042 is released
-@Audited
+//@Converter doesn't work with @Audited until https://hibernate.atlassian.net/browse/HHH-9042 is released
+//@Audited
 @Table(name = "legacy_replica_path", uniqueConstraints = @UniqueConstraint(columnNames = {
     "path",
     "creation_timestamp" }))
