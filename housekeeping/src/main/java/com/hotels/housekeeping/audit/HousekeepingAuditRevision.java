@@ -15,8 +15,7 @@
  */
 package com.hotels.housekeeping.audit;
 
-import
-    javax.persistence.Entity;
+import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.hibernate.envers.RevisionEntity;

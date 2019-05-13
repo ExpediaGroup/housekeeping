@@ -67,8 +67,8 @@ public class HousekeepingConfiguration {
     log.info("Loading default {}", HOUSEKEEPING_ENVIRONMENT);
     Map<String, Object> properties = ImmutableMap
         .<String, Object>builder()
-        .put("spring.jpa.hibernate.ddl-auto", "update")
-        .put("spring.jpa.hibernate.generate-ddl", true)
+        .put("spring.jpa.properties.hibernate.hbm2ddl.auto", "update")
+        .put("spring.jpa.properties.hibernate.generate-ddl", true)
         .put("spring.jpa.properties.org.hibernate.envers.store_data_at_delete", true)
         .put("spring.jpa.properties.hibernate.listeners.envers.autoRegister", false)
         .put("spring.jpa.properties.hibernate.default_schema", "${housekeeping.schema-name:housekeeping}")
