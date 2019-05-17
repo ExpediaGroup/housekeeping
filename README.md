@@ -23,8 +23,8 @@ housekeeping:
   schema-name: my_db
   # Connection details
   data-source:
-    # The package of your driver class
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    # The package of your driver class; note that MySQL on AWS needs a MariaDB driver
+    driver-class-name: org.mariadb.jdbc.Driver
     # JDBC URL for your database
     url: jdbc:mysql://foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
     # Database username
@@ -33,7 +33,10 @@ housekeeping:
     password: Ch4ll3ng3
 ```
 
-Note: To use MySQL and similar database systems, the schema specified in the configuration needs to exist, as the value for `housekeeping.data-source.url` needs to be a valid URI.
+Notes:
+
+* To use MySQL and similar database systems, the schema specified in the configuration needs to exist, as the value for `housekeeping.data-source.url` needs to be a valid URI.
+* Because Housekeeping is built in Java 7, it would be safe to use the latest MariaDB jar for Java 7 support, `mariadb-java-client-1.8.0.jar`.
 
 Houseekeping can also be set up to use the default database engine (H2) and schema:
 
@@ -194,7 +197,7 @@ The 'output' is your encrypted password. This encrypted password can then be use
 housekeeping:
   data-source:
     #The package of your driver class
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
     #JDBC URL for your Database
     url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/housekeeping_db
     #Database Username
