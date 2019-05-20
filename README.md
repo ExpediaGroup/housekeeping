@@ -23,7 +23,7 @@ housekeeping:
   schema-name: my_db
   # Connection details
   data-source:
-    # The package of your driver class; note that MySQL on AWS needs a MariaDB driver
+    # The name of your JDBC Driver class  
     driver-class-name: org.mariadb.jdbc.Driver
     # JDBC URL for your database
     url: jdbc:mysql://foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
@@ -34,9 +34,8 @@ housekeeping:
 ```
 
 Notes:
-
+* Some users have seen issues using the MySQL driver on AWS Aurora. [AWS recommends](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Connecting.html) to use the MariaDB driver for those use cases.
 * To use MySQL and similar database systems, the schema specified in the configuration needs to exist, as the value for `housekeeping.data-source.url` needs to be a valid URI.
-* Because Housekeeping is built in Java 7, it would be safe to use the latest MariaDB jar for Java 7 support, `mariadb-java-client-1.8.0.jar`.
 
 Houseekeping can also be set up to use the default database engine (H2) and schema:
 
