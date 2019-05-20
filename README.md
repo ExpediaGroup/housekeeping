@@ -23,7 +23,7 @@ housekeeping:
   schema-name: my_db
   # Connection details
   data-source:
-    # The name of your JDBC Driver class  
+    # The name of your JDBC Driver class
     driver-class-name: org.mariadb.jdbc.Driver
     # JDBC URL for your database
     url: jdbc:mysql://foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
@@ -195,13 +195,13 @@ The 'output' is your encrypted password. This encrypted password can then be use
 ```yaml
 housekeeping:
   data-source:
-    #The package of your driver class
+    # The name of your JDBC Driver class
     driver-class-name: org.mariadb.jdbc.Driver
-    #JDBC URL for your Database
+    # JDBC URL for your Database
     url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/housekeeping_db
-    #Database Username
+    # Database Username
     username: bdp
-    #Encrypted Database Password
+    # Encrypted Database Password
     password: ENC(EHL/foiBKY2Ucy3oYmxdkFiXzWnOu7by)
 ```
 
