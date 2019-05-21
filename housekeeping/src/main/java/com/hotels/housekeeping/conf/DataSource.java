@@ -24,8 +24,8 @@ import com.hotels.housekeeping.validation.constraints.URI;
 @EnableEncryptableProperties
 public class DataSource {
 
-  @NotEmpty(message = "housekeeping.dataSource.driverClassName must not be blank")
-  private String driverClassName = "org.h2.Driver";
+//  @NotEmpty(message = "housekeeping.dataSource.driverClassName must not be blank")
+//  private String driverClassName = "org.h2.Driver";
   @URI(message = "housekeeping.dataSource.url does not seem to be a valid JDBC URI", scheme = "jdbc")
   private String url = null;
   // Housekeeping can create an application internal database if the user doesn't provide DataSource configuration
@@ -33,13 +33,13 @@ public class DataSource {
   private String username = "bdp";
   private String password = "Ch4ll3ng3";
 
-  public String getDriverClassName() {
-    return driverClassName;
-  }
+//  public String getDriverClassName() {
+//    return driverClassName;
+//  }
 
-  public void setDriverClassName(String driverClassName) {
-    this.driverClassName = driverClassName;
-  }
+//  public void setDriverClassName(String driverClassName) {
+//    this.driverClassName = driverClassName;
+//  }
 
   public String getUrl() {
     return url;

@@ -71,7 +71,7 @@ public class HousekeepingIntegrationTest {
     assertThat(housekeeping.getExpiredPathDuration(), is(not(nullValue())));
     assertThat(housekeeping.getExpiredPathDuration(), is(new Period(168, 0, 0, 0).toStandardDuration()));
     assertThat(housekeeping.getDataSource(), is(not(nullValue())));
-    assertThat(housekeeping.getDataSource().getDriverClassName(), is("org.h2.Driver"));
+//    assertThat(housekeeping.getDataSource().getDriverClassName(), is("org.h2.Driver"));
     assertThat(housekeeping.getDataSource().getUrl(),
         is("jdbc:h2:/opt/my-artifact/data/myproject/housekeeping;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE"));
     assertThat(housekeeping.getDataSource().getUsername(), is("user"));

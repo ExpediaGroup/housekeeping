@@ -53,14 +53,14 @@ public class DataSourceTest {
     assertThat(constraintViolations.size(), is(0));
   }
 
-  @Test
-  public void missingDriverClassName() {
-    dataSource.setDriverClassName(null);
-    Set<ConstraintViolation<DataSource>> constraintViolations = validator.validate(dataSource);
-    assertThat(constraintViolations.size(), is(1));
-    assertThat(constraintViolations.iterator().next().getMessage(),
-        is("housekeeping.dataSource.driverClassName must not be blank"));
-  }
+//  @Test
+//  public void missingDriverClassName() {
+//    dataSource.setDriverClassName(null);
+//    Set<ConstraintViolation<DataSource>> constraintViolations = validator.validate(dataSource);
+//    assertThat(constraintViolations.size(), is(1));
+//    assertThat(constraintViolations.iterator().next().getMessage(),
+//        is("housekeeping.dataSource.driverClassName must not be blank"));
+//  }
 
   @Test
   public void missingUrl() {

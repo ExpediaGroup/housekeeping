@@ -90,7 +90,7 @@ public class HousekeepingConfiguration {
   DataSource housekeepingDataSource(Housekeeping housekeeping) {
     return DataSourceBuilder
         .create()
-        .driverClassName(housekeeping.getDataSource().getDriverClassName())
+//        .driverClassName(housekeeping.getDataSource().getDriverClassName())
         .url(housekeeping.getDataSource().getUrl())
         .username(housekeeping.getDataSource().getUsername())
         .password(housekeeping.getDataSource().getPassword())
