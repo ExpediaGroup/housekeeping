@@ -24,7 +24,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -173,7 +172,7 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void housekeepingPathsWithOneFileSystemLoadFailureCleansUpOtherPaths() throws Exception {
-    reset(housekeepingFileSystemFactory);
+    //reset(housekeepingFileSystemFactory);
     when(housekeepingFileSystemFactory.newInstance(any(FileSystem.class))).thenThrow(new IOException()).thenReturn(fs);
 
     when(legacyReplicationPathRepository
