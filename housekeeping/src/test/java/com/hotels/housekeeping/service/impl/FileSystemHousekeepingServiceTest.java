@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +45,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -180,13 +182,13 @@ public class FileSystemHousekeepingServiceTest {
 
     service.cleanUp(now);
 
-    verify(fs, times(0)).delete(eq(new Path(cleanUpPath1.getPath())), eq(true));
-    verify(fs).delete(eq(new Path(cleanUpPath2.getPath())), eq(true));
-    verify(fs).delete(eq(new Path(cleanUpPath3.getPath())), eq(true));
+    // any path can be fail deletion due to threading so just checking that any 2 paths are deleted from DB and FS.
+    ArgumentCaptor<LegacyReplicaPath> captor = ArgumentCaptor.forClass(LegacyReplicaPath.class);
+    verify(legacyReplicationPathRepository, times(2)).delete(captor.capture());
 
-    verify(legacyReplicationPathRepository, times(0)).delete(cleanUpPath1);
-    verify(legacyReplicationPathRepository).delete(cleanUpPath2);
-    verify(legacyReplicationPathRepository).delete(cleanUpPath3);
+    List<LegacyReplicaPath> allDeletedPaths = captor.getAllValues();
+    verify(fs).delete(eq(new Path(allDeletedPaths.get(0).getPath())), eq(true));
+    verify(fs).delete(eq(new Path(allDeletedPaths.get(1).getPath())), eq(true));
   }
 
   @Test
