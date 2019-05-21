@@ -172,7 +172,6 @@ public class FileSystemHousekeepingServiceTest {
 
   @Test
   public void housekeepingPathsWithOneFileSystemLoadFailureCleansUpOtherPaths() throws Exception {
-    //reset(housekeepingFileSystemFactory);
     when(housekeepingFileSystemFactory.newInstance(any(FileSystem.class))).thenThrow(new IOException()).thenReturn(fs);
 
     when(legacyReplicationPathRepository
