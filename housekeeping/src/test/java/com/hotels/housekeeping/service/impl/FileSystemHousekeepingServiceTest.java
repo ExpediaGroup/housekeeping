@@ -182,7 +182,7 @@ public class FileSystemHousekeepingServiceTest {
 
     service.cleanUp(now);
 
-    // any path can be fail deletion due to threading so just checking that any 2 paths are deleted from DB and FS.
+    // any path can fail deletion due to threading so just checking that any 2 paths are deleted from DB and FS.
     ArgumentCaptor<LegacyReplicaPath> captor = ArgumentCaptor.forClass(LegacyReplicaPath.class);
     verify(legacyReplicationPathRepository, times(2)).delete(captor.capture());
 
