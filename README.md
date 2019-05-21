@@ -15,7 +15,7 @@ The housekeeping module defaults to using the H2 Database Engine, however this m
 In order to connect to your SQL database, you must place a database connector jar that is compatible with your database onto your application's classpath.
 
 ## Spring YAML Housekeeping Configuration
-If your project utilises Spring YAML you can define your Housekeeping within the YAML. For example, Housekeeping can be set up to use a MySQL schema:
+If your project utilises Spring YAML you can define your Housekeeping within the YAML. For example, Housekeeping can be set up to use a MariaDB schema:
 
 ```yaml
 housekeeping:
@@ -23,17 +23,19 @@ housekeeping:
   schema-name: my_db
   # Connection details
   data-source:
-    # The package of your driver class
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    # The name of your JDBC Driver class
+    driver-class-name: org.mariadb.jdbc.Driver
     # JDBC URL for your database
-    url: jdbc:mysql://foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
+    url: jdbc:mariadb://foo1baz123.us-east-1.rds.amazonaws.com:3306/${housekeeping.schema-name}
     # Database username
     username: bdp
     # Database password
     password: Ch4ll3ng3
 ```
 
-Note: To use MySQL and similar database systems, the schema specified in the configuration needs to exist, as the value for `housekeeping.data-source.url` needs to be a valid URI.
+Notes:
+* Some users have seen issues using the MySQL driver on AWS Aurora for MySQL. [AWS recommends](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Connecting.html) using the MariaDB driver for those use cases.
+* To use MariaDB, MySQL and similar database systems, the schema specified in the configuration needs to exist (i.e. the value for `housekeeping.data-source.url` needs to be a valid URI).
 
 Houseekeping can also be set up to use the default database engine (H2) and schema:
 
@@ -193,13 +195,13 @@ The 'output' is your encrypted password. This encrypted password can then be use
 ```yaml
 housekeeping:
   data-source:
-    #The package of your driver class
-    driver-class-name: com.mysql.jdbc.Driver
-    #JDBC URL for your Database
-    url: jdbc:mysql://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/housekeeping_db
-    #Database Username
+    # The name of your JDBC Driver class
+    driver-class-name: org.mariadb.jdbc.Driver
+    # JDBC URL for your Database
+    url: jdbc:mariadb://housekeeping.foo1baz123.us-east-1.rds.amazonaws.com:3306/housekeeping_db
+    # Database Username
     username: bdp
-    #Encrypted Database Password
+    # Encrypted Database Password
     password: ENC(EHL/foiBKY2Ucy3oYmxdkFiXzWnOu7by)
 ```
 
