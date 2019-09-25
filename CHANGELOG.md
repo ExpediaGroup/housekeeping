@@ -1,3 +1,7 @@
+## TBD
+### Changed
+* Removed classes for `TablePathResolverTest` to use the ones from [hcommon-hive-metastore]()
+
 ## [3.1.0] - 2019-04-08
 ### Fixed 
 * Bug where not all DB path entries were looped over in the paging due to deletions.

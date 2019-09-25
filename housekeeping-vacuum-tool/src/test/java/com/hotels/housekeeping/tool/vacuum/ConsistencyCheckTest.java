@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ public class ConsistencyCheckTest {
 
   @Test
   public void metastorePathsCorrect() {
-    ConsistencyCheck.checkMetastorePaths(Collections.singleton(new Path("/a/b/ctp-20160728T110821.830Z-w5npK1yY/d")),
-        4);
+    ConsistencyCheck.checkMetastorePaths(Collections.singleton(
+        new Path("/a/b/ctp-20160728T110821.830Z-w5npK1yY/d")), 4);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -65,5 +65,4 @@ public class ConsistencyCheckTest {
     FileSystem fs = exists.getFileSystem(new Configuration(false));
     ConsistencyCheck.checkUnvisitedPath(fs, exists);
   }
-
 }

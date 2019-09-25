@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
-import org.apache.hadoop.hive.metastore.api.MetaException;
-import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.thrift.TException;
@@ -52,6 +50,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.google.common.base.Supplier;
 
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
+import com.hotels.hcommon.hive.metastore.paths.PathUtils;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
@@ -118,7 +117,7 @@ public class VacuumToolApplicationTest {
   private String partitionLocation3;
 
   @Before
-  public void initialise() throws MetaException, NoSuchObjectException, TException, IOException {
+  public void initialise() throws TException, IOException {
     unpartitionLocation = new Path(temporaryFolder.newFolder("unpartitioned", TABLE_EVENT_1).toURI().toString())
         .toString();
 
@@ -152,17 +151,17 @@ public class VacuumToolApplicationTest {
 
     LegacyReplicaPath legacyReplicaPath = new HousekeepingLegacyReplicaPath("eventId", PARTITION_EVENT_1,
         partitionLocation1, DATABASE_NAME, PARTITIONED_TABLE_NAME);
-    when(legacyReplicaPathRepository.findAll()).thenReturn(Arrays.<LegacyReplicaPath> asList(legacyReplicaPath));
+    when(legacyReplicaPathRepository.findAll()).thenReturn(Collections.singletonList(legacyReplicaPath));
 
     when(unpartitionedTable.getDbName()).thenReturn(DATABASE_NAME);
     when(unpartitionedTable.getTableName()).thenReturn(UNPARTITIONED_TABLE_NAME);
-    when(unpartitionedTable.getPartitionKeys()).thenReturn(Collections.<FieldSchema> emptyList());
+    when(unpartitionedTable.getPartitionKeys()).thenReturn(Collections.<FieldSchema>emptyList());
     when(unpartitionedTable.getSd()).thenReturn(unpartitionedSd);
     when(unpartitionedSd.getLocation()).thenReturn(unpartitionLocation);
     when(partitionedTable.getDbName()).thenReturn(DATABASE_NAME);
     when(partitionedTable.getTableName()).thenReturn(PARTITIONED_TABLE_NAME);
-    when(partitionedTable.getPartitionKeys())
-        .thenReturn(Arrays.asList(new FieldSchema("local_date", "string", "comment")));
+    when(partitionedTable.getPartitionKeys()).thenReturn(
+        Collections.singletonList(new FieldSchema("local_date", "string", "comment")));
     when(partitionedTable.getSd()).thenReturn(partitionedSd);
     when(partitionedSd.getLocation()).thenReturn(partitionedBaseLocation);
     when(partition.getSd()).thenReturn(partitionSd);
@@ -171,13 +170,13 @@ public class VacuumToolApplicationTest {
     when(client.getTable(DATABASE_NAME, PARTITIONED_TABLE_NAME)).thenReturn(partitionedTable);
 
     when(client.listPartitionNames(DATABASE_NAME, PARTITIONED_TABLE_NAME, (short) -1))
-        .thenReturn(Arrays.asList(PARTITION_NAME));
+        .thenReturn(Collections.singletonList(PARTITION_NAME));
   }
 
   @Test
   public void removePath() {
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
+        housekeepingService, tablesValidator, replications, false, (short) 100);
     tool.removePath(new Path(partitionLocation1), "db", "table");
 
     verify(housekeepingService).scheduleForHousekeeping(pathCaptor.capture());
@@ -192,7 +191,7 @@ public class VacuumToolApplicationTest {
   @Test
   public void fetchHousekeepingPaths() throws Exception {
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
+        housekeepingService, tablesValidator, replications, false, (short) 100);
     Set<Path> paths = tool.fetchHousekeepingPaths(legacyReplicaPathRepository);
 
     assertThat(paths.size(), is(1));
@@ -214,7 +213,7 @@ public class VacuumToolApplicationTest {
 
     when(client.listPartitions(DATABASE_NAME, PARTITIONED_TABLE_NAME, (short) 1))
         .thenReturn(Collections.singletonList(partition));
-    when(client.getPartitionsByNames(DATABASE_NAME, PARTITIONED_TABLE_NAME, Arrays.asList(PARTITION_NAME)))
+    when(client.getPartitionsByNames(DATABASE_NAME, PARTITIONED_TABLE_NAME, Collections.singletonList(PARTITION_NAME)))
         .thenReturn(Collections.singletonList(partition));
 
     // The HK references path 2
@@ -227,7 +226,7 @@ public class VacuumToolApplicationTest {
 
     // So we expect path 3 to be scheduled for removal
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
+        housekeepingService, tablesValidator, replications, false, (short) 100);
     tool.run(null);
 
     verify(housekeepingService, times(1)).scheduleForHousekeeping(pathCaptor.capture());
@@ -238,7 +237,7 @@ public class VacuumToolApplicationTest {
   }
 
   @Test
-  public void runValidationFails() throws Exception {
+  public void runValidationFails() {
     Table table = new Table();
     table.setDatabaseName(DATABASE_NAME);
     table.setTableName(PARTITIONED_TABLE_NAME);
@@ -252,7 +251,7 @@ public class VacuumToolApplicationTest {
     when(tablesValidator.validate(client, replications.getTables())).thenReturn(validationResult);
 
     VacuumToolApplication tool = new VacuumToolApplication(conf, clientSupplier, legacyReplicaPathRepository,
-        housekeepingService, tablesValidator, replications, false, (short) 100, 1000);
+        housekeepingService, tablesValidator, replications, false, (short) 100);
     try {
       tool.run(null);
       fail("Should have thrown an exception to stop vacuuming and sort out the invalid config");
@@ -262,5 +261,4 @@ public class VacuumToolApplicationTest {
       verify(validationFailure2).getMessage();
     }
   }
-
 }

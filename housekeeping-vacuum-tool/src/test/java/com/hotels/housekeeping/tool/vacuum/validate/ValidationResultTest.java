@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class ValidationResultTest {
   private ValidationFailure validationFailure2;
 
   @Test
-  public void validationResultInvalid() throws Exception {
+  public void validationResultInvalid() {
     ValidationResult validationResult = new ValidationResult();
     validationResult.addValidationFailure(validationFailure1);
     validationResult.addValidationFailure(validationFailure2);
@@ -42,7 +42,7 @@ public class ValidationResultTest {
   }
 
   @Test
-  public void validationResultValid() throws Exception {
+  public void validationResultValid() {
     ValidationResult validationResult = new ValidationResult();
     assertThat(validationResult.isValid(), is(true));
     assertThat(validationResult.getValidationFailures().isEmpty(), is(true));
