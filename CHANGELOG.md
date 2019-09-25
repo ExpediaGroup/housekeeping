@@ -1,6 +1,7 @@
 ## TBD
 ### Changed
-* Removed classes for `TablePathResolverTest` to use the ones from [hcommon-hive-metastore]()
+* vacuum-tool: Removed classes for `TablePathResolverTest` to use the ones from [hcommon-hive-metastore](https://github.com/HotelsDotCom/hcommon-hive-metastore).
+* vacuum-tool: Removed the configuration for `expected-path-count` as it was not used.
 
 ## [3.1.0] - 2019-04-08
 ### Fixed 
