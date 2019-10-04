@@ -45,11 +45,10 @@ Run with your respective replication YAML configuration file:
 $HOUSEKEEPING_TOOL_HOME/bin/vacuum.sh \
   --config=<your-config>.yml \
   [--dry-run=true] \
-  [--partition-batch-size=1000] \
-  [--expected-path-count=10000]
+  [--partition-batch-size=1000]
 ```
 
-The `dry-run` option allows you to observe the status of paths on the file system, the metastore, and the Housekeeping database without actually scheduling anything for deletion. The `partition-batch-size` and `expected-path-count` allow you to tune memory demands should you hit heap limits with large numbers of partitions.
+The `dry-run` option allows you to observe the status of paths on the file system, the metastore, and the Housekeeping database without actually scheduling anything for deletion. The `partition-batch-size` is the number of partitions to retrieve in each batch from a table, and can be changed to a lower number if an out of memory exception occurs.
 
 ## YAML Configuration
 

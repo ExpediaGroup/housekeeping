@@ -58,6 +58,9 @@ import com.hotels.housekeeping.tool.vacuum.validate.TablesValidator;
 import com.hotels.housekeeping.tool.vacuum.validate.ValidationFailure;
 import com.hotels.housekeeping.tool.vacuum.validate.ValidationResult;
 
+import com.hotels.hcommon.hive.metastore.paths.PathUtils;
+import com.hotels.hcommon.hive.metastore.paths.TablePathResolver;
+
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class VacuumToolApplication implements ApplicationRunner {
@@ -72,7 +75,6 @@ class VacuumToolApplication implements ApplicationRunner {
   private final String vacuumEventId;
   private final boolean isDryRun;
   private final short batchSize;
-  private final int expectedPathCount;
 
   private Set<Path> housekeepingPaths;
   private IMetaStoreClient metastore;
@@ -88,8 +90,7 @@ class VacuumToolApplication implements ApplicationRunner {
       TablesValidator tablesValidator,
       Tables tables,
       @Value("${dry-run:false}") boolean isDryRun,
-      @Value("${partition-batch-size:1000}") short batchSize,
-      @Value("${expected-path-count:10000}") int expectedPathCount) {
+      @Value("${partition-batch-size:1000}") short batchSize) {
     this.conf = conf;
     this.clientSupplier = clientSupplier;
     this.legacyReplicaPathRepository = legacyReplicaPathRepository;
@@ -97,7 +98,6 @@ class VacuumToolApplication implements ApplicationRunner {
     this.tablesValidator = tablesValidator;
     this.isDryRun = isDryRun;
     this.batchSize = batchSize;
-    this.expectedPathCount = expectedPathCount;
     this.tables = tables.getTables();
     vacuumEventId = "vacuum-" + DateTime.now(DateTimeZone.UTC);
   }
@@ -172,7 +172,7 @@ class VacuumToolApplication implements ApplicationRunner {
     LOG.debug("Glob path: '{}'", globPath);
     int globDepth = globPath.depth();
 
-    Set<Path> metastorePaths = pathResolver.getMetastorePaths(batchSize, expectedPathCount);
+    Set<Path> metastorePaths = pathResolver.getMetastorePaths(batchSize);
     ConsistencyCheck.checkMetastorePaths(metastorePaths, globDepth);
     Set<Path> unvisitedMetastorePaths = new HashSet<>(metastorePaths);
 

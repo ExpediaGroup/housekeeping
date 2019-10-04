@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2019 Expedia Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 public class TablesValidationConfigTest {
 
   @Test
-  public void defaults() throws Exception {
+  public void defaults() {
     TablesValidationConfig tablesValidationConfig = new TablesValidationConfig();
 
     assertThat(tablesValidationConfig.getHiveTableProperties().size(), is(1));
@@ -33,7 +33,7 @@ public class TablesValidationConfigTest {
   }
 
   @Test
-  public void overrideDefaults() throws Exception {
+  public void overrideDefaults() {
     TablesValidationConfig tablesValidationConfig = new TablesValidationConfig();
     tablesValidationConfig.setHiveTableProperties(Lists.newArrayList("override"));
 
