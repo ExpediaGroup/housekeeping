@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2019 Expedia Inc.
+ * Copyright (C) 2016-2021 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Supplier;
 
 import com.hotels.hcommon.hive.metastore.client.api.CloseableMetaStoreClient;
+import com.hotels.hcommon.hive.metastore.paths.PathUtils;
+import com.hotels.hcommon.hive.metastore.paths.TablePathResolver;
 import com.hotels.housekeeping.model.HousekeepingLegacyReplicaPath;
 import com.hotels.housekeeping.model.LegacyReplicaPath;
 import com.hotels.housekeeping.repository.LegacyReplicaPathRepository;
@@ -57,9 +59,6 @@ import com.hotels.housekeeping.tool.vacuum.conf.Tables;
 import com.hotels.housekeeping.tool.vacuum.validate.TablesValidator;
 import com.hotels.housekeeping.tool.vacuum.validate.ValidationFailure;
 import com.hotels.housekeeping.tool.vacuum.validate.ValidationResult;
-
-import com.hotels.hcommon.hive.metastore.paths.PathUtils;
-import com.hotels.hcommon.hive.metastore.paths.TablePathResolver;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

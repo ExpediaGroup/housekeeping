@@ -3,11 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.hotels</groupId>
-    <artifactId>hotels-oss-parent</artifactId>
-    <version>4.0.0</version>
+    <groupId>com.expediagroup</groupId>
+    <artifactId>eg-oss-parent</artifactId>
+    <version>2.4.0</version>
   </parent>
 
+  <groupId>com.hotels</groupId>
   <artifactId>housekeeping-parent</artifactId>
   <version>4.0.0-SNAPSHOT</version>
   <inceptionYear>2016</inceptionYear>
@@ -19,14 +20,14 @@
   </modules>
 
   <scm>
-    <connection>scm:git:https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/HotelsDotCom/housekeeping.git</connection>
-    <developerConnection>scm:git:https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/HotelsDotCom/housekeeping.git</developerConnection>
-    <url>https://github.com/HotelsDotCom/housekeeping</url>
+    <connection>scm:git:https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ExpediaGroup/housekeeping.git</connection>
+    <developerConnection>scm:git:https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ExpediaGroup/housekeeping.git</developerConnection>
+    <url>https://github.com/ExpediaGroup/housekeeping</url>
     <tag>HEAD</tag>
   </scm>
 
   <properties>
-    <jdk.version>1.7</jdk.version>
+    <jdk.version>1.8</jdk.version>
     <shade.prefix>${project.groupId}.shaded</shade.prefix>
     <hadoop.version>2.7.1</hadoop.version>
     <hadoop-aws.version>2.8.1</hadoop-aws.version>

@@ -3,7 +3,7 @@
 # Start using
 You can obtain Housekeeping from Maven Central :
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hotels/housekeeping/badge.svg?subject=com.hotels:housekeeping)](https://maven-badges.herokuapp.com/maven-central/com.hotels/housekeeping) [![Build Status](https://travis-ci.org/HotelsDotCom/housekeeping.svg?branch=master)](https://travis-ci.org/HotelsDotCom/housekeeping) [![Coverage Status](https://coveralls.io/repos/github/HotelsDotCom/housekeeping/badge.svg?branch=master)](https://coveralls.io/github/HotelsDotCom/housekeeping) ![GitHub license](https://img.shields.io/github/license/HotelsDotCom/housekeeping.svg)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hotels/housekeeping/badge.svg?subject=com.hotels:housekeeping)](https://maven-badges.herokuapp.com/maven-central/com.hotels/housekeeping) [![Build Status](https://travis-ci.org/ExpediaGroup/housekeeping.svg?branch=master)](https://travis-ci.org/ExpediaGroup/housekeeping) [![Coverage Status](https://coveralls.io/repos/github/ExpediaGroup/housekeeping/badge.svg?branch=master)](https://coveralls.io/github/ExpediaGroup/housekeeping) ![GitHub license](https://img.shields.io/github/license/ExpediaGroup/housekeeping.svg)
 
 # Overview
 A database-backed module that stores orphaned paths in a table for later clean up.
@@ -19,7 +19,7 @@ If your project utilises Spring YAML you can define your Housekeeping within the
 
 ```yaml
 housekeeping:
-  # Name of the schema/database to use - defaults to housekeeping 
+  # Name of the schema/database to use - defaults to housekeeping
   schema-name: my_db
   # Connection details
   data-source:
@@ -79,11 +79,11 @@ Full list of configuration options:
 You can override Spring Boot (HikariCP/Hibernate) settings in the YAML by providing the relevant properties. Housekeeping defaults are added with lower precedence. For example, to override the default connection pool maximum active size to 5 add this:
 
 ```yaml
-spring.datasource.max-active: 5 
+spring.datasource.max-active: 5
 ```
 
 Refer to the Spring Boot documentation for a full list of properties that can be set.   
-    
+
 ## Programmatic Housekeeping Configuration
 Housekeeping allows you to configure your housekeeping job in a more fine-grained manner by providing a certain set of Spring beans in your application.
 

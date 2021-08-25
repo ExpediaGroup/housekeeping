@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 Expedia Inc.
+ * Copyright (C) 2016-2021 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 package com.hotels.housekeeping.tool.vacuum;
 
-import javax.annotation.Nonnull;
-
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import org.springframework.validation.ObjectError;
 
@@ -57,7 +57,7 @@ class VacuumToolHelp {
         .append(System.lineSeparator())
         .append(TAB)
         .append("For more information and help please refer to ")
-        .append("https://github.com/HotelsDotCom/housekeeping/tree/master/housekeeping-vacuum-tool");
+        .append("https://github.com/expediagroup/housekeeping/tree/main/housekeeping-vacuum-tool");
     return help.toString();
   }
 }
